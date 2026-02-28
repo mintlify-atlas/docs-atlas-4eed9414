@@ -1,0 +1,143 @@
+{
+  "projectType": "general",
+  "projectName": "Knowledge Work Plugins",
+  "projectDescription": "Open source plugins that turn Claude into a specialist for various job functions and workflows, built for Claude Cowork.",
+  "theme": "palm",
+  "primaryColor": "#7C3AED",
+  "lightColor": "#A78BFA",
+  "darkColor": "#5B21B6",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/how-plugins-work",
+              "concepts/skills",
+              "concepts/commands",
+              "concepts/connectors",
+              "concepts/mcp-integration"
+            ]
+          },
+          {
+            "group": "Business Plugins",
+            "pages": [
+              "plugins/sales",
+              "plugins/customer-support",
+              "plugins/marketing",
+              "plugins/product-management"
+            ]
+          },
+          {
+            "group": "Operations Plugins",
+            "pages": [
+              "plugins/finance",
+              "plugins/legal",
+              "plugins/human-resources",
+              "plugins/operations"
+            ]
+          },
+          {
+            "group": "Technical Plugins",
+            "pages": [
+              "plugins/engineering",
+              "plugins/data",
+              "plugins/design"
+            ]
+          },
+          {
+            "group": "Specialized Plugins",
+            "pages": [
+              "plugins/bio-research",
+              "plugins/enterprise-search",
+              "plugins/productivity"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "customization/overview",
+              "customization/adding-company-context",
+              "customization/configuring-connectors",
+              "customization/modifying-workflows"
+            ]
+          },
+          {
+            "group": "Building Plugins",
+            "pages": [
+              "building/getting-started",
+              "building/plugin-structure",
+              "building/creating-skills",
+              "building/creating-commands",
+              "building/adding-mcp-servers",
+              "building/plugin-management"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Plugin Manifest",
+            "pages": [
+              "api/plugin-json",
+              "api/mcp-json"
+            ]
+          },
+          {
+            "group": "Skill Reference",
+            "pages": [
+              "api/skill-metadata",
+              "api/skill-examples"
+            ]
+          },
+          {
+            "group": "Command Reference",
+            "pages": [
+              "api/command-metadata",
+              "api/command-examples"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "20+ pre-built plugins for different job functions",
+    "Skills that provide automatic domain expertise",
+    "Slash commands for explicit workflows",
+    "MCP connector integration for external tools",
+    "File-based customization with no code required",
+    "Support for both Claude Cowork and Claude Code",
+    "Plugin management tools for creating custom plugins",
+    "Extensive connector ecosystem (CRM, project management, data warehouses, etc.)"
+  ],
+  "publicApiSurface": [
+    "sales plugin (/call-summary, /forecast, /pipeline-review)",
+    "customer-support plugin (triage, draft responses, knowledge base)",
+    "product-management plugin (/write-spec, roadmap planning)",
+    "marketing plugin (content creation, campaign planning, brand voice)",
+    "legal plugin (contract review, NDA triage, compliance)",
+    "finance plugin (reconciliation, journal entries, financial statements)",
+    "data plugin (/write-query, /explore-data, /build-dashboard)",
+    "engineering plugin (/debug, /review, /incident, /architecture)",
+    "bio-research plugin (literature search, genomics analysis)",
+    "enterprise-search plugin (cross-tool search)",
+    "productivity plugin (/start, /update, task management)",
+    "design plugin (design system, feedback workflows)",
+    "human-resources plugin (recruitment, onboarding)",
+    "operations plugin (process improvement, resource planning)",
+    "cowork-plugin-management plugin (create and customize plugins)"
+  ]
+}
