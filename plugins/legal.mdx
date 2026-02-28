@@ -31,6 +31,12 @@ claude plugins add knowledge-work-plugins/legal
   <Card title="Triage NDA" icon="handshake">
     Rapid NDA pre-screening against standard criteria with GREEN/YELLOW/RED classification
   </Card>
+  <Card title="Compliance Check" icon="shield-check">
+    Run compliance reviews on proposed actions, features, or business initiatives
+  </Card>
+  <Card title="Signature Request" icon="signature">
+    Prepare and route documents for electronic signature
+  </Card>
   <Card title="Vendor Check" icon="building">
     Check existing agreements with a vendor across your connected systems
   </Card>
@@ -101,6 +107,26 @@ Generate contextual briefings for your legal work.
 /brief topic [query]  # Research brief on a specific legal question
 /brief incident       # Rapid brief on a developing situation
 ```
+
+### /compliance-check
+
+Run a compliance check on a proposed action, product feature, or business initiative.
+
+```bash
+/compliance-check [action or initiative to check]
+```
+
+Evaluates applicable regulations (GDPR, CCPA, HIPAA, etc.), identifies requirements, assesses risks, and recommends actions. Output includes assessment summary, applicable regulations, requirements checklist, risk areas, and approvals needed.
+
+### /signature-request
+
+Prepare and route a document for electronic signature.
+
+```bash
+/signature-request [document or contract to send]
+```
+
+Verifies document completeness, configures signing order and recipients, performs pre-signature checklist, and routes for e-signature (if connected) or generates signing instructions.
 
 ### /respond
 

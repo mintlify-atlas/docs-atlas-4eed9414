@@ -31,6 +31,9 @@ An AI-powered product management partner that helps with:
   <Card title="/roadmap-update" icon="road">
     Update, create, or reprioritize your roadmap
   </Card>
+  <Card title="/sprint-planning" icon="calendar-days">
+    Plan a sprint with work scope, capacity, and goals
+  </Card>
   <Card title="/stakeholder-update" icon="users">
     Generate a stakeholder update (weekly, monthly, launch)
   </Card>
@@ -150,6 +153,27 @@ You: Weekly update for the exec team
 Claude: [Pulls context from project management tool, chat, and docs]
 Claude: [Generates executive summary with progress, decisions, risks, and next milestones]
 ```
+
+### /sprint-planning
+
+Plan a sprint by scoping work, estimating capacity, and setting clear goals.
+
+**Usage:**
+```
+/sprint-planning [sprint name or date range]
+```
+
+**Workflow:**
+1. Define sprint goals and success criteria
+2. Estimate team capacity (accounting for PTO, meetings)
+3. Scope and prioritize backlog items
+4. Identify dependencies and risks
+5. Generate sprint plan document
+
+**Supercharged with connectors:**
+- **Project tracker:** Pulls backlog, estimates, team velocity, dependencies
+- **Calendar:** Accounts for PTO, holidays, meetings
+- **Chat:** Surfaces blockers and context from team discussions
 
 ### /synthesize-research
 
