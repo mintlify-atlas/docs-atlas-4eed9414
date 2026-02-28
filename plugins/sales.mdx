@@ -1,0 +1,229 @@
+---
+title: Sales Plugin
+description: Prospect, craft outreach, and build deal strategy faster. Prep for calls, manage your pipeline, and write personalized messaging that moves deals forward.
+---
+
+A sales productivity plugin designed for Claude that helps with prospecting, outreach, pipeline management, call preparation, and deal strategy. Works standalone with web search or supercharged when you connect your CRM, email, and other sales tools.
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/sales
+```
+
+## Commands
+
+Explicit workflows you invoke with a slash command:
+
+<CardGroup cols={3}>
+  <Card title="/call-summary" icon="phone">
+    Process call notes or transcript — extract action items, draft follow-up, generate internal summary
+  </Card>
+  <Card title="/forecast" icon="chart-line">
+    Generate a weighted sales forecast with best/likely/worst scenarios, commit vs. upside breakdown, and gap analysis
+  </Card>
+  <Card title="/pipeline-review" icon="funnel">
+    Analyze pipeline health — prioritize deals, flag risks, get weekly action plan
+  </Card>
+</CardGroup>
+
+All commands work **standalone** (paste notes, upload CSV, or describe your situation) and get **supercharged** with MCP connectors.
+
+### /call-summary
+
+Process call notes or transcripts to extract structured insights and draft follow-ups.
+
+**Usage:**
+```
+/call-summary <notes or transcript>
+```
+
+**What it does:**
+- Extracts key discussion points and decisions
+- Identifies action items with owners and due dates
+- Surfaces objections, concerns, and open questions
+- Drafts customer-facing follow-up email
+- Generates internal summary for your team
+
+**Supercharged with connectors:**
+- **Transcripts (Gong, Fireflies):** Pull recording automatically
+- **CRM:** Update opportunity, log activity, create tasks
+- **Email:** Send follow-up directly from draft
+- **Calendar:** Link to meeting, pull attendee context
+
+### /forecast
+
+Generate a weighted sales forecast with risk analysis and commit recommendations.
+
+**Usage:**
+```
+/forecast [period]
+```
+
+**What you need:**
+- Pipeline data (upload CSV, paste deals, or describe your territory)
+- Your quota and timeline
+- How much you've already closed
+
+**What you get:**
+- Weighted forecast with stage probabilities
+- Best/likely/worst case scenarios
+- Commit vs. upside breakdown
+- Risk flags (stale deals, past close dates)
+- Gap analysis and recommendations
+
+**Default stage probabilities:**
+- Negotiation/Contract: 80%
+- Proposal/Quote: 60%
+- Evaluation/Demo: 40%
+- Discovery/Qualification: 20%
+- Prospecting/Lead: 10%
+
+### /pipeline-review
+
+Analyze pipeline health and get actionable recommendations.
+
+**Usage:**
+```
+/pipeline-review
+```
+
+Upload a CSV or describe your pipeline to get:
+- Pipeline health score
+- Deal prioritization
+- Risk flags (stale deals, single-threaded)
+- Weekly action plan
+
+## Skills
+
+Domain knowledge Claude uses automatically when relevant:
+
+<CardGroup cols={2}>
+  <Card title="account-research" icon="magnifying-glass">
+    Research a company or person — web search for company intel, key contacts, recent news, hiring signals
+  </Card>
+  <Card title="call-prep" icon="clipboard-list">
+    Prepare for sales calls — account context, attendee research, suggested agenda, discovery questions
+  </Card>
+  <Card title="daily-briefing" icon="calendar-day">
+    Prioritized daily sales briefing — meetings, pipeline alerts, email priorities, suggested actions
+  </Card>
+  <Card title="draft-outreach" icon="envelope">
+    Research-first outreach — research the prospect, then draft personalized email and LinkedIn messages
+  </Card>
+  <Card title="competitive-intelligence" icon="chart-mixed">
+    Research competitors — product comparison, pricing intel, recent releases, differentiation matrix, sales talk tracks
+  </Card>
+  <Card title="create-an-asset" icon="file-lines">
+    Generate custom sales assets — landing pages, decks, one-pagers, workflow demos tailored to your prospect
+  </Card>
+</CardGroup>
+
+### When Skills Activate
+
+Skills trigger automatically based on your requests:
+
+**Researching a prospect:**
+```
+Research Acme Corp before my call tomorrow
+```
+The `account-research` skill gives you company overview, key contacts, recent news, and recommended approach.
+
+**Drafting outreach:**
+```
+Draft an email to the VP of Engineering at TechStart
+```
+The `draft-outreach` skill researches the prospect first, then generates personalized outreach with multiple angles.
+
+**Competitive intel:**
+```
+How do we compare to Competitor X?
+```
+The `competitive-intelligence` skill researches both companies and builds a differentiation matrix with talk tracks.
+
+## MCP Integrations
+
+Connect your tools for a richer experience:
+
+| Category | Examples | What It Enables |
+|---|---|---|
+| **CRM** | HubSpot, Close, Salesforce, Pipedrive, Copper | Pipeline data, account history, contact records |
+| **Transcripts** | Fireflies, Gong, Chorus, Otter.ai | Call recordings, transcripts, key moments |
+| **Enrichment** | Clay, ZoomInfo, Apollo, Clearbit, Lusha | Company and contact data enrichment |
+| **Chat** | Slack, Microsoft Teams | Internal discussions, colleague intel |
+| **Email** | Gmail, Microsoft 365 | Email context and sending |
+| **Calendar** | Google Calendar, Microsoft 365 | Meeting context and scheduling |
+| **Sales Engagement** | Outreach, Salesloft, Apollo | Sequence data and engagement tracking |
+
+<Note>
+If you see `~~category` placeholders in plugin files, these represent tool-agnostic references. For example, `~~CRM` works with any connected CRM (HubSpot, Salesforce, etc.).
+</Note>
+
+## Configuration
+
+Create a local settings file at `sales/.claude/settings.local.json` to personalize:
+
+```json
+{
+  "name": "Your Name",
+  "title": "Account Executive",
+  "company": "Your Company",
+  "quota": {
+    "annual": 1000000,
+    "quarterly": 250000
+  },
+  "product": {
+    "name": "Your Product",
+    "value_props": [
+      "Key value proposition 1",
+      "Key value proposition 2"
+    ],
+    "competitors": [
+      "Competitor A",
+      "Competitor B"
+    ]
+  }
+}
+```
+
+The plugin will ask you for this information interactively if it's not configured.
+
+## Example Workflows
+
+### After a Call
+
+```
+/call-summary
+```
+
+Paste your notes or transcript. Get a structured summary, action items with owners, and a draft follow-up email. If CRM is connected, offers to log the activity and create tasks.
+
+### Weekly Forecast
+
+```
+/forecast
+```
+
+Upload a CSV export from your CRM (or paste your deals). Tell Claude your quota and timeline. Get a weighted forecast with best/likely/worst scenarios, commit vs. upside breakdown, and gap analysis.
+
+### Pipeline Review
+
+```
+/pipeline-review
+```
+
+Upload a CSV or describe your pipeline. Get a health score, deal prioritization, risk flags (stale deals, past close dates, single-threaded), and a weekly action plan.
+
+## Standalone vs. Supercharged
+
+Every feature works without integrations:
+
+| What You Can Do | Standalone | Supercharged With |
+|-----------------|------------|-------------------|
+| Process call notes | Paste notes/transcript | Transcripts MCP (Gong, Fireflies) |
+| Forecast pipeline | Upload CSV, paste deals | CRM MCP |
+| Review pipeline | Upload CSV, describe deals | CRM MCP |
+| Research prospects | Web search | Enrichment MCP (Clay, ZoomInfo) |
+| Prep for calls | Describe meeting | CRM, Email, Calendar MCPs |
+| Draft outreach | Web search + your context | CRM, Email MCPs |
+| Competitive intel | Web search | CRM (win/loss data), Docs (battlecards) |

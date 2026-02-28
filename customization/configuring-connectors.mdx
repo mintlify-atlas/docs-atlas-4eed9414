@@ -1,0 +1,541 @@
+---
+title: "Configuring Connectors"
+description: "Connect Claude to your specific tool stack by editing .mcp.json to enable automatic data access"
+---
+
+## What Are Connectors?
+
+Connectors wire Claude to your external tools via [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers. They enable Claude to:
+
+- **Read** from your CRM, project tracker, data warehouse, email, chat, etc.
+- **Write** updates back to those systems (create tasks, log activities, send messages)
+- **Stay in sync** with your actual workflow instead of working in isolation
+
+**Without connectors:** Skills work with whatever information you provide manually.
+
+**With connectors:** Claude pulls context automatically and can update systems for you.
+
+## The .mcp.json File
+
+Connector configuration lives in `.mcp.json` at the root of each plugin:
+
+```
+sales/
+├── .claude-plugin/
+├── .mcp.json          ← Connector configuration
+├── commands/
+└── skills/
+```
+
+<Note>
+The `.mcp.json` file is standard JSON — edit it with any text editor.
+</Note>
+
+## Example: Sales Plugin Connectors
+
+Here's the default `.mcp.json` from the sales plugin:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "close": {
+      "type": "http",
+      "url": "https://mcp.close.com/mcp"
+    },
+    "clay": {
+      "type": "http",
+      "url": "https://api.clay.com/v3/mcp"
+    },
+    "zoominfo": {
+      "type": "http",
+      "url": "https://mcp.zoominfo.com/mcp"
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "atlassian": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    },
+    "fireflies": {
+      "type": "http",
+      "url": "https://api.fireflies.ai/mcp"
+    },
+    "ms365": {
+      "type": "http",
+      "url": "https://microsoft365.mcp.claude.com/mcp"
+    }
+  }
+}
+```
+
+## How Connectors Are Used
+
+Skills automatically use available connectors when relevant. For example, the `call-prep` skill:
+
+**Without connectors:**
+- Asks you: "What company are you meeting with?"
+- Asks you: "Who's attending?"
+- Asks you: "Any context you want me to know?"
+- Uses web search for company research
+
+**With CRM + Calendar connectors:**
+- Finds your upcoming meeting in your calendar
+- Pulls company and contact details from your CRM
+- Gets deal history and recent activities automatically
+- Still does web research for latest news
+- Combines all sources into a comprehensive prep brief
+
+<Note>
+Skills gracefully degrade — they work without connectors but get significantly better with them.
+</Note>
+
+## Customizing for Your Tool Stack
+
+### Step 1: Identify your tools
+
+Look at which tools your team actually uses:
+
+**For sales plugin:**
+- CRM: HubSpot, Salesforce, Close, Pipedrive?
+- Enrichment: Clay, ZoomInfo, Apollo, Clearbit?
+- Calendar: Google Calendar, Outlook?
+- Email: Gmail, Outlook?
+- Chat: Slack, Microsoft Teams?
+- Call recording: Gong, Fireflies, Chorus?
+
+**For support plugin:**
+- Ticketing: Intercom, Zendesk, Freshdesk?
+- Knowledge base: Guru, Notion, Confluence?
+- Chat: Slack, Microsoft Teams?
+- CRM: HubSpot, Salesforce?
+
+**For product plugin:**
+- Project management: Linear, Asana, Jira, Monday?
+- Docs: Notion, Confluence, Coda?
+- Design: Figma?
+- Analytics: Amplitude, Mixpanel, Pendo?
+
+### Step 2: Find the MCP server URLs
+
+Most major tools have official MCP servers. Check:
+
+1. **Tool's documentation:** Look for "MCP integration" or "Claude integration"
+2. **MCP Registry:** Browse [modelcontextprotocol.io/servers](https://modelcontextprotocol.io/servers)
+3. **Plugin marketplace:** See what other plugins use
+
+<Warning>
+If a tool doesn't have an MCP server yet, the skill will work without it — you'll just need to provide information manually.
+</Warning>
+
+### Step 3: Edit .mcp.json
+
+<Steps>
+  <Step title="Open the file">
+    ```bash
+    cd ~/path-to-plugin/sales/
+    code .mcp.json
+    ```
+  </Step>
+  
+  <Step title="Add your tool's connector">
+    Replace or add entries with your tool's MCP server:
+    
+    ```json
+    {
+      "mcpServers": {
+        "your-tool-name": {
+          "type": "http",
+          "url": "https://your-tool.com/mcp"
+        }
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Remove unused connectors">
+    Delete entries for tools you don't use:
+    
+    ```json
+    {
+      "mcpServers": {
+        "slack": { ... },
+        "hubspot": { ... }
+        // Removed: clay, zoominfo, etc.
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Save the file">
+    Save your changes. The plugin will use the new configuration immediately.
+  </Step>
+</Steps>
+
+## Connector Configuration Examples
+
+### Example 1: Minimal Sales Setup
+
+You use HubSpot for CRM and Slack for communication:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    }
+  }
+}
+```
+
+**What this enables:**
+- Call prep pulls deal history from HubSpot
+- Account research checks HubSpot for prior relationships
+- Draft outreach checks HubSpot for existing contacts
+- Pipeline review reads opportunities from HubSpot
+- Internal intel comes from Slack channel discussions
+
+### Example 2: Full Sales Stack
+
+You use HubSpot, Slack, Gmail, Google Calendar, and Fireflies:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "gmail": {
+      "type": "http",
+      "url": "https://gmail.mcp.claude.com/mcp"
+    },
+    "google-calendar": {
+      "type": "http",
+      "url": "https://gcal.mcp.claude.com/mcp"
+    },
+    "fireflies": {
+      "type": "http",
+      "url": "https://api.fireflies.ai/mcp"
+    }
+  }
+}
+```
+
+**What this enables:**
+- Automatically finds upcoming meetings from Google Calendar
+- Pulls email threads from Gmail for context
+- Gets call transcripts from Fireflies
+- Updates HubSpot after calls
+- Searches Slack for internal intel
+- Creates email drafts directly in Gmail
+
+### Example 3: Product Management Stack
+
+You use Linear, Notion, Figma, and Amplitude:
+
+```json
+{
+  "mcpServers": {
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
+    },
+    "amplitude": {
+      "type": "http",
+      "url": "https://mcp.amplitude.com/mcp"
+    }
+  }
+}
+```
+
+**What this enables:**
+- Spec writing pulls related issues from Linear
+- Roadmap planning reads current projects from Linear
+- Research synthesis searches Notion for user research notes
+- Design reviews reference Figma files
+- Feature analysis pulls usage data from Amplitude
+
+### Example 4: Switching CRMs (Salesforce instead of HubSpot)
+
+You use Salesforce instead of HubSpot:
+
+```json
+{
+  "mcpServers": {
+    "salesforce": {
+      "type": "http",
+      "url": "https://mcp.salesforce.com/mcp"
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    }
+  }
+}
+```
+
+<Note>
+Skills are connector-agnostic — they ask for "CRM data" and work with whatever CRM you've configured.
+</Note>
+
+## Connector Types
+
+MCP supports different connector types:
+
+### HTTP/HTTPS (Most Common)
+
+```json
+{
+  "your-tool": {
+    "type": "http",
+    "url": "https://your-tool.com/mcp"
+  }
+}
+```
+
+Used for: Cloud-hosted tools with HTTP APIs (CRMs, project trackers, etc.)
+
+### Local/Command (For CLI Tools)
+
+```json
+{
+  "local-tool": {
+    "type": "command",
+    "command": "npx",
+    "args": ["-y", "@your-tool/mcp-server"]
+  }
+}
+```
+
+Used for: Local development tools, databases, file systems
+
+### Authenticated Services
+
+Some connectors require authentication configuration:
+
+```json
+{
+  "your-tool": {
+    "type": "http",
+    "url": "https://your-tool.com/mcp",
+    "auth": {
+      "type": "bearer",
+      "token": "${YOUR_TOOL_TOKEN}"
+    }
+  }
+}
+```
+
+<Warning>
+Never hardcode API keys in `.mcp.json`. Use environment variables like `${YOUR_TOOL_TOKEN}`.
+</Warning>
+
+## Authentication Setup
+
+Most MCP servers handle authentication through OAuth when you first use them:
+
+<Steps>
+  <Step title="Add connector to .mcp.json">
+    Configure the tool's MCP server URL
+  </Step>
+  
+  <Step title="Use a skill that needs that connector">
+    For example: "Prep me for my call with Acme Corp"
+  </Step>
+  
+  <Step title="Authenticate when prompted">
+    Claude will prompt you to authenticate with the tool
+  </Step>
+  
+  <Step title="Grant permissions">
+    Approve the requested permissions in the tool's OAuth flow
+  </Step>
+  
+  <Step title="Use the connector">
+    Claude can now read/write data from that tool
+  </Step>
+</Steps>
+
+## Testing Your Connectors
+
+### Check if connectors are working:
+
+<CodeGroup>
+
+```bash Sales Plugin Test
+# Ask Claude to prep a call
+"Prep me for my call with [Company in your CRM]"
+
+# Claude should:
+# ✓ Find the meeting in your calendar
+# ✓ Pull company details from CRM
+# ✓ Get recent email threads
+# ✓ Search Slack for internal discussions
+```
+
+```bash Product Plugin Test
+# Ask Claude to write a spec
+"Write a spec for improving the onboarding flow"
+
+# Claude should:
+# ✓ Search Linear for related issues
+# ✓ Pull user research from Notion
+# ✓ Reference Figma designs if linked
+# ✓ Get analytics data from Amplitude
+```
+
+```bash Support Plugin Test
+# Ask Claude to triage a ticket
+"Triage ticket #1234"
+
+# Claude should:
+# ✓ Read the ticket from your support tool
+# ✓ Search knowledge base for related articles
+# ✓ Check CRM for customer context
+# ✓ Search Slack for similar issues
+```
+
+</CodeGroup>
+
+### Troubleshooting
+
+If connectors aren't working:
+
+1. **Check the URL:** Make sure it's the correct MCP server endpoint
+2. **Verify authentication:** Re-authenticate if needed
+3. **Check permissions:** Ensure Claude has the required access scopes
+4. **Test manually:** Try accessing the tool directly to confirm access
+5. **Check skill execution:** Watch Claude's workflow — does it try to use the connector?
+
+<Note>
+Claude will tell you if a connector isn't working and fall back to asking for information manually.
+</Note>
+
+## What Connectors Enable Per Skill
+
+Here's how connectors enhance specific skills:
+
+### Call Prep Skill
+
+| Connector | What It Adds |
+|-----------|-------------|
+| **CRM** | Account details, contact history, open deals, recent activities |
+| **Email** | Recent threads with the company, open questions, attachments shared |
+| **Chat** | Internal discussions about the account, colleague insights |
+| **Transcripts** | Prior call recordings, topics covered, competitor mentions |
+| **Calendar** | Auto-find meeting, pull attendees and description |
+
+From `call-prep/SKILL.md:54`
+
+### Account Research Skill
+
+| Connector | What It Adds |
+|-----------|-------------|
+| **Enrichment** | Verified emails, phone, tech stack, org chart |
+| **CRM** | Prior relationship, past opportunities, contacts |
+
+From `account-research/SKILL.md:50`
+
+### Draft Outreach Skill
+
+| Connector | What It Adds |
+|-----------|-------------|
+| **Enrichment** | Verified email, phone, background details |
+| **CRM** | Prior relationship context, existing contacts |
+| **Email** | Create draft directly in your inbox |
+
+From `draft-outreach/SKILL.md:11`
+
+## Connector Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Start Minimal" icon="seedling">
+    Connect 2-3 core tools first, add more as you see value
+  </Card>
+  <Card title="Match Your Workflow" icon="diagram-project">
+    Only add connectors for tools your team actually uses daily
+  </Card>
+  <Card title="Test Thoroughly" icon="vial">
+    Verify each connector works before adding the next one
+  </Card>
+  <Card title="Keep It Updated" icon="arrows-rotate">
+    When you switch tools, update .mcp.json immediately
+  </Card>
+</CardGroup>
+
+### Do's and Don'ts
+
+**Do:**
+- ✅ Add connectors for tools you use every day
+- ✅ Remove connectors for tools you don't use
+- ✅ Test each connector after adding it
+- ✅ Use environment variables for sensitive credentials
+
+**Don't:**
+- ❌ Add every available connector "just in case"
+- ❌ Hardcode API keys in .mcp.json
+- ❌ Leave connectors for tools you've stopped using
+- ❌ Share .mcp.json with credentials exposed
+
+## Advanced: Custom MCP Servers
+
+If your company uses internal tools without MCP servers, you can build your own.
+
+See the [MCP documentation](https://modelcontextprotocol.io/) for:
+- Creating custom MCP servers
+- Wrapping internal APIs
+- Building company-specific connectors
+
+<Note>
+Building custom MCP servers requires development work. Start with existing connectors first.
+</Note>
+
+## Security Considerations
+
+<Warning>
+**Security best practices for connectors:**
+</Warning>
+
+1. **Use OAuth when available** — More secure than API keys
+2. **Scope permissions narrowly** — Only grant the minimum required access
+3. **Use environment variables** — Never commit credentials to version control
+4. **Review access regularly** — Audit what Claude can read/write
+5. **Revoke unused connectors** — Remove auth for tools you're not using
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Add Company Context" icon="building" href="/customization/adding-company-context">
+    Teach Claude your terminology and processes
+  </Card>
+  <Card title="Modify Workflows" icon="diagram-project" href="/customization/modifying-workflows">
+    Adjust how skills execute tasks
+  </Card>
+</CardGroup>

@@ -1,0 +1,318 @@
+---
+title: Installation
+description: How to install Knowledge Work Plugins in Cowork and Claude Code
+---
+
+# Installation
+
+Knowledge Work Plugins work in two environments: Claude Cowork and Claude Code. This guide covers installation for both.
+
+## Choose your environment
+
+<CardGroup cols={2}>
+  <Card title="Claude Cowork" icon="desktop" href="https://claude.com/product/cowork">
+    Visual interface with built-in plugin marketplace (recommended)
+  </Card>
+  <Card title="Claude Code" icon="terminal" href="https://claude.com/product/claude-code">
+    CLI-based development environment
+  </Card>
+</CardGroup>
+
+## Installing in Cowork
+
+Cowork includes a visual plugin marketplace that makes installation simple.
+
+<Steps>
+  <Step title="Open the plugin marketplace">
+    Navigate to [claude.com/plugins](https://claude.com/plugins) or click the **Plugins** tab in your Cowork workspace.
+  </Step>
+  <Step title="Browse or search for a plugin">
+    Use the search bar to find a specific plugin (e.g., "sales") or browse by category:
+    - Sales & Business Development
+    - Customer Support
+    - Product & Engineering  
+    - Marketing & Content
+    - Finance & Operations
+    - Research & Data
+  </Step>
+  <Step title="Click Install">
+    Click the **Install** button on any plugin card. The plugin will download and activate automatically.
+  </Step>
+  <Step title="Verify installation">
+    Start a new conversation and type `/` to see available slash commands. Your installed plugin's commands should appear in the list.
+  </Step>
+</Steps>
+
+<Note>
+Plugins installed in Cowork are available across all your workspaces. You don't need to reinstall them for each project.
+</Note>
+
+## Installing in Claude Code
+
+Claude Code uses a CLI-based plugin system. You'll add the marketplace first, then install specific plugins.
+
+### Add the marketplace
+
+Before installing any plugin, add the Knowledge Work Plugins marketplace:
+
+```bash
+claude plugin marketplace add anthropics/knowledge-work-plugins
+```
+
+This registers the marketplace repository and makes all plugins available for installation.
+
+### Install a plugin
+
+Install any plugin using the `plugin install` command with the format `plugin-name@marketplace-name`:
+
+```bash
+# Install the sales plugin
+claude plugin install sales@knowledge-work-plugins
+
+# Install the data plugin
+claude plugin install data@knowledge-work-plugins
+
+# Install the customer-support plugin
+claude plugin install customer-support@knowledge-work-plugins
+```
+
+### Verify installation
+
+List all installed plugins:
+
+```bash
+claude plugin list
+```
+
+You should see output like:
+
+```
+Installed plugins:
+  - sales@knowledge-work-plugins (v1.1.0)
+  - data@knowledge-work-plugins (v1.0.2)
+```
+
+### Update a plugin
+
+Update an installed plugin to the latest version:
+
+```bash
+claude plugin update sales@knowledge-work-plugins
+```
+
+Update all plugins at once:
+
+```bash
+claude plugin update --all
+```
+
+### Uninstall a plugin
+
+Remove a plugin you no longer need:
+
+```bash
+claude plugin uninstall sales@knowledge-work-plugins
+```
+
+## Available plugins
+
+All 11 plugins from the marketplace can be installed using either method:
+
+| Plugin | Install Command | Use Case |
+|--------|----------------|----------|
+| `sales` | `claude plugin install sales@knowledge-work-plugins` | Prospect, prep calls, manage pipeline, draft outreach |
+| `customer-support` | `claude plugin install customer-support@knowledge-work-plugins` | Triage tickets, draft responses, build KB articles |
+| `product-management` | `claude plugin install product-management@knowledge-work-plugins` | Write specs, plan roadmaps, synthesize research |
+| `marketing` | `claude plugin install marketing@knowledge-work-plugins` | Draft content, plan campaigns, enforce brand voice |
+| `data` | `claude plugin install data@knowledge-work-plugins` | Query datasets, write SQL, build dashboards |
+| `finance` | `claude plugin install finance@knowledge-work-plugins` | Reconcile accounts, generate statements, manage close |
+| `legal` | `claude plugin install legal@knowledge-work-plugins` | Review contracts, navigate compliance, assess risk |
+| `productivity` | `claude plugin install productivity@knowledge-work-plugins` | Manage tasks, calendars, daily workflows |
+| `enterprise-search` | `claude plugin install enterprise-search@knowledge-work-plugins` | Search across email, chat, docs, and wikis |
+| `bio-research` | `claude plugin install bio-research@knowledge-work-plugins` | Preclinical research tools and databases |
+| `cowork-plugin-management` | `claude plugin install cowork-plugin-management@knowledge-work-plugins` | Create and customize plugins |
+
+## Plugin structure
+
+Once installed, plugins are stored in your local environment. Each plugin follows this structure:
+
+```
+plugin-name/
+├── .claude-plugin/
+│   └── plugin.json          # Plugin manifest
+├── .mcp.json                # MCP server connections
+├── commands/                # Slash commands
+│   ├── command-1.md
+│   └── command-2.md
+└── skills/                  # Auto-activated skills
+    ├── skill-1/
+    │   └── SKILL.md
+    └── skill-2/
+        └── SKILL.md
+```
+
+### Plugin manifest
+
+The `plugin.json` file contains metadata about the plugin:
+
+```json
+{
+  "name": "sales",
+  "version": "1.1.0",
+  "description": "Prospect, craft outreach, and build deal strategy faster.",
+  "author": {
+    "name": "Anthropic"
+  }
+}
+```
+
+### MCP connections
+
+The `.mcp.json` file defines connections to external tools via [MCP servers](https://modelcontextprotocol.io/):
+
+```json
+{
+  "mcpServers": {
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    }
+  }
+}
+```
+
+Plugins work without any MCP connections (using web search and your input), but they're supercharged when you connect your tools.
+
+## How plugins activate
+
+Once installed, plugins activate automatically:
+
+### Skills activate implicitly
+
+Skills trigger when Claude detects relevant intent. You don't need to do anything special.
+
+**Example:**
+```
+You: "Prep me for my call with Acme Corp"
+
+Claude: [call-prep skill activates automatically]
+```
+
+### Commands activate explicitly
+
+Commands are invoked with slash syntax:
+
+**Example:**
+```
+You: "/sales:call-summary [paste your call notes]"
+
+Claude: [processes notes and generates summary]
+```
+
+### View available commands
+
+Type `/` in any conversation to see all available commands from your installed plugins:
+
+```
+/sales:call-summary
+/sales:forecast  
+/sales:pipeline-review
+/data:write-query
+/finance:reconciliation
+...
+```
+
+## Customizing after installation
+
+Plugins are designed to be customized for your company's specific needs:
+
+<CardGroup cols={2}>
+  <Card title="Connect your tools" icon="plug" href="/connectors/overview">
+    Edit `.mcp.json` to wire up your CRM, email, calendar, and other tools
+  </Card>
+  <Card title="Add company context" icon="building" href="/customization/skills">
+    Drop your terminology, processes, and org structure into skill files
+  </Card>
+  <Card title="Modify workflows" icon="diagram-project" href="/customization/workflows">
+    Adjust skill instructions to match how your team actually works
+  </Card>
+  <Card title="Create new commands" icon="code" href="/building/commands">
+    Build custom slash commands for your specific workflows
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+### Plugin not appearing after installation
+
+**In Cowork:**
+- Refresh the plugin marketplace page
+- Check that the plugin appears in **Settings → Plugins**
+- Start a new conversation (plugins don't activate mid-conversation)
+
+**In Claude Code:**
+- Run `claude plugin list` to verify installation
+- Restart your Claude Code session
+- Check that you added the marketplace: `claude plugin marketplace list`
+
+### Slash commands not showing up
+
+Type `/` in a new conversation. If commands don't appear:
+
+1. Verify the plugin is installed: `claude plugin list` (Claude Code) or check Settings → Plugins (Cowork)
+2. Start a fresh conversation
+3. Check the plugin's `commands/` directory to ensure command files exist
+
+### Plugin not finding my tools
+
+If skills aren't pulling from your CRM, email, or other tools:
+
+1. Check that the `.mcp.json` file includes the correct connector URLs
+2. Verify your MCP servers are running and accessible
+3. Check authentication credentials for connected services
+4. See [Connectors documentation](/concepts/connectors) for detailed configuration
+
+### Plugin version conflicts
+
+**In Claude Code:**
+```bash
+# Check current version
+claude plugin list
+
+# Update to latest
+claude plugin update sales@knowledge-work-plugins
+
+# Reinstall if needed
+claude plugin uninstall sales@knowledge-work-plugins
+claude plugin install sales@knowledge-work-plugins
+```
+
+**In Cowork:**
+- Go to Settings → Plugins
+- Click **Update** next to the plugin
+- Restart Cowork if the update doesn't apply
+
+## Next steps
+
+<Steps>
+  <Step title="Try the quickstart">
+    Follow the [quickstart guide](/quickstart) to use your first plugin end-to-end
+  </Step>
+  <Step title="Connect your tools">
+    Set up [MCP connectors](/concepts/connectors) to supercharge your plugins
+  </Step>
+  <Step title="Customize skills">
+    Add your company's context to [skill files](/customization/adding-company-context)
+  </Step>
+  <Step title="Explore the marketplace">
+    Browse [all available plugins](/introduction) to find more for your role
+  </Step>
+</Steps>
+
+<Card title="Need help?" icon="question-circle" href="/support">
+  Get support, join the community, or report issues
+</Card>

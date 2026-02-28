@@ -1,0 +1,277 @@
+---
+title: "Enterprise Search"
+description: "Search across all your company's tools in one place — email, chat, documents, and wikis"
+---
+
+## Overview
+
+Enterprise Search lets you query all your company's tools simultaneously. One question, all sources, synthesized results — no more tab switching between Slack, Gmail, Google Drive, and Notion.
+
+Primarily designed for [Cowork](https://claude.com/product/cowork), Anthropic's agentic desktop application, but also works in Claude Code.
+
+## How It Works
+
+Claude decomposes your question, runs targeted searches across every connected source in parallel, and synthesizes results into a single coherent answer with source attribution.
+
+```
+You: "What did we decide about the API redesign?"
+              ↓ Claude searches in parallel
+~~chat: #engineering thread from Tuesday with the decision
+~~email: Follow-up email from Sarah with the spec
+~~cloud storage: Updated API design doc (modified yesterday)
+              ↓ Claude synthesizes
+"The team decided on Tuesday to go with REST over GraphQL.
+ Sarah sent the updated spec Thursday. The design doc
+ reflects the final approach."
+```
+
+No tab switching. No remembering which tool has what. Ask the question, get the answer.
+
+## Installation
+
+```bash
+Claude plugins add knowledge-work-plugins/enterprise-search
+```
+
+## What It Searches
+
+Connect any combination of sources. The more you connect, the more complete your answers.
+
+<CardGroup cols={2}>
+  <Card title="Communication" icon="comments">
+    **Chat** (`~~chat`) — Messages, threads, channels, DMs  
+    **Email** (`~~email`) — Emails, attachments, conversations
+  </Card>
+  
+  <Card title="Documents" icon="file">
+    **Cloud Storage** (`~~cloud storage`) — Docs, sheets, slides, PDFs  
+    **Wiki / Knowledge Base** — Internal docs, runbooks
+  </Card>
+  
+  <Card title="Work Tracking" icon="list-check">
+    **Project Management** — Tasks, issues, epics, milestones  
+    **Ticketing** — Support tickets, customer issues
+  </Card>
+  
+  <Card title="Business Data" icon="briefcase">
+    **CRM** — Accounts, contacts, opportunities  
+    **Office Suite** — Documents, spreadsheets, presentations
+  </Card>
+</CardGroup>
+
+<Note>
+  Each source is an MCP connection. Plugin files use `~~category` placeholders (e.g., `~~chat`, `~~email`) that resolve to whichever MCP server you connect. See [CONNECTORS.md](https://github.com/anthropics/knowledge-work-plugins/blob/main/enterprise-search/CONNECTORS.md) for supported tools.
+</Note>
+
+## Commands
+
+### `/search`
+
+Search across all connected sources in one query.
+
+```bash
+/enterprise-search:search what's the status of Project Aurora?
+/enterprise-search:search from:sarah about:budget after:2025-01-01
+/enterprise-search:search decisions made in #product this week
+```
+
+**Supported filters:**
+- `from:` — Filter by sender/author
+- `in:` — Filter by channel, folder, or location
+- `after:` / `before:` — Date range filters
+- `type:` — Filter by content type (message, email, doc, thread, file)
+
+Filters are automatically translated to each source's native query syntax.
+
+### `/digest`
+
+Generate a daily or weekly digest of activity across all sources.
+
+```bash
+/enterprise-search:digest --daily      # What happened today
+/enterprise-search:digest --weekly     # Weekly rollup grouped by project/topic
+```
+
+**What it includes:**
+- **Action items** — Direct requests, tasks assigned, questions for you
+- **Decisions** — Conclusions reached, approvals, policy changes
+- **Mentions** — Times you were mentioned or referenced
+- **Updates** — Status changes, completed items, document updates
+
+Activity is grouped by topic/project, not by source, so you see what happened across all your tools in context.
+
+## Skills
+
+Three specialized skills power the search experience:
+
+<AccordionGroup>
+  <Accordion title="Search Strategy">
+    Query decomposition and source-specific translation.
+    
+    **What it does:**
+    - Analyzes your natural language question to understand intent
+    - Breaks the query into targeted sub-queries for each source
+    - Translates filters (`from:`, `in:`, date ranges) to each source's native syntax
+    - Handles ambiguity with clarifying questions
+    - Falls back gracefully when sources are unavailable
+    
+    **Example:**
+    ```
+    Query: "What did Sarah say about the budget?"
+    
+    Decomposed to:
+    - ~~chat: messages from:sarah containing "budget"
+    - ~~email: emails from:sarah subject:budget OR body:budget
+    - ~~cloud storage: docs authored_by:sarah containing "budget"
+    ```
+  </Accordion>
+  
+  <Accordion title="Source Management">
+    Manages which MCP sources are available and how to use them.
+    
+    **What it does:**
+    - Detects which MCP servers are connected
+    - Guides you to connect new sources when needed
+    - Manages source priority for ranking results
+    - Handles rate limits and failed connections
+    - Prevents one failed source from blocking the entire search
+    
+    **Graceful degradation:** If some sources fail, the search continues with available sources and notes what couldn't be reached.
+  </Accordion>
+  
+  <Accordion title="Knowledge Synthesis">
+    Combines results from multiple sources into coherent answers.
+    
+    **What it does:**
+    - Deduplicates information appearing across sources (same decision in chat AND email = one entry)
+    - Ranks results by relevance, freshness, authority, and completeness
+    - Synthesizes raw results into direct answers, not just lists
+    - Attributes sources so you can dig deeper
+    - Scores confidence based on result quality
+    - Summarizes large result sets
+    
+    **Ranking factors:**
+    - **Relevance** — How well does it match the query?
+    - **Freshness** — Recent results rank higher for status/decision queries
+    - **Authority** — Official docs > wiki > chat for facts; conversations > docs for "what did we discuss"
+    - **Completeness** — Results with more context rank higher
+  </Accordion>
+</AccordionGroup>
+
+## Example Workflows
+
+### Finding a Decision
+
+```
+You: /enterprise-search:search when did we decide to switch to Postgres?
+
+Claude searches:
+  ~~chat → #engineering, #infrastructure for "postgres" "switch" "decision"
+  ~~email → threads with "postgres" in subject
+  ~~cloud storage → docs mentioning database migration
+
+Result: "The decision was made March 3 in #infrastructure (link).
+         Sarah's email on March 4 confirmed the timeline.
+         The migration plan doc was updated March 5."
+```
+
+### Catching Up After Time Off
+
+```
+You: /enterprise-search:digest --weekly
+
+Claude scans:
+  ~~chat → channels you're in, DMs, mentions
+  ~~email → inbox activity
+  ~~cloud storage → docs shared with you or modified
+
+Result: Grouped summary by project with action items
+        flagged and decisions highlighted.
+        
+# Weekly Digest — Feb 22-28, 2026
+
+Sources scanned: ~~chat, ~~email, ~~cloud storage
+
+## Action Items (3 items)
+- [ ] Review budget proposal for Sarah — from Sarah, ~~email (Feb 27)
+- [ ] Approve API spec v3 — from Greg, ~~chat (Feb 26)
+- [ ] Q2 roadmap input needed by Friday — from Todd, ~~email (Feb 25)
+
+## Decisions Made
+- Switched to Postgres — #infrastructure (Feb 24)
+- API v3 design approved — ~~email thread (Feb 26)
+
+## Project Aurora
+- ~~chat: Design review concluded, chose Option B (#design, Feb 23)
+- ~~email: Sarah sent updated spec (Feb 24)
+- ~~cloud storage: "Aurora API Spec v3" updated (Feb 24)
+- 3 tasks moved to In Progress
+```
+
+### Finding an Expert
+
+```
+You: /enterprise-search:search who knows about our Kubernetes setup?
+
+Claude searches:
+  ~~chat → messages about Kubernetes, k8s, clusters
+  ~~cloud storage → docs authored about infrastructure
+  Wiki → runbooks and architecture docs
+
+Result: "Based on message history and doc authorship,
+         Alex and Priya are your go-to people for k8s.
+         Here's the main runbook (link)."
+```
+
+### Complex Query with Filters
+
+```
+You: /enterprise-search:search from:sarah about:budget after:2025-01-01 in:#finance
+
+Claude translates filters per source:
+  ~~chat: from:sarah in:#finance after:2025-01-01 text:budget
+  ~~email: from:sarah after:2025-01-01 subject:budget OR body:budget
+  ~~cloud storage: author:sarah modified_after:2025-01-01 content:budget
+
+Result: Unified results across all sources with timeline and context.
+```
+
+## Connector Reference
+
+| Category | Placeholder | Included | Alternatives |
+|----------|-------------|----------|-------------|
+| Chat | `~~chat` | Slack | Microsoft Teams, Discord |
+| Email | `~~email` | Microsoft 365 | — |
+| Cloud storage | `~~cloud storage` | Microsoft 365 | Dropbox |
+| Knowledge base | `~~knowledge base` | Notion, Guru | Confluence, Slite |
+| Project tracker | `~~project tracker` | Atlassian (Jira/Confluence), Asana | Linear, monday.com |
+| CRM | `~~CRM` | *(not pre-configured)* | Salesforce, HubSpot |
+| Office suite | `~~office suite` | Microsoft 365 | Google Workspace |
+
+See [CONNECTORS.md](https://github.com/anthropics/knowledge-work-plugins/blob/main/enterprise-search/CONNECTORS.md) for details.
+
+## Getting Started
+
+1. **Install the plugin**
+   ```bash
+   claude plugins add knowledge-work-plugins/enterprise-search
+   ```
+
+2. **Connect your tools via MCP**  
+   The more sources you connect, the more complete your search results. Start with chat, email, and cloud storage.
+
+3. **Search across everything**
+   ```bash
+   /enterprise-search:search [your question here]
+   ```
+
+4. **Get a digest**
+   ```bash
+   /enterprise-search:digest --daily
+   ```
+
+## Philosophy
+
+Knowledge workers spend hours every week hunting for information scattered across tools. The answer exists somewhere — in a Slack thread, an email chain, a doc, a wiki page — but finding it means searching each tool individually, cross-referencing results, and hoping you checked the right place.
+
+Enterprise Search treats all your tools as one searchable knowledge base. One query, all sources, synthesized results. Your company's knowledge shouldn't be locked in silos. Search everything at once.

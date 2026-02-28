@@ -1,0 +1,380 @@
+---
+title: Skills
+description: How skills encode domain expertise and workflows that Claude activates automatically
+---
+
+Skills are the intelligence layer of plugins. They encode domain expertise, best practices, and step-by-step workflows that Claude draws on automatically when relevant to your task.
+
+## What makes a skill
+
+A skill is a markdown file that teaches Claude how to perform a specific type of work:
+
+```
+skills/
+└── call-prep/
+    ├── SKILL.md              # Main skill instructions
+    └── references/           # Optional supporting docs
+        ├── framework.md
+        └── examples.md
+```
+
+### Skill frontmatter
+
+Every skill starts with YAML frontmatter defining when and how it activates:
+
+```markdown SKILL.md
+---
+name: call-prep
+description: Prepare for a sales call with account context, attendee research, and suggested agenda. Works standalone with user input and web research, supercharged when you connect your CRM, email, chat, or transcripts. Trigger with "prep me for my call with [company]", "I'm meeting with [company] prep me", "call prep [company]", or "get me ready for [meeting]".
+---
+
+# Call Prep
+
+Get fully prepared for any sales call in minutes...
+```
+
+<ParamField path="name" type="string" required>
+  Unique identifier for the skill (kebab-case)
+</ParamField>
+
+<ParamField path="description" type="string" required>
+  What the skill does and common trigger phrases that activate it
+</ParamField>
+
+## How skills activate
+
+Skills activate **automatically** based on conversational context. You don't invoke them explicitly — Claude recognizes when your request matches a skill's domain.
+
+### Trigger patterns
+
+The `description` field tells Claude what kinds of requests should activate this skill:
+
+<CodeGroup>
+```markdown call-prep skill
+---
+description: Prepare for a sales call with account context, attendee research, and suggested agenda. Trigger with "prep me for my call with [company]", "I'm meeting with [company] prep me", "call prep [company]", or "get me ready for [meeting]".
+---
+```
+
+```markdown draft-outreach skill
+---
+description: Research a prospect then draft personalized outreach. Uses web research by default, supercharged with enrichment and CRM. Trigger with "draft outreach to [person/company]", "write cold email to [prospect]", "reach out to [name]".
+---
+```
+</CodeGroup>
+
+<Note>
+  You can activate a skill by naturally describing the task. No special syntax required.
+</Note>
+
+## Skill structure
+
+A well-designed skill includes these sections:
+
+### 1. Overview
+
+What the skill does and what value it provides:
+
+```markdown
+# Call Prep
+
+Get fully prepared for any sales call in minutes. This skill works with 
+whatever context you provide, and gets significantly better when you 
+connect your sales tools.
+```
+
+### 2. How it works
+
+Visual diagram showing standalone vs supercharged capabilities:
+
+```markdown
+## How It Works
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        CALL PREP                                 │
+├─────────────────────────────────────────────────────────────────┤
+│  ALWAYS (works standalone)                                       │
+│  ✓ You tell me: company, meeting type, attendees                │
+│  ✓ Web search: recent news, funding, leadership changes         │
+│  ✓ Company research: what they do, size, industry               │
+│  ✓ Output: prep brief with agenda and questions                 │
+├─────────────────────────────────────────────────────────────────┤
+│  SUPERCHARGED (when you connect your tools)                      │
+│  + CRM: account history, contacts, opportunities, activities    │
+│  + Email: recent threads, open questions, commitments           │
+│  + Chat: internal discussions, colleague insights               │
+│  + Transcripts: prior call recordings, key moments              │
+│  + Calendar: auto-find meeting, pull attendees                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 3. Input requirements
+
+What information Claude needs from you:
+
+```markdown
+## Getting Started
+
+When you run this skill, I'll ask for what I need:
+
+**Required:**
+- Company or contact name
+- Meeting type (discovery, demo, negotiation, check-in, etc.)
+
+**Helpful if you have it:**
+- Who's attending (names and titles)
+- Any context you want me to know (paste prior notes, emails, etc.)
+```
+
+### 4. Connectors table
+
+Optional external tools that enhance the skill:
+
+```markdown
+## Connectors (Optional)
+
+| Connector | What It Adds |
+|-----------|-------------|
+| **CRM** | Account details, contact history, open deals, recent activities |
+| **Email** | Recent threads with the company, open questions, attachments shared |
+| **Chat** | Internal chat discussions about the account, colleague insights |
+| **Transcripts** | Prior call recordings, topics covered, competitor mentions |
+| **Calendar** | Auto-find the meeting, pull attendees and description |
+```
+
+### 5. Output format
+
+Exact structure Claude should follow:
+
+```markdown
+## Output Format
+
+# Call Prep: [Company Name]
+
+**Meeting:** [Type] — [Date/Time if known]
+**Attendees:** [Names with titles]
+**Your Goal:** [What you want to accomplish]
+
+---
+
+## Account Snapshot
+
+| Field | Value |
+|-------|-------|
+| **Company** | [Name] |
+| **Industry** | [Industry] |
+| **Size** | [Employees / Revenue if known] |
+| **Status** | [New prospect / Active opportunity / Customer] |
+```
+
+### 6. Execution flow
+
+Step-by-step instructions for Claude:
+
+```markdown
+## Execution Flow
+
+### Step 1: Gather Context
+
+**If connectors available:**
+1. Calendar → Find upcoming meeting matching company name
+   - Pull: title, time, attendees, description, attachments
+
+2. CRM → Query account
+   - Pull: account details, all contacts, open opportunities
+   - Pull: last 10 activities, any account notes
+
+**If no connectors:**
+1. Ask user:
+   - "What company are you meeting with?"
+   - "What type of meeting is this?"
+   - "Who's attending?"
+```
+
+### 7. Tips and best practices
+
+How to get the most out of the skill:
+
+```markdown
+## Tips for Better Prep
+
+1. **More context = better prep** — Paste emails, notes, anything you have
+2. **Name the attendees** — Even just titles help me research
+3. **State your goal** — "I want to get them to agree to a pilot"
+4. **Flag concerns** — "They mentioned budget is tight"
+```
+
+## Reference files
+
+Skills can include supporting documentation in a `references/` directory:
+
+```
+kills/draft-outreach/
+├── SKILL.md
+└── references/
+    ├── email-templates.md
+    ├── personalization-guide.md
+    └── subject-line-formulas.md
+```
+
+Claude can access these files when executing the skill to look up frameworks, examples, or detailed procedures.
+
+## Skills vs commands
+
+Understand when to use each:
+
+<Accordion title="Use a skill when...">
+  - The workflow should activate based on conversational context
+  - You want Claude to recognize the task without special syntax
+  - The work involves judgment and adaptation
+  - You'll describe the task in different ways
+  
+  **Example:** "Prep me for my call with Acme" activates the call-prep skill
+</Accordion>
+
+<Accordion title="Use a command when...">
+  - You want explicit, on-demand invocation
+  - The workflow is highly structured and repeatable
+  - You want to pass specific arguments
+  - You prefer predictable slash-command syntax
+  
+  **Example:** `/call-summary <transcript>` processes specific input
+</Accordion>
+
+<Note>
+  Many plugins have both: a skill for automatic activation and a command for explicit invocation of the same workflow.
+</Note>
+
+## Customizing skills
+
+Skills are designed to be customized for your company:
+
+### Add company context
+
+Drop in your terminology, processes, and organizational knowledge:
+
+```markdown
+## Company Context [CUSTOMIZE]
+
+**Our sales methodology:** MEDDIC
+- Metrics: What economic impact can we deliver?
+- Economic Buyer: Who controls budget?
+- Decision Criteria: What are they evaluating us on?
+- Decision Process: Steps from eval to signature
+- Identify Pain: What problem drives urgency?
+- Champion: Who's selling for us internally?
+
+**Our ICP:**
+- Company size: 50-500 employees
+- Industry: B2B SaaS
+- Tech stack: Uses Salesforce + Slack
+- Pain point: Manual data entry across systems
+```
+
+### Adjust workflows
+
+Modify the execution flow to match your team's actual process:
+
+```markdown
+## Our Call Prep Process
+
+1. Check if we've engaged this account before (CRM search)
+2. Review the 4 P's: Pain, Power, Plan, Proof
+3. Prepare SPIN questions (Situation, Problem, Implication, Need-payoff)
+4. Identify potential objections based on industry
+5. Draft agenda with time allocations
+6. Share with SE team if technical demo needed
+```
+
+### Modify output format
+
+Change the structure to match your team's standards:
+
+```markdown
+## Output Format
+
+Use our standard brief template:
+
+# [Company] Call Prep — [Date]
+
+## MEDDIC Snapshot
+- [ ] Metrics: [Known/Unknown]
+- [ ] Economic Buyer: [Name/Unknown]
+- [ ] Decision Criteria: [Known/Unknown]
+...
+```
+
+## Real example: Call prep skill
+
+Here's how the sales plugin's call-prep skill is structured:
+
+<Steps>
+  <Step title="Frontmatter defines activation">
+    ```markdown
+    ---
+    name: call-prep
+    description: Prepare for a sales call with account context, attendee research, 
+    and suggested agenda. Trigger with "prep me for my call with [company]"...
+    ---
+    ```
+  </Step>
+  
+  <Step title="Overview explains value">
+    Get fully prepared for any sales call in minutes. Works standalone, supercharged with connectors.
+  </Step>
+  
+  <Step title="Execution flow provides instructions">
+    Step 1: Gather context from CRM/email/calendar or ask user
+    
+    Step 2: Research supplement via web search
+    
+    Step 3: Synthesize and generate prep brief
+  </Step>
+  
+  <Step title="Output format ensures consistency">
+    Structured template with account snapshot, attendee research, suggested agenda, discovery questions, and potential objections
+  </Step>
+</Steps>
+
+See the full implementation: [call-prep skill](https://github.com/anthropics/knowledge-work-plugins/blob/main/sales/skills/call-prep/SKILL.md)
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Be specific about triggers">
+    List explicit phrases that should activate your skill. The more specific, the better Claude can recognize when to use it.
+  </Accordion>
+  
+  <Accordion title="Design for standalone first">
+    Make the skill useful even without external tool connections. Connectors should enhance, not enable.
+  </Accordion>
+  
+  <Accordion title="Provide concrete examples">
+    Show the exact output format, question templates, and decision frameworks you want Claude to use.
+  </Accordion>
+  
+  <Accordion title="Include customization sections">
+    Mark sections where teams should add their own context, terminology, and processes.
+  </Accordion>
+  
+  <Accordion title="Keep execution steps clear">
+    Use numbered steps, conditional logic (if/then), and explicit tool calls. Remove ambiguity.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Commands" icon="terminal" href="/concepts/commands">
+    Learn about explicit slash command workflows
+  </Card>
+  <Card title="Connectors" icon="plug" href="/concepts/connectors">
+    Connect skills to your external tools
+  </Card>
+  <Card title="Build a plugin" icon="hammer" href="/building/create-plugin">
+    Create your own custom plugin
+  </Card>
+  <Card title="Customize plugins" icon="wrench" href="/building/customize-plugins">
+    Adapt marketplace plugins for your company
+  </Card>
+</CardGroup>

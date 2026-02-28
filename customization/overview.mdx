@@ -1,0 +1,195 @@
+---
+title: "Customization Overview"
+description: "Learn how to customize Knowledge Work Plugins for your company's specific needs, tools, and workflows"
+---
+
+## Why Customize?
+
+Out-of-the-box plugins give Claude strong baseline skills for sales, support, product management, and other roles. But the real value comes when you customize them for your company — your tools, your terminology, your processes.
+
+Customization transforms generic plugins into experts that understand how your team actually works.
+
+## What You Can Customize
+
+Every plugin has three main customization points:
+
+<CardGroup cols={3}>
+  <Card title="Connectors" icon="plug">
+    Point Claude at your specific tool stack by editing `.mcp.json`
+  </Card>
+  <Card title="Company Context" icon="building">
+    Add your terminology, org structure, and processes to skill files
+  </Card>
+  <Card title="Workflows" icon="diagram-project">
+    Modify step-by-step instructions to match how your team works
+  </Card>
+</CardGroup>
+
+## Plugin Structure
+
+Every plugin follows the same structure:
+
+```
+plugin-name/
+├── .claude-plugin/
+│   └── plugin.json          # Plugin metadata
+├── .mcp.json                # Connector configuration
+├── commands/                # Slash commands (/sales:call-prep)
+│   └── command-name.md
+└── skills/                  # Domain knowledge Claude uses automatically
+    └── skill-name/
+        └── SKILL.md
+```
+
+<Note>
+All customization happens through markdown and JSON files — no code, no infrastructure, no build steps required.
+</Note>
+
+## How Skills Work
+
+Skills are markdown files that encode domain expertise. When you ask Claude for help with something relevant, it automatically draws on the appropriate skills.
+
+**Example:** If you say "prep me for my call with Acme Corp", Claude:
+1. Detects this is a sales call preparation task
+2. Loads the `call-prep` skill instructions
+3. Follows the workflow defined in that skill
+4. Uses connectors you've configured to pull data
+
+You never have to explicitly invoke skills — Claude uses them when relevant.
+
+## How Commands Work
+
+Commands are explicit actions you trigger with a slash:
+
+```
+/sales:pipeline-review
+/finance:reconciliation
+/product-management:write-spec
+```
+
+Commands are useful for:
+- Structured workflows you run regularly
+- Tasks that need specific input formats
+- Actions that should always follow the same steps
+
+## How Connectors Work
+
+Connectors wire Claude to external tools via [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers. They let Claude:
+- Read from your CRM, project tracker, data warehouse, etc.
+- Write updates back to those systems
+- Stay in sync with your actual workflow
+
+**Without connectors:** Skills work with whatever information you provide manually.
+
+**With connectors:** Claude pulls context automatically and can update systems for you.
+
+## Customization Workflow
+
+<Steps>
+  <Step title="Start with a base plugin">
+    Install a plugin from the marketplace that's close to your needs
+  </Step>
+  
+  <Step title="Configure connectors">
+    Edit `.mcp.json` to point at your specific tools (HubSpot, Notion, etc.)
+  </Step>
+  
+  <Step title="Add company context">
+    Edit skill files to include your terminology, processes, and org structure
+  </Step>
+  
+  <Step title="Adjust workflows">
+    Modify the step-by-step instructions in skills to match how your team works
+  </Step>
+  
+  <Step title="Test and iterate">
+    Use the plugin, see what works, refine the instructions
+  </Step>
+</Steps>
+
+## Example: Customizing the Sales Plugin
+
+Let's say you're a mid-market SaaS company with a 60-day sales cycle:
+
+**1. Configure connectors** (`.mcp.json`):
+```json
+{
+  "mcpServers": {
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    }
+  }
+}
+```
+
+**2. Add company context** (in `skills/call-prep/SKILL.md`):
+```markdown
+## Company Configuration
+
+- Company: Acme Analytics
+- Product: Real-time analytics platform
+- Target market: Mid-market B2B SaaS (100-1000 employees)
+- Avg deal size: $50K-$200K ARR
+- Sales cycle: 60 days average
+- Key competitors: CompetitorX, CompetitorY
+- Value prop: 10x faster queries than legacy solutions
+```
+
+**3. Adjust workflow** (in `skills/call-prep/SKILL.md`):
+```markdown
+## Discovery Questions (Acme-Specific)
+
+1. What analytics solution do you use today? (Qualify: must have analytics pain)
+2. How many users need query access? (Size deal appropriately)
+3. What's driving the evaluation now? (Understand urgency)
+4. Who else is involved in the decision? (Map buying committee)
+5. What's your timeline for a decision? (Qualify against 60-day cycle)
+```
+
+Now when you say "prep me for my call with TechCorp", Claude understands your product, your sales process, and your qualification criteria.
+
+## Where to Start
+
+Pick the customization path that matches your needs:
+
+<CardGroup cols={2}>
+  <Card title="Configure Connectors" icon="plug" href="/customization/configuring-connectors">
+    Connect Claude to your specific tools (CRM, Slack, Notion, etc.)
+  </Card>
+  <Card title="Add Company Context" icon="building" href="/customization/adding-company-context">
+    Teach Claude your terminology, processes, and org structure
+  </Card>
+  <Card title="Modify Workflows" icon="diagram-project" href="/customization/modifying-workflows">
+    Adjust step-by-step instructions to match how your team works
+  </Card>
+</CardGroup>
+
+## Tips for Effective Customization
+
+<Warning>
+**Start small.** Don't try to customize everything at once. Pick one skill, add your company context, test it, then move to the next.
+</Warning>
+
+1. **Be specific** — "We use a 3-stage sales process: Discovery, Demo, Negotiation" is better than "We have a sales process"
+2. **Include examples** — Show Claude actual emails, call scripts, or deliverables your team produces
+3. **Update regularly** — As your processes evolve, keep skill files in sync
+4. **Share across teams** — Once customized, the whole team benefits from consistent context
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Configuring Connectors" icon="plug" href="/customization/configuring-connectors">
+    Edit .mcp.json to wire up your tools
+  </Card>
+  <Card title="Adding Company Context" icon="building" href="/customization/adding-company-context">
+    Teach Claude about your company
+  </Card>
+  <Card title="Modifying Workflows" icon="diagram-project" href="/customization/modifying-workflows">
+    Adjust how skills execute tasks
+  </Card>
+</CardGroup>

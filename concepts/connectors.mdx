@@ -1,0 +1,431 @@
+---
+title: Connectors
+description: Connect Knowledge Work Plugins to your external tools via Model Context Protocol
+---
+
+Connectors wire Claude to the external tools your role depends on — CRMs, project trackers, data warehouses, design tools, and more. They enable Claude to read data from and write data to your company's systems.
+
+## How connectors work
+
+Connectors use the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) to provide standardized access to external tools. Each connector is an MCP server that exposes tools, resources, and prompts.
+
+<Steps>
+  <Step title="Configure in .mcp.json">
+    List the MCP servers your plugin should connect to
+  </Step>
+  
+  <Step title="Claude discovers capabilities">
+    When the plugin loads, Claude queries each server to discover available tools
+  </Step>
+  
+  <Step title="Skills and commands use tools">
+    Your plugin's skills and commands can invoke tools from connected servers
+  </Step>
+  
+  <Step title="Data flows bidirectionally">
+    Claude can read data (query CRM), write data (update deal stage), or both
+  </Step>
+</Steps>
+
+## Configuration
+
+Connectors are defined in your plugin's `.mcp.json` file:
+
+```json .mcp.json
+{
+  "mcpServers": {
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "fireflies": {
+      "type": "http",
+      "url": "https://api.fireflies.ai/mcp"
+    }
+  }
+}
+```
+
+### Server types
+
+<ParamField path="type" type="string" required>
+  The MCP server transport type. Currently supports `http` for HTTP-based servers.
+</ParamField>
+
+<ParamField path="url" type="string" required>
+  The endpoint URL for the MCP server.
+</ParamField>
+
+## Real example: Sales plugin connectors
+
+The sales plugin connects to tools across the sales stack:
+
+```json sales/.mcp.json
+{
+  "mcpServers": {
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "close": {
+      "type": "http",
+      "url": "https://mcp.close.com/mcp"
+    },
+    "clay": {
+      "type": "http",
+      "url": "https://api.clay.com/v3/mcp"
+    },
+    "zoominfo": {
+      "type": "http",
+      "url": "https://mcp.zoominfo.com/mcp"
+    },
+    "fireflies": {
+      "type": "http",
+      "url": "https://api.fireflies.ai/mcp"
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    }
+  }
+}
+```
+
+### What each connector provides
+
+<AccordionGroup>
+  <Accordion title="HubSpot (CRM)">
+    **Tools:**
+    - Search accounts, contacts, deals, activities
+    - Create and update records
+    - Log calls, emails, meetings
+    - Manage pipeline stages
+    
+    **Use cases:**
+    - Pull account history for call prep
+    - Update deal stages after meetings
+    - Create follow-up tasks
+    - Log activity from call summaries
+  </Accordion>
+  
+  <Accordion title="Slack (Communication)">
+    **Tools:**
+    - Search messages across channels
+    - Read channel history
+    - Post messages
+    - Upload files
+    
+    **Use cases:**
+    - Find internal discussions about accounts
+    - Share pipeline reviews with team
+    - Get colleague insights for call prep
+  </Accordion>
+  
+  <Accordion title="Fireflies (Call transcripts)">
+    **Tools:**
+    - Search call recordings
+    - Retrieve transcripts
+    - Extract key moments
+    - Get speaker analytics
+    
+    **Use cases:**
+    - Process call transcripts automatically
+    - Review prior conversations before new calls
+    - Extract competitive intelligence
+  </Accordion>
+  
+  <Accordion title="Clay / ZoomInfo (Enrichment)">
+    **Tools:**
+    - Company lookup
+    - Contact enrichment
+    - Find email addresses
+    - Get firmographic data
+    
+    **Use cases:**
+    - Research prospects for outreach
+    - Verify contact information
+    - Build account context
+  </Accordion>
+</AccordionGroup>
+
+## Standalone vs supercharged
+
+Plugins are designed to work with or without connectors:
+
+<Tabs>
+  <Tab title="Standalone mode">
+    **Works without any connectors**
+    
+    Claude relies on:
+    - Manual input from you
+    - Web research
+    - File uploads
+    - Your direct knowledge
+    
+    **Example: Call prep**
+    - You tell Claude: company name, attendees, meeting type
+    - Claude does web research: recent news, funding, LinkedIn
+    - Output: prep brief with research and suggested questions
+  </Tab>
+  
+  <Tab title="Supercharged mode">
+    **With connectors configured**
+    
+    Claude can:
+    - Pull data automatically
+    - Cross-reference multiple sources
+    - Update systems directly
+    - Maintain context over time
+    
+    **Example: Call prep with connectors**
+    - CRM: account history, contact details, open deals, past activities
+    - Email: recent threads, open questions, commitments made
+    - Calendar: auto-find meeting, pull attendee list
+    - Slack: internal discussions about the account
+    - Transcripts: prior call recordings and key moments
+  </Tab>
+</Tabs>
+
+## How skills use connectors
+
+Skills reference connectors in their execution flow:
+
+```markdown call-prep/SKILL.md
+## Execution Flow
+
+### Step 1: Gather Context
+
+**If connectors available:**
+
+1. Calendar → Find upcoming meeting matching company name
+   - Pull: title, time, attendees, description, attachments
+
+2. CRM → Query account
+   - Pull: account details, all contacts, open opportunities
+   - Pull: last 10 activities, any account notes
+
+3. Email → Search recent threads
+   - Query: emails with company domain (last 30 days)
+   - Extract: key topics, open questions, commitments
+
+4. Chat → Search internal discussions
+   - Query: company name mentions (last 30 days)
+   - Extract: colleague insights, competitive intel
+
+**If no connectors:**
+
+1. Ask user:
+   - "What company are you meeting with?"
+   - "What type of meeting is this?"
+   - "Who's attending?"
+```
+
+Claude automatically detects which connectors are available and adjusts its approach.
+
+## Connector tables in skills
+
+Skills document which connectors enhance them:
+
+```markdown
+## Connectors (Optional)
+
+| Connector | What It Adds |
+|-----------|-------------|
+| **CRM** | Account details, contact history, open deals, recent activities |
+| **Email** | Recent threads with the company, open questions, attachments shared |
+| **Chat** | Internal chat discussions about the account, colleague insights |
+| **Transcripts** | Prior call recordings, topics covered, competitor mentions |
+| **Calendar** | Auto-find the meeting, pull attendees and description |
+
+> **No connectors?** No problem. Just tell me about the meeting and paste 
+> any context you have. I'll research the rest.
+```
+
+## Available connector types
+
+Common categories of connectors used in knowledge work plugins:
+
+<CardGroup cols={2}>
+  <Card title="CRM & Sales" icon="chart-line">
+    - HubSpot
+    - Salesforce
+    - Close
+    - Outreach
+    - Apollo
+  </Card>
+  
+  <Card title="Communication" icon="comments">
+    - Slack
+    - Microsoft Teams
+    - Gmail
+    - Outlook
+  </Card>
+  
+  <Card title="Project Management" icon="list-check">
+    - Jira
+    - Linear
+    - Asana
+    - Monday
+    - ClickUp
+  </Card>
+  
+  <Card title="Data & Analytics" icon="database">
+    - Snowflake
+    - Databricks
+    - BigQuery
+    - Amplitude
+    - Pendo
+  </Card>
+  
+  <Card title="Documentation" icon="file-alt">
+    - Notion
+    - Guru
+    - Confluence
+    - Google Docs
+  </Card>
+  
+  <Card title="Meetings & Calls" icon="video">
+    - Fireflies
+    - Gong
+    - Chorus
+    - Zoom
+  </Card>
+  
+  <Card title="Design" icon="palette">
+    - Figma
+    - Canva
+    - BioRender
+  </Card>
+  
+  <Card title="Enrichment" icon="magnifying-glass">
+    - ZoomInfo
+    - Clay
+    - Clearbit
+    - Apollo
+  </Card>
+</CardGroup>
+
+## Swapping connectors
+
+Customize which tools your plugin connects to:
+
+<Steps>
+  <Step title="Edit .mcp.json">
+    Open your plugin's `.mcp.json` file
+  </Step>
+  
+  <Step title="Add your tools">
+    Replace the default connectors with your company's stack:
+    
+    ```json
+    {
+      "mcpServers": {
+        "salesforce": {
+          "type": "http",
+          "url": "https://mcp.salesforce.com/api"
+        },
+        "teams": {
+          "type": "http",
+          "url": "https://teams.mcp.claude.com/mcp"
+        }
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Update skill references">
+    If skills reference specific connectors by name, update those references to match your new tools
+  </Step>
+</Steps>
+
+<Note>
+  The connector must provide an MCP server. Check the tool's documentation or the [MCP directory](https://modelcontextprotocol.io/servers) for availability.
+</Note>
+
+## Authentication
+
+Authentication is handled at the MCP server level, not in your plugin configuration. When you connect to an MCP server:
+
+1. **First connection** — Claude prompts you to authenticate with the service
+2. **Credentials stored** — Tokens are securely stored by Claude
+3. **Automatic refresh** — Claude handles token refresh automatically
+4. **Scoped access** — You control what permissions the connector has
+
+## Data privacy and security
+
+<Warning>
+  Connectors give Claude access to company data. Review what data each connector can access before enabling it.
+</Warning>
+
+**What connectors can do:**
+- Read data you have access to in connected systems
+- Write data when you explicitly approve actions
+- Search across your connected tools
+
+**What connectors cannot do:**
+- Access data you don't have permissions for
+- Make changes without your confirmation (when configured)
+- Share data between different companies/workspaces
+
+**Best practices:**
+1. Only connect tools your role actually needs
+2. Review the permissions each connector requests
+3. Use read-only connectors when possible
+4. Audit connector activity regularly
+
+## MCP protocol deep dive
+
+For details on how the Model Context Protocol works:
+
+<Card title="MCP Integration" icon="share-nodes" href="/concepts/mcp-integration">
+  Learn about the Model Context Protocol, server discovery, tool invocation, and building custom MCP servers
+</Card>
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Design for graceful degradation">
+    Skills and commands should work without connectors, just less powerfully. Never make connectors a hard requirement.
+  </Accordion>
+  
+  <Accordion title="Document what each connector adds">
+    Use connector tables in skills to show what's enhanced when tools are connected.
+  </Accordion>
+  
+  <Accordion title="Match your actual tool stack">
+    Customize `.mcp.json` to reflect what your team actually uses. Don't keep default connectors you don't have.
+  </Accordion>
+  
+  <Accordion title="Consider read vs write access">
+    Some workflows only need to read data. Configure appropriate permissions for each connector.
+  </Accordion>
+  
+  <Accordion title="Test standalone mode first">
+    Validate your plugin works without connectors before adding tool integrations. This ensures a good baseline experience.
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="MCP integration" icon="share-nodes" href="/concepts/mcp-integration">
+    Deep dive on the Model Context Protocol
+  </Card>
+  <Card title="Build a connector" icon="plug" href="/building/build-mcp-server">
+    Create a custom MCP server
+  </Card>
+  <Card title="Customize plugins" icon="wrench" href="/building/customize-plugins">
+    Swap connectors for your tool stack
+  </Card>
+  <Card title="Available connectors" icon="list" href="/reference/connectors">
+    Browse all supported MCP servers
+  </Card>
+</CardGroup>

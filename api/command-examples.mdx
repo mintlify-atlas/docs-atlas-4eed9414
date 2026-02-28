@@ -1,0 +1,526 @@
+---
+title: "Command Examples"
+description: "Real-world command patterns for processing, generating, and analyzing across different domains"
+---
+
+## Overview
+
+This page shows complete command examples from production plugins, demonstrating different patterns and use cases. Use these as templates for building your own commands.
+
+## Command Patterns
+
+Commands typically fall into one of these patterns:
+
+- **Processing**: Transform input into structured output (summaries, reports)
+- **Generating**: Create new content from requirements (specs, queries, emails)
+- **Analyzing**: Evaluate data or content and provide insights (reviews, audits)
+- **Orchestrating**: Coordinate multiple tools to complete a workflow
+
+## Processing Pattern
+
+### Example: Call Summary
+
+**Use case:** Process call notes or transcripts into actionable summaries
+
+```markdown
+---
+description: Process call notes or a transcript — extract action items, draft follow-up email, generate internal summary
+argument-hint: "<call notes or transcript>"
+---
+
+# /call-summary
+
+Process call notes or a transcript to extract action items, draft follow-up communications, and update records.
+
+## Usage
+
+```
+/call-summary [notes or transcript]
+```
+
+Process these call notes: $ARGUMENTS
+
+If a file is referenced: @$1
+
+---
+
+## How It Works
+
+### Standalone (always works)
+- Paste call notes or transcript
+- Extract key discussion points and decisions
+- Identify action items with owners and due dates
+- Surface objections, concerns, and open questions
+- Draft customer-facing follow-up email
+- Generate internal summary for your team
+
+### Supercharged (when you connect your tools)
+- Transcripts: Pull recording automatically (e.g. Gong, Fireflies)
+- CRM: Update opportunity, log activity, create tasks
+- Email: Send follow-up directly from draft
+- Calendar: Link to meeting, pull attendee context
+
+---
+
+## What I Need From You
+
+**Option 1: Paste your notes**
+Just paste whatever you have — bullet points, rough notes, stream of consciousness. I'll structure it.
+
+**Option 2: Paste a transcript**
+If you have a full transcript from your video conferencing tool (e.g. Zoom, Teams) or conversation intelligence tool (e.g. Gong, Fireflies), paste it. I'll extract the key moments.
+
+**Option 3: Describe the call**
+Tell me what happened: "Had a discovery call with Acme Corp. Met with their VP Eng and CTO. They're evaluating us vs Competitor X. Main concern is integration timeline."
+
+---
+
+## Output
+
+### Internal Summary
+```markdown
+## Call Summary: [Company] — [Date]
+
+**Attendees:** [Names and titles]
+**Call Type:** [Discovery / Demo / Negotiation / Check-in]
+**Duration:** [If known]
+
+### Key Discussion Points
+1. [Topic] — [What was discussed, decisions made]
+2. [Topic] — [Summary]
+
+### Customer Priorities
+- [Priority 1 they expressed]
+- [Priority 2]
+
+### Objections / Concerns Raised
+- [Concern] — [How you addressed it / status]
+
+### Action Items
+| Owner | Action | Due |
+|-------|--------|-----|
+| [You] | [Task] | [Date] |
+| [Customer] | [Task] | [Date] |
+
+### Next Steps
+- [Agreed next step with timeline]
+```
+
+### Customer Follow-Up Email
+```
+Subject: [Meeting recap + next steps]
+
+Hi [Name],
+
+Thank you for taking the time to meet today...
+
+[Key points discussed]
+
+[Commitments you made]
+
+[Clear next step with timeline]
+
+Best,
+[You]
+```
+
+---
+
+## Tips
+
+1. **More detail = better output** — Even rough notes help. "They seemed concerned about X" is useful context.
+2. **Name the attendees** — Helps me structure the summary and assign action items.
+3. **Flag what matters** — If something was important, tell me: "The big thing was..."
+4. **Tell me the deal stage** — Helps me tailor the follow-up tone and next steps.
+```
+
+**Key features:**
+- Multiple input options (notes, transcript, description)
+- Dual output (internal summary + customer email)
+- Clear formatting guidelines for emails (plain text, scannable)
+- Conditional connector integration
+
+## Generating Pattern
+
+### Example: Write SQL Query
+
+**Use case:** Generate optimized SQL from natural language descriptions
+
+```markdown
+---
+description: Write optimized SQL for your dialect with best practices
+argument-hint: "[description of what data you need]"
+---
+
+# /write-query - Write Optimized SQL
+
+Write a SQL query from a natural language description, optimized for your specific SQL dialect and following best practices.
+
+## Usage
+
+```
+/write-query [description of what data you need]
+```
+
+## Workflow
+
+### 1. Understand the Request
+
+Parse the user's description to identify:
+
+- **Output columns**: What fields should the result include?
+- **Filters**: What conditions limit the data (time ranges, segments, statuses)?
+- **Aggregations**: Are there GROUP BY operations, counts, sums, averages?
+- **Joins**: Does this require combining multiple tables?
+- **Ordering**: How should results be sorted?
+- **Limits**: Is there a top-N or sample requirement?
+
+### 2. Determine SQL Dialect
+
+If the user's SQL dialect is not already known, ask which they use:
+
+- **PostgreSQL** (including Aurora, RDS, Supabase, Neon)
+- **Snowflake**
+- **BigQuery** (Google Cloud)
+- **Redshift** (Amazon)
+- **Databricks SQL**
+- **MySQL** (including Aurora MySQL, PlanetScale)
+- **SQL Server** (Microsoft)
+- **DuckDB**
+- **SQLite**
+- **Other** (ask for specifics)
+
+Remember the dialect for future queries in the same session.
+
+### 3. Discover Schema (If Warehouse Connected)
+
+If a data warehouse MCP server is connected:
+
+1. Search for relevant tables based on the user's description
+2. Inspect column names, types, and relationships
+3. Check for partitioning or clustering keys that affect performance
+4. Look for pre-built views or materialized views that might simplify the query
+
+### 4. Write the Query
+
+Follow these best practices:
+
+**Structure:**
+- Use CTEs (WITH clauses) for readability when queries have multiple logical steps
+- One CTE per logical transformation or data source
+- Name CTEs descriptively (e.g., `daily_signups`, `active_users`, `revenue_by_product`)
+
+**Performance:**
+- Never use `SELECT *` in production queries -- specify only needed columns
+- Filter early (push WHERE clauses as close to the base tables as possible)
+- Use partition filters when available (especially date partitions)
+- Prefer `EXISTS` over `IN` for subqueries with large result sets
+- Use appropriate JOIN types (don't use LEFT JOIN when INNER JOIN is correct)
+- Avoid correlated subqueries when a JOIN or window function works
+- Be mindful of exploding joins (many-to-many)
+
+**Readability:**
+- Add comments explaining the "why" for non-obvious logic
+- Use consistent indentation and formatting
+- Alias tables with meaningful short names (not just `a`, `b`, `c`)
+- Put each major clause on its own line
+
+### 5. Present the Query
+
+Provide:
+
+1. **The complete query** in a SQL code block with syntax highlighting
+2. **Brief explanation** of what each CTE or section does
+3. **Performance notes** if relevant (expected cost, partition usage, potential bottlenecks)
+4. **Modification suggestions** -- how to adjust for common variations (different time range, different granularity, additional filters)
+
+### 6. Offer to Execute
+
+If a data warehouse is connected, offer to run the query and analyze the results. If the user wants to run it themselves, the query is ready to copy-paste.
+
+## Examples
+
+**Simple aggregation:**
+```
+/write-query Count of orders by status for the last 30 days
+```
+
+**Complex analysis:**
+```
+/write-query Cohort retention analysis -- group users by their signup month, then show what percentage are still active (had at least one event) at 1, 3, 6, and 12 months after signup
+```
+
+**Performance-critical:**
+```
+/write-query We have a 500M row events table partitioned by date. Find the top 100 users by event count in the last 7 days with their most recent event type.
+```
+
+## Tips
+
+- Mention your SQL dialect upfront to get the right syntax immediately
+- If you know the table names, include them -- otherwise Claude will help you find them
+- Specify if you need the query to be idempotent (safe to re-run) or one-time
+- For recurring queries, mention if it should be parameterized for date ranges
+```
+
+**Key features:**
+- Step-by-step workflow breakdown
+- Dialect detection and adaptation
+- Schema discovery with connectors
+- Comprehensive best practices (structure, performance, readability)
+- Graduated examples (simple to complex)
+
+## Analyzing Pattern
+
+### Example: Pipeline Review
+
+**Use case:** Analyze sales pipeline health and provide actionable recommendations
+
+```markdown
+---
+description: Analyze pipeline health — prioritize deals, flag risks, get a weekly action plan
+argument-hint: "<segment or rep>"
+---
+
+# /pipeline-review
+
+Analyze your pipeline health, prioritize deals, and get actionable recommendations for where to focus.
+
+## Usage
+
+```
+/pipeline-review [segment or rep]
+```
+
+Review pipeline for: $ARGUMENTS
+
+If a file is referenced: @$1
+
+---
+
+## What I Need From You
+
+**Option A: Upload a CSV**
+Export your pipeline from your CRM (e.g. Salesforce, HubSpot). Helpful fields:
+- Deal/Opportunity name
+- Account name
+- Amount
+- Stage
+- Close date
+- Created date
+- Last activity date
+- Owner (if reviewing a team)
+- Primary contact
+
+**Option B: Paste your deals**
+```
+Acme Corp - $50K - Negotiation - closes Jan 31 - last activity Jan 20
+TechStart - $25K - Demo scheduled - closes Feb 15 - no activity in 3 weeks
+BigCo - $100K - Discovery - closes Mar 30 - created last week
+```
+
+**Option C: Describe your pipeline**
+"I have 12 deals. Two big ones in negotiation that I'm confident about. Three stuck in discovery for over a month. The rest are mid-stage but I haven't talked to some of them in a while."
+
+---
+
+## Output
+
+```markdown
+# Pipeline Review: [Date]
+
+**Data Source:** [CSV upload / Manual input / CRM]
+**Deals Analyzed:** [X]
+**Total Pipeline Value:** $[X]
+
+---
+
+## Pipeline Health Score: [X/100]
+
+| Dimension | Score | Issue |
+|-----------|-------|-------|
+| **Stage Progression** | [X]/25 | [X] deals stuck in same stage 30+ days |
+| **Activity Recency** | [X]/25 | [X] deals with no activity in 14+ days |
+| **Close Date Accuracy** | [X]/25 | [X] deals with close date in past |
+| **Contact Coverage** | [X]/25 | [X] deals single-threaded |
+
+---
+
+## Priority Actions This Week
+
+### 1. [Highest Priority Deal]
+**Why:** [Reason — large, closing soon, at risk, etc.]
+**Action:** [Specific next step]
+**Impact:** $[X] if you close it
+
+### 2. [Second Priority]
+**Why:** [Reason]
+**Action:** [Next step]
+
+---
+
+## Risk Flags
+
+### Stale Deals (No Activity 14+ Days)
+| Deal | Amount | Last Activity | Days Silent | Recommendation |
+|------|--------|---------------|-------------|----------------|
+| [Deal] | $[X] | [Date] | [X] | [Re-engage / Downgrade / Remove] |
+
+### Stuck Deals (Same Stage 30+ Days)
+| Deal | Amount | Stage | Days in Stage | Recommendation |
+|------|--------|-------|---------------|----------------|
+| [Deal] | $[X] | [Stage] | [X] | [Push / Multi-thread / Qualify out] |
+```
+
+---
+
+## Prioritization Framework
+
+I'll rank your deals using this framework:
+
+| Factor | Weight | What I Look For |
+|--------|--------|------------------|
+| **Close Date** | 30% | Deals closing soonest get priority |
+| **Deal Size** | 25% | Bigger deals = more focus |
+| **Stage** | 20% | Later stage = more focus |
+| **Activity** | 15% | Active deals get prioritized |
+| **Risk** | 10% | Lower risk = safer bet |
+
+You can tell me to weight differently: "Focus on big deals over soon deals" or "I need quick wins, prioritize close dates."
+
+---
+
+## Tips
+
+1. **Review weekly** — Pipeline health decays fast. Weekly reviews catch issues early.
+2. **Kill dead deals** — Stale opportunities inflate your pipeline and distort forecasts. Be ruthless.
+3. **Multi-thread everything** — If one person goes dark, you need a backup contact.
+4. **Close dates should mean something** — A close date is when you expect signature, not when you hope for one.
+```
+
+**Key features:**
+- Flexible input methods (CSV, paste, describe)
+- Structured scoring system
+- Multi-dimensional analysis (health, priorities, risks, hygiene)
+- Customizable prioritization framework
+- Actionable recommendations with clear next steps
+
+## Orchestrating Pattern
+
+### Example: Slack Channel Summary
+
+**Use case:** Coordinate multiple API calls to summarize Slack activity
+
+```markdown
+---
+description: Summarize recent activity in a Slack channel
+---
+
+Given the channel name provided in $ARGUMENTS (strip any leading `#`):
+
+1. Use the `slack_search_channels` tool to find the channel ID for the provided channel name. Strip any leading `#` from the argument before searching.
+2. Use the `slack_read_channel` tool to read recent messages from the channel (default limit of 100 messages).
+3. For any messages that have threads with replies, use `slack_read_thread` to read the thread contents so the summary captures threaded discussions.
+4. Produce a concise summary organized by topic or theme. The summary should include:
+   - An overview of the main topics discussed
+   - Key decisions or action items mentioned
+   - Notable announcements or updates
+   - Active threads and their conclusions (if any)
+5. Keep the summary scannable — use short bullet points grouped by topic. Mention who said what when it's relevant (e.g., decisions, action items).
+6. If the channel has very little recent activity, say so and note the last time a message was posted.
+```
+
+**Key features:**
+- Step-by-step orchestration instructions
+- Multiple tool calls in sequence
+- Conditional logic (check for threads)
+- Structured output requirements
+- Edge case handling (low activity)
+
+## Output Formatting Guidelines
+
+Across all command types, follow these formatting principles:
+
+### Structure
+
+- Use clear section headers
+- Employ tables for comparative data
+- Use bullet points for lists
+- Include examples in code blocks
+
+### Tone
+
+- Be direct and actionable
+- Use "you" and "I" for conversational clarity
+- Avoid jargon unless domain-specific
+- Include context for recommendations
+
+### Scannability
+
+- Start with summary or key findings
+- Use bold for emphasis sparingly
+- Keep paragraphs short (2-3 sentences)
+- Group related information together
+
+### Email Formatting
+
+For customer-facing emails specifically:
+
+**Do:**
+- Write in plain text without markdown
+- Use simple dashes or numbers for lists
+- Keep it concise and scannable
+- Include clear next steps
+
+**Don't:**
+- Use bold, italics, or markdown syntax
+- Include fancy formatting
+- Use asterisks or other special characters
+
+**Good:**
+```
+Here's what we discussed:
+- Quote for 20 seats at $480/seat/year
+- W9 and supplier onboarding docs
+- Point of contact for the contract
+```
+
+**Bad:**
+```
+**What You Need from Us:**
+* Quote for 20 seats at $480/seat/year
+```
+
+## Best Practices Summary
+
+### Command Design
+
+1. ✓ Start with a clear use case
+2. ✓ Offer multiple input methods
+3. ✓ Provide example interactions
+4. ✓ Define output format explicitly
+5. ✓ Include tips for best results
+6. ✓ Show both standalone and connected modes
+
+### Documentation
+
+1. ✓ Write action-oriented descriptions
+2. ✓ Use concrete examples
+3. ✓ Show expected output format
+4. ✓ Explain the "why" not just the "what"
+5. ✓ Include edge cases and error handling
+
+### User Experience
+
+1. ✓ Make commands forgiving (accept varied input)
+2. ✓ Provide clear next steps
+3. ✓ Fail gracefully with helpful error messages
+4. ✓ Remember context across interactions
+5. ✓ Offer to take follow-up actions
+
+## Next Steps
+
+- Review [Command Metadata](/api/command-metadata) for frontmatter schema
+- Learn about [Plugin Development](/building/getting-started) to package commands
+- Explore [Connector Integration](/building/adding-mcp-servers) for tool integrations
+- See [Modifying Workflows](/customization/modifying-workflows) for multi-step commands

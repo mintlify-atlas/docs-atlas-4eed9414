@@ -1,0 +1,262 @@
+---
+title: "Bio-Research"
+description: "Connect to preclinical research tools and databases to accelerate early-stage life sciences R&D"
+---
+
+## Overview
+
+The Bio-Research plugin consolidates 10 MCP server integrations and 5 analysis skills into a single package for life science researchers. Search biomedical literature, run genomics pipelines, analyze single-cell data, and standardize instrument outputs — all in one place.
+
+Designed for [Cowork](https://claude.com/product/cowork) and Claude Code.
+
+## Installation
+
+```bash
+/install anthropics/knowledge-work-plugins bio-research
+```
+
+## What's Included
+
+### MCP Servers (Data Sources & Tools)
+
+The plugin connects to 10 MCP servers across literature, drug discovery, and scientific tools:
+
+<CardGroup cols={2}>
+  <Card title="Literature & Data" icon="book">
+    - **PubMed** — Biomedical literature search
+    - **bioRxiv/medRxiv** — Preprint access
+    - **Wiley Scholar Gateway** — Academic publications
+    - **Synapse** — Collaborative research data management
+  </Card>
+  
+  <Card title="Drug Discovery" icon="flask">
+    - **ChEMBL** — Bioactive compound database
+    - **Open Targets** — Drug target discovery
+    - **ClinicalTrials.gov** — Clinical trial registry
+  </Card>
+  
+  <Card title="Visualization & AI" icon="chart-line">
+    - **BioRender** — Scientific illustration creation
+    - **Owkin** — AI for histopathology and drug discovery
+  </Card>
+  
+  <Card title="Lab Platform" icon="microscope">
+    - **Benchling** — Lab data management (placeholder)
+  </Card>
+</CardGroup>
+
+<Note>
+  Plugin files use `~~category` placeholders (e.g., `~~literature`, `~~chemical database`) that resolve to whichever MCP server you connect in that category. See [CONNECTORS.md](https://github.com/anthropics/knowledge-work-plugins/blob/main/bio-research/CONNECTORS.md) for alternative options.
+</Note>
+
+### Optional Binary MCP Servers
+
+These require separate binary downloads:
+
+- **10X Genomics txg-mcp** (`~~genomics platform`) — Cloud analysis data and workflows  
+  [Download from GitHub](https://github.com/10XGenomics/txg-mcp/releases)
+- **ToolUniverse** (`~~tool database`) — AI tools for scientific discovery from Harvard MIMS  
+  [Download from GitHub](https://github.com/mims-harvard/ToolUniverse/releases)
+
+### Analysis Skills
+
+Five specialized skills power your research workflows:
+
+<AccordionGroup>
+  <Accordion title="Single-Cell RNA QC">
+    Automated quality control for scRNA-seq data following scverse best practices.
+    
+    **Features:**
+    - Supports `.h5ad` and `.h5` file formats
+    - MAD-based filtering for cells and genes
+    - Comprehensive visualizations (violin plots, scatter plots, highest expressed genes)
+    - Mitochondrial content analysis
+    - Doublet detection
+    
+    **Output:** Filtered dataset ready for downstream analysis with QC report
+  </Accordion>
+  
+  <Accordion title="scvi-tools">
+    Deep learning toolkit for single-cell omics analysis.
+    
+    **Supported models:**
+    - **scVI** — Dimensionality reduction and batch correction
+    - **scANVI** — Semi-supervised cell type annotation with label transfer
+    - **totalVI** — Joint RNA and protein analysis (CITE-seq)
+    - **PeakVI** — scATAC-seq analysis
+    - **MultiVI** — Multi-modal integration
+    - **DestVI** — Deconvolution of spatial transcriptomics
+    - **veloVI** — RNA velocity with uncertainty quantification
+    - **sysVI** — Systems biology modeling
+    
+    **Use cases:** Integration, batch correction, label transfer, multi-modal analysis
+  </Accordion>
+  
+  <Accordion title="Nextflow Pipelines">
+    Run nf-core bioinformatics pipelines on local or public sequencing data.
+    
+    **Available pipelines:**
+    - **rnaseq** — Gene expression quantification and differential expression analysis
+    - **sarek** — Germline and somatic variant calling (WGS/WES)
+    - **atacseq** — Chromatin accessibility analysis
+    
+    **Data sources:** Local FASTQ files or public GEO/SRA datasets
+    
+    Automatically handles pipeline configuration, execution, and output verification.
+  </Accordion>
+  
+  <Accordion title="Instrument Data to Allotrope">
+    Convert laboratory instrument output files to Allotrope Simple Model (ASM) format.
+    
+    **Supported formats:** PDF, CSV, Excel, TXT
+    
+    **Instrument types (40+):**
+    - Cell counters and viability analyzers
+    - Spectrophotometers (UV-Vis, fluorescence)
+    - Plate readers
+    - qPCR and digital PCR systems
+    - Chromatography systems (HPLC, LC-MS)
+    - Flow cytometers
+    - Thermal cyclers
+    
+    Enables standardized data interchange and FAIR data principles.
+  </Accordion>
+  
+  <Accordion title="Scientific Problem Selection">
+    Systematic framework for research problem selection based on Fischbach & Walsh's methodology.
+    
+    **9 sub-skills covering:**
+    - Ideation and brainstorming
+    - Risk assessment and feasibility analysis
+    - Resource optimization
+    - Decision trees for prioritization
+    - Adversity planning (what could go wrong)
+    - Synthesis and final selection
+    
+    Use when pitching a new idea, troubleshooting a stuck project, or evaluating strategic decisions.
+  </Accordion>
+</AccordionGroup>
+
+## Commands
+
+### `/start`
+
+Initialize your bio-research environment and explore available tools.
+
+```bash
+/bio-research:start
+```
+
+**What it does:**
+1. Displays a welcome message with plugin overview
+2. Tests which MCP servers are connected and reports their status
+3. Lists available analysis skills with descriptions
+4. Mentions optional binary MCP servers (10X Genomics, ToolUniverse)
+5. Asks what you're working on and suggests starting points
+
+**Common starting points:**
+- Literature review
+- Analyze sequencing data (QC, pipelines)
+- Drug discovery (compound search, target prioritization)
+- Data standardization (Allotrope conversion)
+- Research strategy evaluation
+
+## Common Workflows
+
+<CardGroup cols={2}>
+  <Card title="Literature Review" icon="book-open">
+    ```
+    Search ~~literature for "CRISPR gene editing"
+    Access full text via ~~journal access
+    Create figure with ~~scientific illustration
+    ```
+    
+    Seamlessly search PubMed, access papers through Wiley, and generate publication-ready figures with BioRender.
+  </Card>
+  
+  <Card title="Single-Cell Analysis" icon="dna">
+    ```
+    Run QC on scRNA-seq data in my_data.h5ad
+    Use scvi-tools for batch correction
+    Perform cell type annotation with scANVI
+    ```
+    
+    Complete pipeline from raw counts to annotated cell types with deep learning.
+  </Card>
+  
+  <Card title="Sequencing Pipeline" icon="chart-network">
+    ```
+    Download GEO dataset GSE12345
+    Run nf-core/rnaseq pipeline
+    Generate differential expression report
+    ```
+    
+    Automated pipeline execution from public or local data with validated results.
+  </Card>
+  
+  <Card title="Drug Discovery" icon="pills">
+    ```
+    Search ~~chemical database for CDK inhibitors
+    Use ~~drug targets for target prioritization
+    Review clinical trial data for safety profile
+    ```
+    
+    Integrated workflow from compound discovery to clinical validation.
+  </Card>
+</CardGroup>
+
+### Example: Complete RNA-seq Analysis
+
+```
+You: I have RNA-seq data from a GEO dataset. Can you help me analyze it?
+
+Claude: I'll help you run the nf-core/rnaseq pipeline. What's the GEO accession?
+
+You: GSE147507
+
+Claude: [Downloads data, configures pipeline, runs analysis]
+        Analysis complete. Found 1,234 differentially expressed genes.
+        Results saved to results/differential_expression/
+```
+
+### Example: Literature Search with Visualization
+
+```
+You: Find recent papers on CAR-T cell therapy and create a summary figure
+
+Claude: [Searches PubMed for recent CAR-T papers]
+        Found 45 relevant papers from the last 6 months.
+        Top finding: New CD19/CD22 dual-targeting approach shows 85% response rate.
+        
+        [Creates figure in BioRender showing mechanism of action]
+        Figure ready: car-t-mechanism.png
+```
+
+## Connector Reference
+
+| Category | Placeholder | Included | Alternatives |
+|----------|-------------|----------|-------------|
+| Literature | `~~literature` | PubMed, bioRxiv | Google Scholar, Semantic Scholar |
+| Scientific illustration | `~~scientific illustration` | BioRender | — |
+| Clinical trials | `~~clinical trials` | ClinicalTrials.gov | EU Clinical Trials Register |
+| Chemical database | `~~chemical database` | ChEMBL | PubChem, DrugBank |
+| Drug targets | `~~drug targets` | Open Targets | UniProt, STRING |
+| Data repository | `~~data repository` | Synapse | Zenodo, Dryad, Figshare |
+| Journal access | `~~journal access` | Wiley Scholar Gateway | Elsevier, Springer Nature |
+| AI research | `~~AI research` | Owkin | — |
+| Lab platform | `~~lab platform` | Benchling* | — |
+
+*Placeholder — MCP URL not yet configured
+
+See [CONNECTORS.md](https://github.com/anthropics/knowledge-work-plugins/blob/main/bio-research/CONNECTORS.md) for details on alternative MCP servers.
+
+## Getting Help
+
+Run `/bio-research:start` anytime to:
+- Check which MCP servers are connected
+- See available analysis skills
+- Get suggested workflows for your research
+
+## License
+
+Skills are licensed under Apache 2.0. MCP servers are provided by their respective authors — see individual server documentation for terms.

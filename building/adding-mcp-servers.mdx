@@ -1,0 +1,478 @@
+---
+title: Adding MCP Servers
+description: Connect your plugins to external tools and services using the Model Context Protocol
+---
+
+## What Are MCP Servers?
+
+MCP (Model Context Protocol) servers connect Claude to external tools and services — CRMs, project trackers, data warehouses, design tools, and more. They let Claude read and write data directly from the tools your team already uses.
+
+Every plugin can define its own MCP server connections in a `.mcp.json` file.
+
+## The .mcp.json File
+
+Create a `.mcp.json` file at the root of your plugin directory:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    }
+  }
+}
+```
+
+Each key in `mcpServers` is a unique identifier for that connection.
+
+## MCP Server Types
+
+There are three types of MCP servers:
+
+### HTTP Servers
+
+Hosted services accessible via HTTP/HTTPS. Most common for SaaS tools:
+
+```json
+{
+  "slack": {
+    "type": "http",
+    "url": "https://mcp.slack.com/mcp"
+  }
+}
+```
+
+**When to use:** Connecting to external SaaS platforms (Slack, HubSpot, Notion, etc.)
+
+### SSE Servers
+
+Server-Sent Events servers for real-time streaming connections with OAuth:
+
+```json
+{
+  "custom-service": {
+    "type": "sse",
+    "url": "https://api.example.com/mcp",
+    "oauth": {
+      "clientId": "your-client-id",
+      "clientSecret": "${CUSTOM_SERVICE_CLIENT_SECRET}",
+      "authUrl": "https://api.example.com/oauth/authorize",
+      "tokenUrl": "https://api.example.com/oauth/token",
+      "scopes": ["read", "write"]
+    }
+  }
+}
+```
+
+**When to use:** Real-time data streams, custom services requiring OAuth
+
+### Stdio Servers
+
+Local processes that communicate via standard input/output:
+
+```json
+{
+  "local-tool": {
+    "type": "stdio",
+    "command": "node",
+    "args": ["${CLAUDE_PLUGIN_ROOT}/servers/local-server.js"],
+    "env": {
+      "API_KEY": "${LOCAL_TOOL_API_KEY}"
+    }
+  }
+}
+```
+
+**When to use:** Local tools, command-line utilities, custom scripts
+
+## Real-World Examples
+
+### Sales Plugin
+
+Connecting to multiple sales and productivity tools:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "close": {
+      "type": "http",
+      "url": "https://mcp.close.com/mcp"
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "fireflies": {
+      "type": "http",
+      "url": "https://api.fireflies.ai/mcp"
+    },
+    "ms365": {
+      "type": "http",
+      "url": "https://microsoft365.mcp.claude.com/mcp"
+    }
+  }
+}
+```
+
+### Data Plugin
+
+Connecting to data warehouses:
+
+```json
+{
+  "mcpServers": {
+    "snowflake": {
+      "type": "http",
+      "url": "https://mcp.snowflake.com/mcp"
+    },
+    "databricks": {
+      "type": "http",
+      "url": "https://mcp.databricks.com/mcp"
+    },
+    "bigquery": {
+      "type": "http",
+      "url": "https://bigquery.mcp.claude.com/mcp"
+    }
+  }
+}
+```
+
+### Custom Local Server
+
+Running a custom MCP server locally:
+
+```json
+{
+  "mcpServers": {
+    "company-data": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/servers/company_data_server.py"],
+      "env": {
+        "DATABASE_URL": "${COMPANY_DATABASE_URL}",
+        "API_KEY": "${COMPANY_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+## Using Environment Variables
+
+For sensitive data like API keys, use environment variables:
+
+```json
+{
+  "mcpServers": {
+    "custom-api": {
+      "type": "http",
+      "url": "https://api.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${CUSTOM_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+Users set these variables in their environment before launching Cowork:
+
+```bash
+export CUSTOM_API_KEY="sk-..."
+```
+
+<Warning>
+  **Never hardcode secrets** in `.mcp.json` files. Always use environment variables for API keys, tokens, and passwords.
+</Warning>
+
+## Plugin-Relative Paths
+
+When referencing files within your plugin, always use `${CLAUDE_PLUGIN_ROOT}`:
+
+```json
+{
+  "mcpServers": {
+    "local-tool": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/servers/tool.js"]
+    }
+  }
+}
+```
+
+**Never use absolute paths** — they won't work when the plugin is installed in different locations.
+
+## Custom Configuration Path
+
+By default, Claude looks for `.mcp.json` at the plugin root. You can specify a custom location in `plugin.json`:
+
+```json
+{
+  "name": "my-plugin",
+  "mcpServers": "./config/mcp-servers.json"
+}
+```
+
+## Documenting Required Connections
+
+In your plugin's README.md, document which MCP servers are required vs. optional:
+
+```markdown
+## Required Connectors
+
+- **Slack** — Team communication and notifications
+- **HubSpot** — CRM data for account research
+
+## Optional Connectors
+
+These enhance the plugin but aren't required:
+
+- **Fireflies** — Automatic call transcript retrieval
+- **Notion** — Access to team knowledge base
+- **Microsoft 365** — Calendar and email integration
+
+## Setup
+
+1. Install the plugin
+2. Connect required services from Settings → Plugins
+3. Optionally connect enhanced services for more features
+```
+
+## How Skills and Commands Use MCP Servers
+
+Once MCP servers are configured, your skills and commands can reference them:
+
+### In Skills
+
+```markdown
+## Execution Flow
+
+### Step 1: Gather Context
+
+**If CRM connected:**
+1. Query HubSpot for account details
+2. Pull recent activities and contacts
+3. Get open opportunities
+
+**If Slack connected:**
+4. Search for internal discussions about the account
+5. Extract colleague insights
+
+**If no connectors:**
+- Ask user for basic context
+- Proceed with web research only
+```
+
+### In Commands
+
+```markdown
+## If Connectors Available
+
+**CRM connected:**
+- Update opportunity stage
+- Log the call as an activity  
+- Create tasks for action items
+
+**Email connected:**
+- Create draft in email client
+- Send directly if approved
+```
+
+## Testing MCP Connections
+
+After adding MCP servers to your plugin:
+
+<Steps>
+
+<Step title="Install the plugin">
+  Package and install your plugin in Cowork to test the MCP configuration.
+</Step>
+
+<Step title="Verify connections appear">
+  Check Settings → Plugins → Your Plugin to see if MCP servers are listed.
+</Step>
+
+<Step title="Authenticate services">
+  For OAuth-based services, complete the authentication flow.
+</Step>
+
+<Step title="Test in skills/commands">
+  Try using skills and commands that depend on the MCP servers.
+</Step>
+
+<Step title="Check error handling">
+  Test what happens when connections fail or are disconnected.
+</Step>
+
+</Steps>
+
+## Common MCP Servers
+
+Here are commonly used MCP servers for different categories:
+
+### Communication
+
+```json
+"slack": {
+  "type": "http",
+  "url": "https://mcp.slack.com/mcp"
+},
+"ms365": {
+  "type": "http",
+  "url": "https://microsoft365.mcp.claude.com/mcp"
+}
+```
+
+### CRM & Sales
+
+```json
+"hubspot": {
+  "type": "http",
+  "url": "https://mcp.hubspot.com/anthropic"
+},
+"close": {
+  "type": "http",
+  "url": "https://mcp.close.com/mcp"
+},
+"apollo": {
+  "type": "http",
+  "url": "https://api.apollo.io/mcp"
+}
+```
+
+### Project Management
+
+```json
+"linear": {
+  "type": "http",
+  "url": "https://mcp.linear.app/mcp"
+},
+"asana": {
+  "type": "http",
+  "url": "https://mcp.asana.com/mcp"
+},
+"atlassian": {
+  "type": "http",
+  "url": "https://mcp.atlassian.com/v1/mcp"
+}
+```
+
+### Data & Analytics
+
+```json
+"snowflake": {
+  "type": "http",
+  "url": "https://mcp.snowflake.com/mcp"
+},
+"databricks": {
+  "type": "http",
+  "url": "https://mcp.databricks.com/mcp"
+},
+"amplitude": {
+  "type": "http",
+  "url": "https://mcp.amplitude.com/mcp"
+}
+```
+
+### Knowledge Management
+
+```json
+"notion": {
+  "type": "http",
+  "url": "https://mcp.notion.com/mcp"
+},
+"guru": {
+  "type": "http",
+  "url": "https://api.getguru.com/mcp"
+}
+```
+
+## Handling Missing Connections
+
+Design your skills and commands to gracefully handle missing MCP connections:
+
+```markdown
+## Execution Flow
+
+### Step 1: Check Available Connectors
+
+**Priority:**
+1. If CRM connected → Pull account data
+2. Else if enrichment connected → Use enrichment API
+3. Else → Web search and user input
+
+### Step 2: Adapt Workflow
+
+Based on available tools, adjust the depth and sources:
+- Rich data → Full detailed analysis
+- Limited data → Focus on web research
+- No tools → Work with user-provided context
+
+**Always deliver value** regardless of which tools are connected.
+```
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use environment variables for secrets">
+    Never hardcode API keys, tokens, or passwords in `.mcp.json`. Use `${VARIABLE_NAME}` syntax.
+  </Accordion>
+  
+  <Accordion title="Document required permissions">
+    In your README, list what permissions/scopes each MCP server needs and why.
+  </Accordion>
+  
+  <Accordion title="Use HTTPS for all remote servers">
+    Always use `https://` URLs for production MCP servers. Never use plain HTTP.
+  </Accordion>
+  
+  <Accordion title="Validate data from MCP servers">
+    Don't assume MCP server responses are always valid. Handle errors and missing fields gracefully.
+  </Accordion>
+  
+  <Accordion title="Minimize scope requests">
+    Only request the OAuth scopes your plugin actually needs. Less permission = less risk.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| MCP server not appearing | Check JSON syntax in `.mcp.json`, ensure file is at plugin root |
+| Authentication fails | Verify OAuth configuration, check environment variables are set |
+| Connection timeout | Verify URL is correct and service is reachable |
+| Permission denied | Check OAuth scopes include required permissions |
+| Data not loading | Verify API keys/tokens are valid and not expired |
+| Local server won't start | Check command path, verify `${CLAUDE_PLUGIN_ROOT}` resolves correctly |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Skills" icon="brain" href="/building/creating-skills">
+    Learn how skills can leverage MCP server connections
+  </Card>
+  <Card title="Creating Commands" icon="terminal" href="/building/creating-commands">
+    Build commands that use data from MCP servers
+  </Card>
+  <Card title="Plugin Management" icon="wrench" href="/building/plugin-management">
+    Use the plugin management plugin to configure MCP servers
+  </Card>
+  <Card title="Model Context Protocol" icon="book" href="https://modelcontextprotocol.io/">
+    Learn more about MCP at the official documentation
+  </Card>
+</CardGroup>

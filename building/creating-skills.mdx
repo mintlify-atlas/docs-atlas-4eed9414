@@ -1,0 +1,411 @@
+---
+title: Creating Skills
+description: Learn how to write skills that give Claude domain expertise and workflow knowledge
+---
+
+## What Are Skills?
+
+Skills encode domain expertise, best practices, and step-by-step workflows that Claude needs to give you useful help. Unlike commands that you invoke explicitly, skills are drawn on automatically when Claude detects they're relevant to your conversation.
+
+For example, when you say "prep me for my call with Acme Corp", Claude automatically activates the `call-prep` skill to gather context, research the company, and generate a briefing.
+
+## Skill File Structure
+
+Each skill lives in its own directory under `skills/`:
+
+```
+skills/
+└── call-prep/
+    ├── SKILL.md           # Required: main skill definition
+    ├── references/        # Optional: detailed reference content
+    │   └── template.md
+    └── examples/          # Optional: working examples
+        └── sample-output.md
+```
+
+## SKILL.md Format
+
+Every skill must have a `SKILL.md` file with two parts:
+
+1. **YAML frontmatter**: Metadata that helps Claude decide when to use the skill
+2. **Markdown body**: Instructions and workflow for Claude to follow
+
+### Basic Structure
+
+```markdown
+---
+name: call-prep
+description: Prepare for a sales call with account context, attendee research, and suggested agenda. Trigger with "prep me for my call with [company]", "I'm meeting with [company] prep me", or "call prep [company]".
+---
+
+# Call Prep
+
+Get fully prepared for any sales call in minutes...
+
+## How It Works
+
+[Instructions for Claude]
+
+## Execution Flow
+
+[Step-by-step workflow]
+```
+
+## Frontmatter Fields
+
+### name (required)
+
+The unique identifier for the skill. Use kebab-case:
+
+```yaml
+name: call-prep
+```
+
+### description (required)
+
+This is critical — it's how Claude decides when to activate the skill. Write it in third person and include:
+
+- What the skill does
+- When to use it
+- Specific trigger phrases users might say
+
+**Good example:**
+```yaml
+description: Prepare for a sales call with account context, attendee research, and suggested agenda. Works standalone with user input and web research, supercharged when you connect your CRM, email, chat, or transcripts. Trigger with "prep me for my call with [company]", "I'm meeting with [company] prep me", "call prep [company]", or "get me ready for [meeting]".
+```
+
+**Bad example:**
+```yaml
+description: Helps with calls
+```
+
+### Optional Fields
+
+```yaml
+compatibility: Requires Cowork desktop app environment with access to outputs directory
+author: Your Name
+version: 1.0.0
+```
+
+## Writing Effective Skills
+
+### 1. Start with the User Goal
+
+Begin your skill with a clear statement of what the user gets:
+
+```markdown
+# Account Research
+
+Get a complete picture of any company or person before outreach. 
+This skill always works with web search, and gets significantly 
+better with enrichment and CRM data.
+```
+
+### 2. Explain What Works With and Without Tools
+
+Be transparent about what the skill can do standalone vs. with connectors:
+
+```markdown
+## How It Works
+
+┌─────────────────────────────────────────────────────────────────┐
+│                     ACCOUNT RESEARCH                             │
+├─────────────────────────────────────────────────────────────────┤
+│  ALWAYS (works standalone via web search)                        │
+│  ✓ Company overview: what they do, size, industry               │
+│  ✓ Recent news: funding, leadership changes, announcements      │
+│  ✓ Hiring signals: open roles, growth indicators                │
+├─────────────────────────────────────────────────────────────────┤
+│  SUPERCHARGED (when you connect your tools)                      │
+│  + Enrichment: verified emails, phone, tech stack, org chart    │
+│  + CRM: prior relationship, past opportunities, contacts        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 3. Provide Step-by-Step Execution Flow
+
+Give Claude a clear workflow to follow:
+
+```markdown
+## Execution Flow
+
+### Step 1: Gather Context
+
+**If connectors available:**
+1. Calendar → Find upcoming meeting matching company name
+   - Pull: title, time, attendees, description
+
+2. CRM → Query account
+   - Pull: account details, all contacts, opportunities
+   - Pull: last 10 activities, any account notes
+
+**If no connectors:**
+1. Ask user:
+   - "What company are you meeting with?"
+   - "What type of meeting is this?"
+   - "Who's attending?"
+
+### Step 2: Research Supplement
+
+**Always run (web search):**
+1. "[Company] news" — last 30 days
+2. "[Company] funding" — recent announcements
+3. Attendee LinkedIn profiles — background research
+
+### Step 3: Synthesize & Generate
+
+1. Combine all sources into unified context
+2. Identify gaps in understanding → generate discovery questions
+3. Create suggested agenda tailored to meeting type
+4. Output formatted prep brief
+```
+
+### 4. Show Expected Output Format
+
+Include a template or example of what Claude should generate:
+
+```markdown
+## Output Format
+
+```markdown
+# Call Prep: [Company Name]
+
+**Meeting:** [Type] — [Date/Time if known]
+**Attendees:** [Names with titles]
+**Your Goal:** [What you want to accomplish]
+
+---
+
+## Account Snapshot
+
+| Field | Value |
+|-------|-------|
+| **Company** | [Name] |
+| **Industry** | [Industry] |
+| **Size** | [Employees] |
+
+...
+```
+```
+
+### 5. Handle Variations
+
+Document how the skill should adapt to different contexts:
+
+```markdown
+## Meeting Type Variations
+
+### Discovery Call
+- Focus on: Understanding their world, pain points, priorities
+- Agenda emphasis: Questions > Talking
+- Key output: Qualification signals, next step proposal
+
+### Demo / Presentation
+- Focus on: Their specific use case, tailored examples
+- Agenda emphasis: Show relevant features, get feedback
+- Key output: Technical requirements, decision timeline
+```
+
+## Progressive Disclosure with References
+
+Keep your SKILL.md focused (under 3,000 words) and move detailed content to reference files:
+
+```
+skills/call-prep/
+├── SKILL.md                    # Core workflow (concise)
+└── references/
+    ├── output-template.md      # Detailed output format
+    ├── meeting-types.md        # Deep dive on variations
+    └── connector-details.md    # Integration specifics
+```
+
+Reference these files in your SKILL.md:
+
+```markdown
+For detailed output format specifications, see `references/output-template.md`.
+```
+
+## Writing Style
+
+### Use Imperative Commands
+
+Skills are instructions FOR Claude, not documentation for users:
+
+**Good:**
+```markdown
+1. Search for recent news about the company
+2. Extract key announcements and funding events
+3. Identify hiring signals from job postings
+```
+
+**Bad:**
+```markdown
+The skill will search for recent news about the company, 
+extract key announcements, and identify hiring signals.
+```
+
+### Be Specific
+
+Don't say "gather information" — say exactly what information and how:
+
+**Good:**
+```markdown
+Run these searches:
+1. "[Company] news" — last 30 days
+2. "[Company] funding" — recent announcements
+3. "[Company] careers" — open roles
+```
+
+**Bad:**
+```markdown
+Research the company online.
+```
+
+### Include Decision Logic
+
+Help Claude make good choices:
+
+```markdown
+**If connectors available:**
+- Pull data from CRM first
+- Use web search to supplement gaps
+
+**If no connectors:**
+- Ask user for basic context
+- Rely primarily on web search
+- Accept whatever context user provides
+```
+
+## Real-World Example
+
+Here's a complete minimal skill:
+
+```markdown
+---
+name: account-research
+description: Research a company or person and get actionable sales intel. Works standalone with web search, supercharged when you connect enrichment tools or your CRM. Trigger with "research [company]", "look up [person]", "intel on [prospect]", or "tell me about [company]".
+---
+
+# Account Research
+
+Get a complete picture of any company or person before outreach.
+
+## Execution Flow
+
+### Step 1: Parse Request
+
+Identify what to research:
+- "Research Stripe" → Company research
+- "Look up John Smith at Acme" → Person + company
+- "Who is the CTO at Notion" → Role-based search
+
+### Step 2: Web Search (Always)
+
+Run these searches:
+1. "[Company name]" → Homepage, about page
+2. "[Company name] news" → Recent announcements
+3. "[Company name] funding" → Investment history
+4. "[Person name] [Company] LinkedIn" → Profile info
+
+Extract:
+- Company description and positioning
+- Recent news (last 90 days)
+- Leadership team
+- Open job postings
+
+### Step 3: Enrichment (If Connected)
+
+If enrichment tools available:
+1. Enrich company → Firmographics, funding, tech stack
+2. Search people → Org chart, contact list
+3. Get signals → Intent data, hiring velocity
+
+### Step 4: Synthesize
+
+1. Combine all sources
+2. Prioritize enrichment data over web (more accurate)
+3. Identify qualification signals
+4. Generate talking points
+5. Recommend outreach approach
+
+## Output Format
+
+```markdown
+# Research: [Company Name]
+
+**Generated:** [Date]
+**Sources:** Web Search [+ Enrichment] [+ CRM]
+
+## Quick Take
+
+[2-3 sentences: Who they are, why they might need you]
+
+## Company Profile
+
+| Field | Value |
+|-------|-------|
+| **Company** | [Name] |
+| **Industry** | [Industry] |
+| **Size** | [Employees] |
+| **Funding** | [Stage + amount] |
+
+## Recent News
+- [Headline] — [Date] — [Why it matters]
+
+## Recommended Approach
+
+**Best Entry Point:** [Person and why]
+**Opening Hook:** [What to lead with]
+```
+```
+
+## Testing Your Skill
+
+After creating a skill:
+
+1. **Test the trigger**: Say phrases from your description and verify Claude activates the skill
+2. **Test without connectors**: Ensure it works standalone
+3. **Test with connectors**: Verify it leverages connected tools
+4. **Test edge cases**: Try minimal input, ambiguous requests
+5. **Check output quality**: Does it match your template?
+
+## Tips for Great Skills
+
+<AccordionGroup>
+  <Accordion title="Keep core workflow in SKILL.md, details in references">
+    Aim for under 3,000 words in the main file. Move schemas, examples, and deep dives to reference files.
+  </Accordion>
+  
+  <Accordion title="Write specific trigger phrases in the description">
+    The more specific your trigger phrases, the better Claude knows when to use the skill. Include exact user language.
+  </Accordion>
+  
+  <Accordion title="Default to working standalone">
+    Always design skills to work without connectors first. Enhance with connector data as available.
+  </Accordion>
+  
+  <Accordion title="Use imperative language">
+    Write "Search for X" not "The skill searches for X". Skills are instructions for Claude.
+  </Accordion>
+  
+  <Accordion title="Show, don't tell">
+    Include example outputs, sample queries, and specific workflows. Don't just describe what should happen.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Commands" icon="terminal" href="/building/creating-commands">
+    Learn how to create slash commands for structured workflows
+  </Card>
+  <Card title="Adding MCP Servers" icon="plug" href="/building/adding-mcp-servers">
+    Connect your skills to external tools and data sources
+  </Card>
+  <Card title="Plugin Structure" icon="folder-tree" href="/building/plugin-structure">
+    Review the complete plugin directory structure
+  </Card>
+  <Card title="Plugin Management" icon="wrench" href="/building/plugin-management">
+    Use the plugin management plugin to create skills visually
+  </Card>
+</CardGroup>

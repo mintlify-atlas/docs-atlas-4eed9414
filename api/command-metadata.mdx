@@ -1,0 +1,261 @@
+---
+title: "Command Metadata"
+description: "Define command frontmatter schema, file structure, and metadata fields for custom commands"
+---
+
+## Overview
+
+Commands in Claude Code are defined using Markdown files with YAML frontmatter. The frontmatter contains metadata that controls how the command appears in the UI and how arguments are processed.
+
+## File Structure
+
+Command files follow this basic structure:
+
+```markdown
+---
+description: Brief description of what the command does
+argument-hint: "<placeholder text for arguments>"
+---
+
+# /command-name
+
+Command implementation using natural language instructions...
+
+Process user input: $ARGUMENTS
+
+If a file is referenced: @$1
+```
+
+### File Naming Convention
+
+Command files should be named with lowercase and hyphens:
+- `call-summary.md` → `/call-summary`
+- `write-query.md` → `/write-query`
+- `pipeline-review.md` → `/pipeline-review`
+
+The command name in the file should match: `# /command-name`
+
+## Frontmatter Schema
+
+The YAML frontmatter at the top of each command file defines metadata used by the system.
+
+### Required Fields
+
+<ParamField path="description" type="string" required>
+  A concise description of what the command does. This appears in command palettes, autocomplete, and help text.
+  
+  **Best practices:**
+  - Keep it under 80 characters
+  - Use action verbs ("Process", "Analyze", "Generate", "Write")
+  - Describe the outcome, not the process
+  - Mention key features separated by em dashes
+  
+  **Examples:**
+  ```yaml
+  description: Process call notes or a transcript — extract action items, draft follow-up email, generate internal summary
+  
+  description: Write optimized SQL for your dialect with best practices
+  
+  description: Analyze pipeline health — prioritize deals, flag risks, get a weekly action plan
+  ```
+</ParamField>
+
+### Optional Fields
+
+<ParamField path="argument-hint" type="string">
+  Placeholder text shown in the command input UI to guide users on what arguments to provide. Use angle brackets for placeholders.
+  
+  **Examples:**
+  ```yaml
+  argument-hint: "<call notes or transcript>"
+  
+  argument-hint: "<description of what data you need>"
+  
+  argument-hint: "<segment or rep>"
+  
+  argument-hint: "<feature or problem statement>"
+  
+  argument-hint: "[PR URL, diff, or file path]"
+  ```
+  
+  **Best practices:**
+  - Use descriptive placeholders, not generic ones
+  - Good: `<call notes or transcript>`
+  - Bad: `<input>`
+  - Show multiple options when applicable: `<segment or rep>`
+  - Omit if the command takes no arguments
+</ParamField>
+
+## Command Body
+
+After the frontmatter, the command body contains natural language instructions for Claude to follow.
+
+### Structure Guidelines
+
+1. **Header**: Start with `# /command-name` matching the command invocation
+
+2. **Usage Section**: Show basic usage syntax
+   ````markdown
+   ## Usage
+   
+   ```
+   /command-name <arguments>
+   ```
+   ````
+
+3. **Argument Processing**: Include references to access user input
+   ```markdown
+   Process the user's input: $ARGUMENTS
+   
+   If a file is referenced: @$1
+   ```
+
+4. **How It Works**: Describe functionality in standalone and connected modes
+   ```markdown
+   ## How It Works
+   
+   ### Standalone (always works)
+   - Core functionality without integrations
+   
+   ### Supercharged (when you connect your tools)
+   - Additional features with connectors
+   ```
+
+5. **Output Format**: Show expected output structure with examples
+
+6. **Tips and Best Practices**: Help users get the most from the command
+
+### Referencing Connectors
+
+When mentioning integrations, use strikethrough to indicate they're optional:
+
+```markdown
+If **~~CRM** is connected:
+- Pull pipeline automatically
+- Update records
+
+If **~~email** is connected:
+- Send drafts directly
+```
+
+## Argument Variables
+
+Commands can access user input through special variables:
+
+| Variable | Description | Example |
+|----------|-------------|----------|
+| `$ARGUMENTS` | All arguments provided by the user | Full text after command name |
+| `@$1` | First file reference | First file path if provided |
+| `@$2` | Second file reference | Second file path if provided |
+| `@$N` | Nth file reference | Additional file paths |
+
+### Usage Examples
+
+**Single argument:**
+```markdown
+Process these call notes: $ARGUMENTS
+```
+
+**File reference:**
+```markdown
+Analyze the file: @$1
+```
+
+**Combined:**
+```markdown
+Review the code changes in @$1 with focus on: $ARGUMENTS
+```
+
+**Optional file:**
+```markdown
+Generate a summary for: $ARGUMENTS
+
+If a file is referenced: @$1
+```
+
+## Complete Example
+
+```markdown
+---
+description: Review code changes for security, performance, and correctness
+argument-hint: "[PR URL, diff, or file path]"
+---
+
+# /review
+
+Review code changes with a structured lens on security, performance, correctness, and maintainability.
+
+## Usage
+
+```
+/review [PR URL or file path]
+```
+
+Review the provided code changes: @$1
+
+If no specific file or URL is provided, ask what to review.
+
+## How It Works
+
+### Standalone (always works)
+- Paste a diff, PR URL, or point to files
+- Security audit (OWASP top 10, injection, auth)
+- Performance review (N+1, memory leaks, complexity)
+- Correctness (edge cases, error handling, race conditions)
+- Style (naming, structure, readability)
+- Actionable suggestions with code examples
+
+### Supercharged (when you connect your tools)
+- Source control: Pull PR diff automatically
+- Project tracker: Link findings to tickets
+- Knowledge base: Check against team coding standards
+
+## Output
+
+```markdown
+## Code Review: [PR title or file]
+
+### Summary
+[1-2 sentence overview of the changes and overall quality]
+
+### Critical Issues
+| # | File | Line | Issue | Severity |
+|---|------|------|-------|----------|
+| 1 | [file] | [line] | [description] | 🔴 Critical |
+
+### Suggestions
+| # | File | Line | Suggestion | Category |
+|---|------|------|------------|----------|
+| 1 | [file] | [line] | [description] | Performance |
+
+### What Looks Good
+- [Positive observations]
+
+### Verdict
+[Approve / Request Changes / Needs Discussion]
+```
+
+## Tips
+
+1. **Provide context** — "This is a hot path" or "This handles PII" helps me focus.
+2. **Specify concerns** — "Focus on security" narrows the review.
+3. **Include tests** — I'll check test coverage and quality too.
+```
+
+## Validation
+
+When creating commands, ensure:
+
+1. ✓ Frontmatter is valid YAML
+2. ✓ Description is concise and action-oriented
+3. ✓ Argument hint matches expected input
+4. ✓ Command body includes `$ARGUMENTS` or `@$1` references
+5. ✓ Output format is clearly defined
+6. ✓ Usage examples are provided
+7. ✓ Tips section helps users succeed
+
+## Next Steps
+
+- See [Command Examples](/api/command-examples) for real-world command patterns
+- Learn about [Plugin Development](/building/getting-started) to package commands
+- Explore [Connector Integration](/building/adding-mcp-servers) to add tool integrations

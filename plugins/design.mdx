@@ -1,0 +1,516 @@
+---
+title: Design Plugin
+description: Accelerate design workflows with critique, design system management, UX writing, accessibility audits, research synthesis, and dev handoff
+---
+
+A design productivity plugin designed for [Cowork](https://claude.com/product/cowork) and Claude Code. Helps with design critique, system management, UX writing, accessibility, research synthesis, and developer handoff. Works standalone or supercharged with Figma and other tools.
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/design
+```
+
+## Overview
+
+The Design plugin transforms Claude into a design teammate that helps with common design workflows. Every command works **standalone** (describe your design or paste screenshots) and gets **supercharged** when you connect your design tools via MCP.
+
+## Commands
+
+Explicit workflows you invoke with a slash command:
+
+<CardGroup cols={2}>
+  <Card title="/critique" icon="comments">
+    Get structured design feedback on usability, visual hierarchy, accessibility, and consistency
+  </Card>
+  
+  <Card title="/design-system" icon="layer-group">
+    Audit, document, or extend your design system — components, tokens, patterns
+  </Card>
+  
+  <Card title="/handoff" icon="code">
+    Generate developer handoff specs with measurements, tokens, states, interactions, and edge cases
+  </Card>
+  
+  <Card title="/ux-copy" icon="pen">
+    Write or review UX copy — microcopy, error messages, empty states, onboarding flows
+  </Card>
+  
+  <Card title="/accessibility" icon="universal-access">
+    Run an accessibility audit — WCAG compliance, color contrast, screen reader, keyboard navigation
+  </Card>
+  
+  <Card title="/research-synthesis" icon="microscope">
+    Synthesize user research — interviews, surveys, usability tests into actionable insights
+  </Card>
+</CardGroup>
+
+### /critique
+
+Get structured design feedback across multiple dimensions:
+
+```bash
+/critique
+```
+
+Share a Figma link, screenshot, or describe your design. Get structured feedback on:
+
+- **Usability**: Can users accomplish their goal? Is navigation intuitive?
+- **Visual Hierarchy**: Is there a clear reading order? Are the right things emphasized?
+- **Consistency**: Does it follow the design system? Are patterns consistent?
+- **Accessibility**: Color contrast, touch targets, text readability
+
+**Example output:**
+
+```markdown
+## Design Critique: Checkout Flow Redesign
+
+### Overall Impression
+Clean, modern interface with good use of whitespace. The biggest opportunity
+is improving the visual hierarchy — the CTA doesn't stand out enough.
+
+### Usability
+| Finding | Severity | Recommendation |
+|---------|----------|----------------|
+| Back button placement inconsistent | 🟡 Moderate | Standardize back button in top-left across all screens |
+| Payment info form too long | 🔴 Critical | Break into steps or use smart defaults |
+| Loading state unclear | 🟡 Moderate | Add skeleton screen or progress indicator |
+
+### Visual Hierarchy
+- **What draws the eye first**: The product image — correct for initial engagement
+- **Reading flow**: Natural F-pattern, but CTA gets lost at bottom
+- **Emphasis**: Price is de-emphasized compared to product details — may be intentional
+
+### Consistency
+| Element | Issue | Recommendation |
+|---------|-------|----------------|
+| Button styles | Mix of rounded and sharp corners | Use design system button component |
+| Spacing | Inconsistent 16px/20px/24px | Stick to 8px spacing scale |
+| Typography | 3 different body text sizes | Use only body-md and body-sm |
+
+### Accessibility
+- **Color contrast**: ⚠️ Secondary text (gray-400) fails WCAG AA on white (3.2:1)
+- **Touch targets**: ✓ All buttons meet 44px minimum
+- **Text readability**: ✓ Font size and line height appropriate
+
+### What Works Well
+- Clear visual separation between sections
+- Good use of icons to reinforce meaning
+- Mobile-first responsive design
+- Error states are clear and helpful
+
+### Priority Recommendations
+1. **Increase CTA contrast** — Use primary color with higher saturation
+   - Why: Current state has only 30% success rate in eye-tracking studies
+   - How: Change from gray-600 to brand-primary
+
+2. **Fix secondary text contrast** — Bump to gray-600 or darker
+   - Why: WCAG AA compliance and readability for users with low vision
+   - How: Replace gray-400 with gray-600 (4.5:1 contrast)
+
+3. **Standardize spacing** — Use 8px scale throughout
+   - Why: Consistency helps users build mental model
+   - How: Audit all spacing and round to nearest 8px multiple
+```
+
+### /design-system
+
+Audit, document, or extend your design system:
+
+```bash
+/design-system audit
+```
+
+Claude reviews your component library for:
+- **Consistency**: Are components using the same tokens?
+- **Completeness**: Are there missing states or variants?
+- **Naming conventions**: Are components named clearly and consistently?
+- **Documentation**: Is usage clear? Are examples provided?
+
+**Example use cases:**
+- "Audit our button components for consistency"
+- "Document the spacing scale with examples"
+- "Create a new card component that fits our system"
+- "Check if our color tokens meet WCAG AA"
+
+### /handoff
+
+Generate comprehensive developer handoff documentation:
+
+```bash
+/handoff
+```
+
+Share a Figma link and get a complete spec:
+
+```markdown
+## Developer Handoff: Profile Settings Modal
+
+### Layout
+- **Width**: 640px (fixed)
+- **Height**: Auto, max 80vh with scroll
+- **Padding**: 32px all sides
+- **Background**: surface-primary (#FFFFFF)
+- **Border radius**: 16px
+- **Shadow**: elevation-modal (0 8px 24px rgba(0,0,0,0.12))
+
+### Components
+
+#### Header
+- **Title**: H3 / Semibold / 24px / Gray-900
+- **Close button**: Icon button / 40x40px / top-right 8px offset
+- **Divider**: 1px / Gray-200 / margin-bottom 24px
+
+#### Form Fields
+- **Label**: Body-sm / Medium / 14px / Gray-700
+- **Input**: Height 44px / Border 1px Gray-300 / Radius 8px
+- **Spacing**: 16px between fields
+
+#### Primary CTA
+- **Component**: Button-primary-large
+- **Token**: `brand-primary`
+- **Size**: 48px height, full width
+- **Text**: "Save Changes" / Semibold / 16px
+
+### States
+
+**Default**
+- Modal centered on screen with overlay
+- Overlay: rgba(0,0,0,0.4) backdrop blur 4px
+
+**Loading**
+- Save button shows spinner
+- Form fields disabled with 50% opacity
+- "Saving changes..." text below button
+
+**Success**
+- Toast notification top-right: "Profile updated"
+- Modal closes after 300ms
+
+**Error**
+- Error text below affected field
+- Field border changes to error-500 red
+- Icon: alert-circle / 16px / error-500
+
+### Interactions
+
+**Open**
+- Fade in overlay (200ms ease-out)
+- Scale modal from 0.95 to 1.0 (200ms ease-out)
+- Focus first input field
+
+**Close**
+- Click overlay, press ESC, or click X
+- Scale modal to 0.95 and fade out (150ms ease-in)
+- Return focus to trigger element
+
+**Save**
+- Validate all fields
+- If valid: POST /api/profile, show loading state
+- If invalid: Show field-level errors, focus first error
+
+### Edge Cases
+
+- **Unsaved changes**: Show confirmation dialog if user tries to close
+- **Network error**: Show retry option with error message
+- **Long content**: Modal scrolls internally, header stays fixed
+- **Mobile**: Modal becomes full-screen sheet on <768px
+
+### Accessibility
+
+- **Role**: `dialog`, `aria-modal="true"`
+- **Label**: `aria-labelledby` pointing to title
+- **Focus trap**: Keep focus within modal while open
+- **ESC key**: Closes modal (same as close button)
+- **Tab order**: Logical flow through form fields
+```
+
+### /ux-copy
+
+Write or review UX copy:
+
+```bash
+/ux-copy error messages for payment flow
+```
+
+**Claude generates:**
+
+```markdown
+## UX Copy: Payment Flow Error Messages
+
+### Card Declined
+**Message**: "Your card was declined. Please try a different payment method or contact your bank."
+
+**Tone**: Empathetic, clear, actionable
+**Alternatives**: 
+- "We couldn't process your card. Try another card or contact your bank for details."
+- "Payment unsuccessful. Please use a different card or reach out to your bank."
+
+**Localization notes**: 
+- Avoid idioms like "bounced" or "didn't go through"
+- "Bank" may be "financial institution" in some locales
+
+### Insufficient Funds
+**Message**: "Your card has insufficient funds. Please use a different payment method."
+
+**Tone**: Neutral, non-judgmental
+**Why this works**: Direct without being condescending
+
+### Expired Card
+**Message**: "This card has expired. Please enter a valid card or update your payment details."
+
+**CTA**: "Update payment method"
+
+### Network Error
+**Message**: "We're having trouble connecting. Check your internet and try again."
+
+**Tone**: Friendly, collaborative ("we're" not "you're")
+**CTA**: "Try again"
+
+### General Error
+**Message**: "Something went wrong. We've been notified and are working on it. Please try again in a few minutes."
+
+**Tone**: Reassuring, transparent
+**Why this works**: 
+- Acknowledges the problem
+- Tells user it's being addressed
+- Sets expectation for resolution
+```
+
+### /accessibility
+
+Run a comprehensive accessibility audit:
+
+```bash
+/accessibility
+```
+
+Share a design or URL. Get a WCAG 2.1 AA compliance report:
+
+```markdown
+## Accessibility Audit: Dashboard Redesign
+
+### Color Contrast
+
+| Element | Foreground | Background | Ratio | Status |
+|---------|------------|------------|-------|--------|
+| Body text | #4B5563 | #FFFFFF | 7.4:1 | ✓ AAA |
+| Secondary text | #9CA3AF | #FFFFFF | 2.9:1 | ✗ Fails AA |
+| Primary button | #FFFFFF | #3B82F6 | 4.9:1 | ✓ AA |
+| Link text | #2563EB | #FFFFFF | 8.2:1 | ✓ AAA |
+
+**Issues**:
+- Secondary text (#9CA3AF) needs to be darkened to #6B7280 (4.5:1) minimum
+
+### Touch Targets
+
+✓ All interactive elements meet 44x44px minimum
+✗ Close button in modal is 32x32px — increase to 44x44px
+
+### Screen Reader
+
+✓ All images have meaningful alt text
+✗ Icon buttons missing aria-label (e.g., search, filter, menu)
+✓ Form inputs have associated labels
+✗ Custom dropdown missing ARIA roles and keyboard support
+
+### Keyboard Navigation
+
+✓ All interactive elements are keyboard accessible
+✗ Focus indicators not visible on dark backgrounds
+✓ Tab order is logical
+✗ Modal doesn't trap focus — add focus trap
+
+### Severity Summary
+
+🔴 **Critical** (3 issues)
+1. Secondary text contrast fails WCAG AA
+2. Icon buttons missing labels for screen readers
+3. Custom dropdown not keyboard accessible
+
+🟡 **Moderate** (2 issues)
+1. Close button below minimum touch target
+2. Focus trap missing on modal
+
+🟢 **Minor** (1 issue)
+1. Focus indicators could be more prominent
+
+### Remediation Steps
+
+**Priority 1** (Critical - block release):
+1. Change secondary text from gray-400 to gray-600
+2. Add aria-label to all icon-only buttons
+3. Replace custom dropdown with native select or add full ARIA support
+
+**Priority 2** (Should fix before release):
+1. Increase modal close button to 44x44px hit area
+2. Implement focus trap on modal with react-focus-lock or similar
+
+**Priority 3** (Nice to have):
+1. Increase focus ring contrast to 3:1 minimum
+```
+
+### /research-synthesis
+
+Synthesize user research into actionable insights:
+
+```bash
+/research-synthesis
+```
+
+Upload interview transcripts, survey results, or usability test notes.
+
+**Claude analyzes and produces:**
+
+```markdown
+## Research Synthesis: Mobile Checkout Usability Study
+
+### Study Overview
+- **Method**: Moderated usability testing
+- **Participants**: 12 users (6 iOS, 6 Android)
+- **Date**: Feb 15-22, 2024
+- **Task**: Complete a purchase from product page to confirmation
+
+### Key Themes
+
+#### 1. Payment Information Cognitive Load
+**Finding**: 9/12 participants struggled with the payment form
+- "Too many fields to fill out on mobile"
+- "Why can't I use Apple Pay or Google Pay?"
+- Average task time: 3m 42s (expected: <2m)
+
+**Supporting Evidence**:
+- P3: "I just want to tap and buy, not type all this"
+- P7: "I almost gave up when I saw the form"
+- 5 participants made at least one typo in credit card entry
+
+**Impact**: High — 75% of participants frustrated, 42% task abandonment
+
+**Recommendation**: Implement digital wallet options (Apple Pay, Google Pay) as primary CTA
+
+#### 2. Shipping Address Confusion
+**Finding**: 7/12 participants didn't understand "Use billing address"
+- "Does this mean it will ship to my card address?"
+- "I'm not sure what this checkbox does"
+
+**Impact**: Medium — 58% confusion, but all eventually completed
+
+**Recommendation**: Change copy to "Ship to the same address" and show address preview
+
+#### 3. Order Review Anxiety
+**Finding**: 10/12 participants re-checked order multiple times before confirming
+- Average 2.3 times reviewing before clicking "Place Order"
+- "I just want to make sure everything is right"
+
+**Impact**: Medium — Increases time but appropriate caution
+
+**Recommendation**: Add clearer visual hierarchy to order summary, make edit links more obvious
+
+### Quantitative Summary
+
+| Metric | Value | Target | Status |
+|--------|-------|--------|--------|
+| Task completion rate | 58% | 90% | ✗ |
+| Average time on task | 3m 42s | <2m | ✗ |
+| Error rate | 42% | <10% | ✗ |
+| SUS score | 62 | 75+ | ✗ |
+
+### Priority Recommendations
+
+**P0 - Critical** (Blocking launch)
+1. **Add digital wallet options**
+   - Expected impact: +30% completion rate, -45% task time
+   - Implementation: 2-3 sprints
+   - Owner: Payments team
+
+**P1 - High** (Should include)
+2. **Redesign shipping address section**
+   - Expected impact: -40% confusion rate
+   - Implementation: 1 sprint
+   - Owner: Design team
+
+3. **Improve order review clarity**
+   - Expected impact: -20% task time, increased confidence
+   - Implementation: 1 sprint
+   - Owner: Design team
+
+**P2 - Medium** (Nice to have)
+4. Auto-fill payment details from browser
+5. Add progress indicator to form
+6. Implement inline validation with helpful error messages
+
+### User Quotes
+
+> "If you had Apple Pay, I'd use this app way more often. I hate typing my card info on my phone."
+> — P3, iOS user, age 28
+
+> "I trust the app, but I'm always paranoid I'll mess something up in the order. A summary that's easier to scan would help."
+> — P9, Android user, age 42
+
+### Next Steps
+
+1. Share findings with product and engineering teams
+2. Prioritize digital wallet integration in Q2 roadmap
+3. Design iteration on shipping and review screens
+4. Follow-up testing with updated design (target: April 2024)
+```
+
+## Skills
+
+Domain knowledge Claude uses automatically when relevant:
+
+| Skill | Description | When It Activates |
+|-------|-------------|------------------|
+| `design-critique` | Evaluate designs for usability, visual hierarchy, consistency, and adherence to principles | When you share a design and ask for feedback |
+| `design-system-management` | Manage design tokens, component libraries, and pattern documentation | Working with design systems or component libraries |
+| `ux-writing` | Write effective microcopy — clear, concise, consistent, and brand-aligned | Writing or reviewing interface copy |
+| `accessibility-review` | Audit designs and code for WCAG 2.1 AA compliance | Checking accessibility or discussing inclusive design |
+| `user-research` | Plan, conduct, and synthesize user research — interviews, surveys, usability testing | Planning research or analyzing research data |
+| `design-handoff` | Create comprehensive developer handoff documentation from designs | Preparing designs for development |
+
+## MCP Integrations
+
+Connect your tools for a richer experience:
+
+| Category | Examples | What It Enables |
+|----------|----------|----------------|
+| **Design tool** | Figma | Pull designs, inspect components, access design tokens |
+| **User feedback** | Intercom, Productboard | Raw feedback, feature requests, NPS data |
+| **Project tracker** | Linear, Asana, Jira | Link designs to tickets, track implementation |
+| **Knowledge base** | Notion | Brand guidelines, design principles, research repository |
+| **Product analytics** | Amplitude, Mixpanel | Usage data for research synthesis and design decisions |
+
+### Connector Placeholders
+
+Plugin files use `~~category` as a placeholder for whatever tool you connect:
+
+- `~~design tool` might mean Figma, Sketch, Adobe XD, or Framer
+- `~~user feedback` might mean Intercom, Productboard, Canny, or UserVoice
+- `~~product analytics` might mean Amplitude, Mixpanel, Heap, or FullStory
+
+Plugins are **tool-agnostic** — they describe workflows in terms of categories rather than specific products.
+
+## Standalone vs Supercharged
+
+Every command and skill works without any integrations:
+
+| What You Can Do | Standalone | Supercharged With |
+|-----------------|------------|-------------------|
+| Design critique | Describe or screenshot | Figma (pull designs directly) |
+| Design system | Describe your system | Figma (audit component library) |
+| Handoff specs | Describe or screenshot | Figma (exact measurements, tokens) |
+| UX copy | Describe the context | Knowledge base (brand voice guidelines) |
+| Accessibility | Describe or screenshot | Figma, analytics for real usage data |
+| Research synthesis | Paste transcripts | User feedback tools (pull raw data) |
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Engineering Plugin" href="/plugins/engineering">
+    Code review, debugging, and technical workflows
+  </Card>
+  
+  <Card title="Data Plugin" href="/plugins/data">
+    SQL queries, data exploration, and analytics
+  </Card>
+</CardGroup>

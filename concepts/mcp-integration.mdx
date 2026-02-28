@@ -1,0 +1,526 @@
+---
+title: MCP integration
+description: How Knowledge Work Plugins use the Model Context Protocol to connect Claude to external tools
+---
+
+Knowledge Work Plugins use the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) to connect Claude to external tools and services. MCP provides a standardized way for Claude to discover, invoke, and interact with tools across your company's stack.
+
+## What is MCP
+
+The Model Context Protocol is an open standard that enables AI assistants to interact with external data sources and tools through a common interface.
+
+<CardGroup cols={2}>
+  <Card title="Standardized interface" icon="plug">
+    Tools expose capabilities through a consistent protocol, so Claude doesn't need custom integration for each service.
+  </Card>
+  
+  <Card title="Bidirectional communication" icon="arrows-left-right">
+    Claude can read data from tools (query CRM), write data to tools (update records), or both.
+  </Card>
+  
+  <Card title="Tool discovery" icon="magnifying-glass">
+    MCP servers advertise their capabilities, so Claude knows what's available and how to use it.
+  </Card>
+  
+  <Card title="Secure authentication" icon="lock">
+    User credentials are managed outside the plugin, with scoped permissions per tool.
+  </Card>
+</CardGroup>
+
+## MCP architecture
+
+Here's how MCP connects your plugin to external tools:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         YOUR PLUGIN                              │
+│  .mcp.json lists which servers to connect to                    │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                      MCP PROTOCOL LAYER                          │
+│  - Server discovery                                              │
+│  - Tool capability enumeration                                   │
+│  - Request/response handling                                     │
+│  - Authentication management                                     │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+        ┌─────────────┬─────────────┬─────────────┬────────────┐
+        ↓             ↓             ↓             ↓            ↓
+  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+  │ HubSpot  │  │  Slack   │  │ Fireflies│  │  Notion  │  │   ...    │
+  │   MCP    │  │   MCP    │  │   MCP    │  │   MCP    │  │   MCP    │
+  │  Server  │  │  Server  │  │  Server  │  │  Server  │  │  Server  │
+  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
+       ↓             ↓             ↓             ↓            ↓
+  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
+  │ HubSpot  │  │  Slack   │  │ Fireflies│  │  Notion  │  │   ...    │
+  │   API    │  │   API    │  │   API    │  │   API    │  │   API    │
+  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
+```
+
+## MCP server types
+
+MCP servers expose three types of capabilities:
+
+### 1. Tools
+
+Tools are functions Claude can invoke to perform actions:
+
+<CodeGroup>
+```json HubSpot tools
+{
+  "tools": [
+    {
+      "name": "search_contacts",
+      "description": "Search for contacts in HubSpot CRM",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string" },
+          "limit": { "type": "number" }
+        }
+      }
+    },
+    {
+      "name": "update_deal",
+      "description": "Update a deal's properties",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deal_id": { "type": "string" },
+          "stage": { "type": "string" },
+          "close_date": { "type": "string" }
+        }
+      }
+    }
+  ]
+}
+```
+
+```json Slack tools
+{
+  "tools": [
+    {
+      "name": "search_messages",
+      "description": "Search Slack messages",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string" },
+          "channel": { "type": "string" }
+        }
+      }
+    },
+    {
+      "name": "post_message",
+      "description": "Post a message to a channel",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "channel": { "type": "string" },
+          "text": { "type": "string" }
+        }
+      }
+    }
+  ]
+}
+```
+</CodeGroup>
+
+### 2. Resources
+
+Resources are data sources Claude can read:
+
+```json
+{
+  "resources": [
+    {
+      "uri": "hubspot://contacts/recent",
+      "name": "Recent Contacts",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "hubspot://deals/pipeline",
+      "name": "Sales Pipeline",
+      "mimeType": "application/json"
+    }
+  ]
+}
+```
+
+### 3. Prompts
+
+Prompts are templates the server provides:
+
+```json
+{
+  "prompts": [
+    {
+      "name": "account_summary",
+      "description": "Generate account summary from CRM data",
+      "arguments": [
+        {
+          "name": "account_id",
+          "description": "HubSpot account ID",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+## How plugins use MCP
+
+### 1. Server configuration
+
+Plugins declare which MCP servers to connect to:
+
+```json .mcp.json
+{
+  "mcpServers": {
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    }
+  }
+}
+```
+
+### 2. Capability discovery
+
+When your plugin loads, Claude:
+
+<Steps>
+  <Step title="Connects to each MCP server">
+    Establishes connection using the configured URL
+  </Step>
+  
+  <Step title="Requests capability list">
+    Asks each server: "What tools, resources, and prompts do you provide?"
+  </Step>
+  
+  <Step title="Builds tool catalog">
+    Aggregates all available capabilities from all connected servers
+  </Step>
+  
+  <Step title="Makes tools available to skills">
+    Your plugin's skills and commands can now reference these tools
+  </Step>
+</Steps>
+
+### 3. Tool invocation
+
+When a skill needs to use a tool:
+
+```markdown call-prep/SKILL.md
+### Step 1: Gather Context
+
+**If connectors available:**
+
+1. CRM → Query account
+   - Pull: account details, all contacts, open opportunities
+```
+
+Claude translates this to MCP tool calls:
+
+```json
+{
+  "server": "hubspot",
+  "tool": "search_accounts",
+  "arguments": {
+    "query": "Acme Corp",
+    "include": ["contacts", "deals", "activities"]
+  }
+}
+```
+
+### 4. Response handling
+
+The MCP server returns structured data:
+
+```json
+{
+  "result": {
+    "account": {
+      "name": "Acme Corp",
+      "industry": "Software",
+      "employees": 500
+    },
+    "contacts": [...],
+    "deals": [...],
+    "recent_activities": [...]
+  }
+}
+```
+
+Claude uses this data to generate the call prep brief.
+
+## Execution flow example
+
+Here's how MCP works in practice for the call-prep skill:
+
+<Steps>
+  <Step title="User request">
+    "Prep me for my call with Acme Corp tomorrow"
+  </Step>
+  
+  <Step title="Skill activation">
+    The `call-prep` skill matches this request and activates
+  </Step>
+  
+  <Step title="Connector detection">
+    Skill checks: Are CRM, email, calendar, Slack connectors available?
+  </Step>
+  
+  <Step title="MCP tool calls (parallel)">
+    ```json
+    // To HubSpot MCP server
+    {"tool": "search_accounts", "arguments": {"query": "Acme Corp"}}
+    
+    // To Google Calendar MCP server
+    {"tool": "find_meeting", "arguments": {"query": "Acme Corp", "date": "tomorrow"}}
+    
+    // To Slack MCP server
+    {"tool": "search_messages", "arguments": {"query": "Acme Corp"}}
+    ```
+  </Step>
+  
+  <Step title="Data synthesis">
+    Claude combines responses from all MCP servers with web research
+  </Step>
+  
+  <Step title="Output generation">
+    Generates call prep brief using the skill's template and gathered data
+  </Step>
+</Steps>
+
+## Authentication and security
+
+MCP handles authentication outside your plugin:
+
+### First-time connection
+
+<Steps>
+  <Step title="User installs plugin">
+    Plugin's `.mcp.json` lists required MCP servers
+  </Step>
+  
+  <Step title="Authentication prompt">
+    When Claude first needs a connector, user is prompted to authenticate
+  </Step>
+  
+  <Step title="OAuth flow">
+    User completes OAuth flow with the service (e.g., HubSpot login)
+  </Step>
+  
+  <Step title="Token storage">
+    Access tokens are securely stored by Claude, not in your plugin
+  </Step>
+</Steps>
+
+### Subsequent uses
+
+- Claude uses stored tokens automatically
+- Tokens are refreshed transparently
+- Users can revoke access at any time
+
+### Permission scopes
+
+Each MCP server requests specific permissions:
+
+<Accordion title="HubSpot MCP server">
+  **Requested scopes:**
+  - `crm.objects.contacts.read`
+  - `crm.objects.deals.read`
+  - `crm.objects.deals.write`
+  - `crm.objects.companies.read`
+  
+  **What this allows:**
+  - Read account and contact data
+  - Read and update deal information
+  - Cannot delete records
+  - Cannot access settings or admin functions
+</Accordion>
+
+<Accordion title="Slack MCP server">
+  **Requested scopes:**
+  - `search:read`
+  - `channels:read`
+  - `chat:write`
+  
+  **What this allows:**
+  - Search messages in channels user has access to
+  - Read channel list
+  - Post messages
+  - Cannot read private messages without explicit access
+</Accordion>
+
+## Building custom MCP servers
+
+You can create MCP servers for internal tools or services that don't have one:
+
+<Steps>
+  <Step title="Implement MCP protocol">
+    Build an HTTP server that implements the [MCP specification](https://modelcontextprotocol.io/specification)
+  </Step>
+  
+  <Step title="Expose tools">
+    Define the tools your server provides and their input schemas
+  </Step>
+  
+  <Step title="Handle authentication">
+    Implement OAuth or API key authentication for your service
+  </Step>
+  
+  <Step title="Add to .mcp.json">
+    Configure your plugin to use your custom server
+  </Step>
+</Steps>
+
+### Example: Custom internal API
+
+```json .mcp.json
+{
+  "mcpServers": {
+    "internal-crm": {
+      "type": "http",
+      "url": "https://mcp.yourcompany.com/crm"
+    },
+    "internal-wiki": {
+      "type": "http",
+      "url": "https://mcp.yourcompany.com/wiki"
+    }
+  }
+}
+```
+
+See the [Adding MCP Servers](/building/adding-mcp-servers) guide for implementation details.
+
+## MCP vs direct API calls
+
+Why use MCP instead of calling APIs directly?
+
+<CardGroup cols={2}>
+  <Card title="Standardization" icon="check">
+    **MCP:** One protocol for all tools
+    
+    **Direct APIs:** Custom integration for each service
+  </Card>
+  
+  <Card title="Authentication" icon="lock">
+    **MCP:** Centralized auth handled by Claude
+    
+    **Direct APIs:** Manage credentials in plugin code
+  </Card>
+  
+  <Card title="Discovery" icon="magnifying-glass">
+    **MCP:** Claude learns what tools are available
+    
+    **Direct APIs:** Hard-code available endpoints
+  </Card>
+  
+  <Card title="Maintenance" icon="wrench">
+    **MCP:** API changes handled by MCP server
+    
+    **Direct APIs:** Update plugin code for every API change
+  </Card>
+</CardGroup>
+
+## Error handling
+
+MCP provides structured error responses:
+
+```json
+{
+  "error": {
+    "code": "AUTHENTICATION_REQUIRED",
+    "message": "Please authenticate with HubSpot to continue"
+  }
+}
+```
+
+Skills can handle common errors gracefully:
+
+```markdown
+**If CRM connection fails:**
+
+I couldn't connect to your CRM. I'll prep your call using web research instead. 
+To get account history next time, connect your CRM in settings.
+```
+
+## Testing without connectors
+
+Plugins should work without MCP connections:
+
+<Tabs>
+  <Tab title="Development">
+    Test your plugin with connectors disabled to ensure standalone mode works:
+    
+    ```json .mcp.json
+    {
+      "mcpServers": {}
+    }
+    ```
+    
+    Skills should gracefully fall back to manual input and web research.
+  </Tab>
+  
+  <Tab title="Production">
+    Users without certain tools connected should still get value:
+    
+    **Has CRM, no email connector:**
+    - CRM data pulls automatically
+    - Claude asks user to paste relevant emails
+    
+    **No connectors at all:**
+    - User provides all context manually
+    - Claude does web research to supplement
+  </Tab>
+</Tabs>
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Design for graceful degradation">
+    Every skill should have a fallback mode when connectors aren't available. Never make MCP a hard requirement.
+  </Accordion>
+  
+  <Accordion title="Request minimal permissions">
+    Only request the OAuth scopes your plugin actually needs. Users are more likely to connect tools with limited permissions.
+  </Accordion>
+  
+  <Accordion title="Handle errors gracefully">
+    If an MCP call fails, fall back to alternative approaches or ask the user for manual input.
+  </Accordion>
+  
+  <Accordion title="Document connector benefits">
+    Use connector tables in skills to show users what they gain by connecting each tool.
+  </Accordion>
+  
+  <Accordion title="Test both modes">
+    Validate your plugin works well both with and without each connector enabled.
+  </Accordion>
+</AccordionGroup>
+
+## Learn more
+
+<CardGroup cols={2}>
+  <Card title="MCP Specification" icon="book" href="https://modelcontextprotocol.io/specification">
+    Official Model Context Protocol specification
+  </Card>
+  <Card title="MCP Servers" icon="server" href="https://modelcontextprotocol.io/servers">
+    Directory of available MCP servers
+  </Card>
+  <Card title="Build an MCP Server" icon="code" href="/building/build-mcp-server">
+    Create a custom MCP server for your tools
+  </Card>
+  <Card title="Connectors" icon="plug" href="/concepts/connectors">
+    Back to connector overview
+  </Card>
+</CardGroup>

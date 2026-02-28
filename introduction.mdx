@@ -1,0 +1,146 @@
+---
+title: Introduction to Knowledge Work Plugins
+description: Turn Claude into a specialist for your role, team, and company with plugins built for knowledge work
+---
+
+# Introduction to Knowledge Work Plugins
+
+Knowledge Work Plugins turn Claude into a specialist for your role, team, and company. Built for [Claude Cowork](https://claude.com/product/cowork), also compatible with [Claude Code](https://claude.com/product/claude-code).
+
+## What are Knowledge Work Plugins?
+
+Plugins let you tell Claude how you like work done, which tools and data to pull from, how to handle critical workflows, and what slash commands to expose — so your team gets better and more consistent outcomes.
+
+Each plugin bundles the skills, connectors, slash commands, and sub-agents for a specific job function. Out of the box, they give Claude a strong starting point for helping anyone in that role. The real power comes when you customize them for your company — your tools, your terminology, your processes — so Claude works like it was built for your team.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Install your first plugin and start using it in minutes
+  </Card>
+  <Card title="Installation" icon="download" href="/installation">
+    Learn how to install plugins in Cowork and Claude Code
+  </Card>
+  <Card title="Available plugins" icon="grid" href="/plugins/overview">
+    Browse the complete marketplace of 11+ plugins
+  </Card>
+  <Card title="Customize plugins" icon="wrench" href="/customization/overview">
+    Adapt plugins to your company's tools and workflows
+  </Card>
+</CardGroup>
+
+## Why use plugins?
+
+Cowork lets you set the goal and Claude delivers finished, professional work. Plugins let you go further:
+
+- **Tell Claude how you like work done** — Define your team's processes and best practices
+- **Connect to your tools** — Wire Claude to CRMs, project trackers, data warehouses, and more
+- **Handle critical workflows** — Codify step-by-step procedures for complex tasks
+- **Expose slash commands** — Give your team quick access to common operations
+
+As your team builds and shares plugins, Claude becomes a cross-functional expert. The context you define gets baked into every relevant interaction, so leaders and admins can spend less time enforcing processes and more time improving them.
+
+## How plugins work
+
+Every plugin follows the same structure:
+
+```
+plugin-name/
+├── .claude-plugin/plugin.json   # Manifest
+├── .mcp.json                    # Tool connections
+├── commands/                    # Slash commands you invoke explicitly
+└── skills/                      # Domain knowledge Claude draws on automatically
+```
+
+### Skills
+
+Skills encode the domain expertise, best practices, and step-by-step workflows Claude needs to give you useful help. Claude draws on them automatically when relevant.
+
+For example, the sales plugin includes skills for call prep, account research, competitive intelligence, and drafting outreach. When you say "prep me for my call with Acme Corp," the `call-prep` skill activates automatically.
+
+### Commands
+
+Commands are explicit actions you trigger with slash syntax. They're perfect for well-defined workflows you want to invoke on demand.
+
+Examples:
+- `/sales:call-summary` — Process call notes and extract action items
+- `/finance:reconciliation` — Generate account reconciliation reports
+- `/product-management:write-spec` — Draft a product requirements document
+
+### Connectors
+
+Connectors wire Claude to the external tools your role depends on — CRMs, project trackers, data warehouses, design tools, and more — via [MCP servers](https://modelcontextprotocol.io/).
+
+Plugins work standalone with web search and your input, but they're supercharged when you connect your tools. For instance, the sales plugin can prep you for calls using just company names and notes you provide. Connect your CRM, and it automatically pulls account history, contact details, and prior activities.
+
+## Plugin marketplace
+
+11 plugins are available now, built and inspired by work at Anthropic:
+
+<CardGroup cols={2}>
+  <Card title="Sales" icon="handshake" href="/plugins/sales">
+    Research prospects, prep for calls, review pipeline, and draft outreach
+  </Card>
+  <Card title="Customer support" icon="headset" href="/plugins/customer-support">
+    Triage tickets, draft responses, research context, build KB articles
+  </Card>
+  <Card title="Product management" icon="compass" href="/plugins/product-management">
+    Write specs, plan roadmaps, synthesize research, track competitors
+  </Card>
+  <Card title="Marketing" icon="bullhorn" href="/plugins/marketing">
+    Draft content, plan campaigns, enforce brand voice, report performance
+  </Card>
+  <Card title="Data" icon="chart-line" href="/plugins/data">
+    Query, visualize, and interpret datasets with SQL and dashboards
+  </Card>
+  <Card title="Finance" icon="dollar-sign" href="/plugins/finance">
+    Reconcile accounts, generate statements, analyze variances, manage close
+  </Card>
+  <Card title="Legal" icon="scale-balanced" href="/plugins/legal">
+    Review contracts, triage NDAs, navigate compliance, assess risk
+  </Card>
+  <Card title="Productivity" icon="check-circle" href="/plugins/productivity">
+    Manage tasks, calendars, and daily workflows with less repetition
+  </Card>
+</CardGroup>
+
+[Explore all plugins in the documentation →](/quickstart)
+
+## Making them yours
+
+These plugins are generic starting points. They become much more useful when you customize them for how your company actually works:
+
+<CardGroup cols={2}>
+  <Card title="Swap connectors" icon="plug">
+    Edit `.mcp.json` to point at your specific tool stack
+  </Card>
+  <Card title="Add company context" icon="building">
+    Drop your terminology, org structure, and processes into skill files
+  </Card>
+  <Card title="Adjust workflows" icon="diagram-project">
+    Modify skill instructions to match how your team actually does things
+  </Card>
+  <Card title="Build new plugins" icon="code">
+    Use the plugin management tool or follow the structure to create custom plugins
+  </Card>
+</CardGroup>
+
+## Get started
+
+<Steps>
+  <Step title="Choose your environment">
+    Decide whether you'll use [Cowork](https://claude.com/product/cowork) (recommended) or [Claude Code](https://claude.com/product/claude-code)
+  </Step>
+  <Step title="Install your first plugin">
+    Follow the [installation guide](/installation) to add a plugin to your environment
+  </Step>
+  <Step title="Try it out">
+    Use a skill or slash command to see the plugin in action
+  </Step>
+  <Step title="Customize it">
+    Add your company's context and connect your tools to make it truly yours
+  </Step>
+</Steps>
+
+<Card title="Ready to start?" icon="rocket" href="/quickstart">
+  Follow the quickstart guide to install and use your first plugin in under 5 minutes
+</Card>

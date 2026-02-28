@@ -1,0 +1,332 @@
+---
+title: "Productivity"
+description: "Task management, workplace memory, and a visual dashboard — Claude learns your shorthand and acts like a colleague"
+---
+
+## Overview
+
+The Productivity plugin gives Claude a persistent understanding of your work through task management, workplace memory, and a visual dashboard. Claude learns your people, projects, and terminology so it can decode requests like a colleague would.
+
+Primarily designed for [Cowork](https://claude.com/product/cowork), Anthropic's agentic desktop application, but also works in Claude Code.
+
+## What It Does
+
+<CardGroup cols={3}>
+  <Card title="Task Management" icon="list-check">
+    A shared `TASKS.md` file that Claude reads, writes, and executes against. Add tasks naturally, and Claude tracks status, triages stale items, and syncs with external tools.
+  </Card>
+  
+  <Card title="Workplace Memory" icon="brain">
+    A two-tier memory system that teaches Claude your shorthand, people, projects, and terminology. Say "ask Todd to do the PSR for Oracle" and Claude knows exactly who, what, and which deal.
+  </Card>
+  
+  <Card title="Visual Dashboard" icon="chart-kanban">
+    A local HTML file that gives you a board view of your tasks and a live view of what Claude knows about your workplace. Edit from the board or the file — they stay in sync.
+  </Card>
+</CardGroup>
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/productivity
+```
+
+## Commands
+
+### `/start`
+
+Initialize tasks + memory, open the dashboard.
+
+```bash
+/productivity:start
+```
+
+**What it does:**
+1. Checks for existing `TASKS.md`, `CLAUDE.md`, `memory/` directory, and `dashboard.html`
+2. Creates missing files/directories
+3. Opens the dashboard (tells you to open `dashboard.html` from your file browser)
+4. If first run, bootstraps memory by analyzing your tasks and optionally scanning chat/email/docs
+5. Guides you through decoding shorthand, acronyms, people, and projects
+
+**First-run bootstrap workflow:**
+- Analyzes your existing task list for shorthand and workplace language
+- Asks you to decode each term, acronym, nickname, or project reference
+- Optionally scans chat, email, calendar, and documents for comprehensive context
+- Creates `CLAUDE.md` (hot cache) and `memory/` directory (full storage)
+
+### `/update`
+
+Sync tasks and refresh memory from your current activity.
+
+```bash
+/productivity:update                  # Default mode
+/productivity:update --comprehensive  # Deep scan mode
+```
+
+**Default mode:**
+1. Syncs tasks from external sources (project trackers, GitHub Issues)
+2. Triages stale items (overdue, 30+ days active, missing context)
+3. Decodes all tasks to find memory gaps (unknown people, projects, terms)
+4. Fills gaps by asking you about unknown terms
+5. Enriches memory with context from tasks (links, relationships, deadlines)
+
+**Comprehensive mode (`--comprehensive`):**  
+Everything in default mode, plus:
+- Deep scan of recent chat messages, emails, documents, and calendar events
+- Flags missed todos (action items in messages not captured in TASKS.md)
+- Suggests new memories (people, projects, terms appearing frequently)
+- Offers cleanup of stale memories (projects with no mentions in 30+ days)
+
+## Skills
+
+Two powerful skills drive the productivity system:
+
+<AccordionGroup>
+  <Accordion title="Task Management">
+    Simple, effective task tracking using a shared `TASKS.md` file.
+    
+    **File structure:**
+    ```markdown
+    # Tasks
+    
+    ## Active
+    - [ ] **Task title** - context, for whom, due date
+    
+    ## Waiting On
+    - [ ] **Blocked task** - waiting on X, since date
+    
+    ## Someday
+    - [ ] **Future idea** - low priority or unclear timing
+    
+    ## Done
+    - [x] ~~Completed task~~ (completion date)
+    ```
+    
+    **Features:**
+    - Both you and Claude can read/write the same file
+    - Visual dashboard syncs automatically with file changes
+    - External tool sync (Asana, Linear, Jira, GitHub Issues)
+    - Natural language task extraction from conversations
+    - Automatic triage of stale items
+    
+    **Task format conventions:**
+    - Bold the task title for scannability
+    - Include "for [person]" when it's a commitment
+    - Include "due [date]" for deadlines
+    - Include "since [date]" for waiting items
+    - Sub-bullets for additional context
+  </Accordion>
+  
+  <Accordion title="Memory Management">
+    Two-tier memory system that makes Claude a true workplace collaborator.
+    
+    **The goal:** Transform shorthand into understanding.
+    
+    ```
+    User: "ask todd to do the PSR for oracle"
+                  ↓ Claude decodes
+    "Ask Todd Martinez (Finance lead) to prepare the Pipeline
+     Status Report for the Oracle Systems deal ($2.3M, closing Q2)"
+    ```
+    
+    **Architecture:**
+    ```
+    CLAUDE.md          ← Hot cache (~30 people, common terms)
+    memory/
+      glossary.md      ← Full decoder ring (everything)
+      people/          ← Complete profiles
+      projects/        ← Project details
+      context/         ← Company, teams, tools
+    ```
+    
+    **Lookup flow (tiered):**
+    1. Check `CLAUDE.md` (hot cache) — covers 90% of daily needs
+    2. Search `memory/glossary.md` if not found — full glossary
+    3. Dive into `memory/people/` or `memory/projects/` for rich detail
+    4. Ask user if still unknown — learn it and remember
+    
+    **What goes in CLAUDE.md:**
+    - Top ~30 people you interact with most
+    - ~30 most common acronyms/terms
+    - Active projects (5-15)
+    - Your preferences (meeting style, communication preferences)
+    - Target: ~50-80 lines, covers 90% of decoding needs
+    
+    **What goes in memory/:**
+    - `glossary.md` — Complete decoder ring (all people nicknames, all acronyms, all project codenames)
+    - `people/{name}.md` — Individual profiles (role, team, communication preferences, context)
+    - `projects/{name}.md` — Project details (status, people, budget, timeline)
+    - `context/company.md` — Teams, tools, processes, company context
+    
+    **Promotion/demotion:**
+    - **Promote to CLAUDE.md** when term/person used frequently or part of active work
+    - **Demote to memory/ only** when project completed, person no longer frequent contact, or term rarely used
+    
+    This keeps CLAUDE.md fresh and relevant while memory/ can grow indefinitely.
+  </Accordion>
+</AccordionGroup>
+
+## Example Workflows
+
+### Getting Started (First Run)
+
+```
+You: /productivity:start
+
+Claude: [Creates TASKS.md, dashboard.html]
+        Dashboard is ready at dashboard.html. Open it from your file browser.
+        
+        Where do you keep your todos? This could be:
+        - A local file (e.g., TASKS.md, todo.txt)
+        - An app (e.g., Asana, Linear, Jira, Notion, Todoist)
+        - A notes file
+        
+        I'll use your tasks to learn your workplace shorthand.
+
+You: I use Asana
+
+Claude: [Fetches tasks from Asana]
+        I see 12 tasks. Let me decode the shorthand:
+        
+        Task: "Send PSR to Todd re: Phoenix blockers"
+        
+        I see some terms I want to make sure I understand:
+        1. **PSR** - What does this stand for?
+        2. **Todd** - Who is Todd? (full name, role)
+        3. **Phoenix** - Is this a project codename? What's it about?
+
+You: PSR is Pipeline Status Report, Todd is Todd Martinez our Finance lead,
+     and Phoenix is our database migration project
+
+Claude: Got it! [Continues through other tasks, then creates CLAUDE.md and memory/]
+        
+        Do you want me to do a comprehensive scan of your messages, emails,
+        and documents? This takes longer but builds much richer context.
+
+You: Yes
+
+Claude: [Scans chat, email, calendar, docs]
+        [Builds complete glossary of people, projects, terms]
+        
+        Productivity system ready:
+        - Tasks: TASKS.md (12 items)
+        - Memory: 23 people, 15 terms, 8 projects
+        - Dashboard: open in browser
+```
+
+### Adding Tasks Naturally
+
+```
+You: I need to review the budget proposal for Sarah by Friday,
+     draft the Q2 roadmap after syncing with Greg, and follow up
+     on the API spec from the Platform team
+
+Claude: [Adds all three tasks to TASKS.md]
+        Added 3 tasks:
+        - Review budget proposal for Sarah - due Friday
+        - Draft Q2 roadmap - after sync with Greg
+        - Follow up on API spec - from Platform team
+        
+        [Dashboard updates automatically]
+```
+
+### Morning Sync
+
+```
+You: /productivity:update --comprehensive
+
+Claude: [Scans Asana, email, chat, calendar, docs]
+        
+        Update complete:
+        - Tasks: +3 from Asana, 1 completed, 2 triaged
+        - Memory: 2 gaps filled, 1 project enriched
+        
+        ## Possible Missing Tasks
+        
+        From your activity, these look like todos you haven't captured:
+        
+        1. From Slack yesterday:
+           "I'll send the updated mockups by Friday"
+           → Add to TASKS.md?
+        
+        2. From meeting "Phoenix Standup" (Jan 17):
+           You have a recurring meeting but no Phoenix tasks active
+           → Anything needed here?
+        
+        ## New People (not in memory)
+        
+        | Name | Frequency | Context |
+        |------|-----------|------|
+        | Maya Rodriguez | 12 mentions | design, UI reviews |
+        
+        Add Maya to memory?
+```
+
+### Workplace Shorthand in Action
+
+Once memory is populated, Claude decodes your shorthand instantly:
+
+```
+You: ask todd to do the PSR for oracle
+
+Claude: I'll draft a message to Todd Martinez (Finance lead) asking
+        him to prepare the Pipeline Status Report for the Oracle
+        Systems deal ($2.3M, closing Q2).
+        
+        Since Todd prefers Slack and responds best in the mornings,
+        I'll send this via DM.
+        
+        [Drafts message]
+```
+
+No clarifying questions. No round trips. Claude knows your language.
+
+## Visual Dashboard
+
+The dashboard provides:
+
+<CardGroup cols={2}>
+  <Card title="Task Board View" icon="trello">
+    - Kanban-style board with Active, Waiting On, Someday, Done columns
+    - Drag-and-drop task management
+    - Inline editing
+    - Auto-saves to TASKS.md
+    - Syncs with external file changes
+  </Card>
+  
+  <Card title="Memory View" icon="address-book">
+    - Live view of CLAUDE.md hot cache
+    - Browse memory/ directory contents
+    - See people, projects, terms at a glance
+    - Jump to detailed profiles
+  </Card>
+</CardGroup>
+
+Edit from the dashboard or edit `TASKS.md` directly — they stay in sync.
+
+## Data Sources
+
+Connect your communication and project management tools for the best experience:
+
+| Category | Placeholder | Included | Alternatives |
+|----------|-------------|----------|-------------|
+| Chat | `~~chat` | Slack | Microsoft Teams, Discord |
+| Email | `~~email` | Microsoft 365 | — |
+| Calendar | `~~calendar` | Microsoft 365 | — |
+| Knowledge base | `~~knowledge base` | Notion | Confluence, Guru, Coda |
+| Project tracker | `~~project tracker` | Asana, Linear, Atlassian, monday.com, ClickUp | Shortcut, Basecamp, Wrike |
+| Office suite | `~~office suite` | Microsoft 365 | — |
+
+<Note>
+  Plugin files use `~~category` placeholders that resolve to whichever MCP server you connect. See [CONNECTORS.md](https://github.com/anthropics/knowledge-work-plugins/blob/main/productivity/CONNECTORS.md) for details.
+</Note>
+
+Without external connections, you can still manage tasks and memory manually — Claude will help you maintain the files.
+
+## Philosophy
+
+Knowledge workers spend cognitive energy translating their own shorthand. "Todd" means one person on your team. "PSR" is obvious to you. "Phoenix" is that database project.
+
+But AI doesn't know this — until now. The Productivity plugin teaches Claude your workplace language, so you can communicate like you would with a colleague. No more spelling things out. No more clarifying questions.
+
+Task management without memory is just a todo list. Memory without tasks is context with no action. Together, they make Claude your workplace collaborator.

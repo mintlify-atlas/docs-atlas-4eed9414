@@ -1,0 +1,474 @@
+---
+title: Plugin Management
+description: Use the cowork-plugin-management plugin to create and customize plugins conversationally
+---
+
+## What Is Plugin Management?
+
+The `cowork-plugin-management` plugin is a meta-plugin that helps you create new plugins or customize existing ones — all through conversation with Claude. Instead of manually writing markdown files and JSON configs, you describe what you want and Claude builds it for you.
+
+Think of it as a plugin for building plugins.
+
+## Installing Plugin Management
+
+Install from the Plugin Marketplace:
+
+```bash
+claude plugin install cowork-plugin-management@knowledge-work-plugins
+```
+
+Or in Cowork, search for "Plugin Management" in Settings → Plugins.
+
+## Two Main Skills
+
+The plugin management plugin provides two conversational workflows:
+
+### 1. Create a New Plugin
+
+Guides you through building a plugin from scratch:
+
+- **What it does**: Interactive plugin creation through conversation
+- **Best for**: Building custom plugins for unique workflows
+- **Trigger**: "Create a new plugin", "Build a plugin for...", "I want to make a plugin"
+
+### 2. Customize an Existing Plugin
+
+Adapts a generic plugin template to your organization:
+
+- **What it does**: Replaces placeholders with your specific tools and processes
+- **Best for**: Setting up marketplace plugins for your company
+- **Trigger**: "Customize the sales plugin", "Set up this plugin for our team"
+
+## Creating a New Plugin
+
+When you ask Claude to create a plugin, it guides you through a structured workflow:
+
+<Steps>
+
+<Step title="Discovery">
+  Claude asks about your goals:
+  - What should the plugin do?
+  - Who will use it?
+  - What tools does it integrate with?
+  - Are there similar plugins to reference?
+</Step>
+
+<Step title="Component Planning">
+  Based on your needs, Claude determines what components to create:
+  - Skills (domain knowledge)
+  - Commands (slash commands)
+  - MCP Servers (tool connections)
+  - Agents (autonomous workflows)
+  - Hooks (automated triggers)
+</Step>
+
+<Step title="Design & Questions">
+  Claude asks targeted questions about each component:
+  - What should trigger this skill?
+  - What arguments does this command need?
+  - Which MCP servers to connect?
+</Step>
+
+<Step title="Implementation">
+  Claude creates all the files:
+  - Plugin manifest (plugin.json)
+  - Skill files (SKILL.md with frontmatter)
+  - Command files (.md)
+  - MCP configuration (.mcp.json)
+  - README documentation
+</Step>
+
+<Step title="Packaging">
+  Claude packages everything as a `.plugin` file you can install directly.
+</Step>
+
+</Steps>
+
+### Example Conversation
+
+```
+You: Create a plugin for design review workflows
+
+Claude: I'll help you build a design review plugin. Let me understand what you need:
+
+1. What should this plugin help with specifically? 
+   (e.g., collecting feedback, tracking changes, generating summaries)
+
+2. Who will use it?
+   (designers, product managers, engineers, stakeholders)
+
+3. What tools do you use for design work?
+   (Figma, Sketch, Abstract, Linear, etc.)
+
+You: We use Figma for designs and Linear for tracking feedback. 
+     The plugin should help designers collect structured feedback 
+     from stakeholders and turn it into Linear issues.
+
+Claude: Got it. Here's what I'm planning:
+
+**Skills:**
+- feedback-collection: Guide stakeholders through giving structured feedback
+- feedback-synthesis: Summarize feedback themes and priorities
+
+**Commands:**
+- /design-review:start — Begin a new design review
+- /design-review:summarize — Summarize feedback and create Linear issues
+
+**MCP Servers:**
+- Figma (read designs, add comments)
+- Linear (create issues, link to designs)
+
+Does this match your vision?
+```
+
+## Customizing an Existing Plugin
+
+Many marketplace plugins include `~~` placeholders for tool names and organization-specific values. The customization workflow helps you fill these in:
+
+<Steps>
+
+<Step title="Locate Plugin">
+  Claude finds the installed plugin in your local plugins directory.
+</Step>
+
+<Step title="Gather Context">
+  Claude searches your connected tools (Slack, Notion, email) to learn:
+  - What tools your organization uses
+  - Team conventions and processes
+  - Configuration values (workspace IDs, project names)
+</Step>
+
+<Step title="Ask Questions">
+  For anything not found automatically, Claude asks:
+  - "Which CRM do you use?"
+  - "What are your ticket statuses?"
+  - "How do you estimate work?"
+</Step>
+
+<Step title="Apply Customizations">
+  Claude updates the plugin files:
+  - Replaces `~~Jira` with "Linear"
+  - Fills in workspace IDs
+  - Adjusts workflows to match your process
+</Step>
+
+<Step title="Connect MCP Servers">
+  Claude searches the MCP registry and suggests relevant connectors for the tools you mentioned.
+</Step>
+
+<Step title="Package">
+  Delivers a customized `.plugin` file ready to install.
+</Step>
+
+</Steps>
+
+### Example Conversation
+
+```
+You: Customize the sales plugin for our team
+
+Claude: I'll customize the sales plugin for your organization. 
+        Let me gather some context...
+
+[Searches Slack, Notion, email for tool mentions]
+
+Here's what I learned:
+
+**From searching Slack:**
+- You use HubSpot for CRM
+- Sales calls are recorded in Fireflies
+- Team uses #sales-ops for internal discussion
+
+**From searching Notion:**
+- Deal stages: Discovery, Demo, Negotiation, Closed
+- You track competitive intel on key competitors
+
+I have a few questions:
+
+1. What enrichment tool do you use for prospect research?
+   (ZoomInfo, Apollo, Clay, other, or none)
+
+You: We use Apollo
+
+Claude: Perfect. I've customized the plugin:
+
+**Changes made:**
+- Set CRM to HubSpot
+- Added Fireflies for call transcripts
+- Added Apollo for prospect enrichment
+- Updated deal stages to match your process
+- Set Slack channel to #sales-ops
+
+**MCP Servers connected:**
+✓ HubSpot
+✓ Fireflies
+✓ Apollo
+
+**You should also connect:**
+- Slack (connect at Settings → Plugins → Slack)
+- Notion (connect at Settings → Plugins → Notion)
+
+Ready to install your customized sales plugin!
+```
+
+## Creating Skills Conversationally
+
+When creating a plugin, you describe skills in natural language and Claude structures them:
+
+```
+You: Add a skill for preparing weekly sales reviews
+
+Claude: I'll create a weekly-review skill. Tell me:
+
+1. What should trigger this skill?
+   (e.g., "prepare my weekly review", "weekly sales report")
+
+2. What data should it include?
+   (e.g., deals closed, pipeline changes, upcoming meetings)
+
+3. Should it pull from CRM automatically or ask the user for input?
+
+You: Trigger with "weekly review" or "sales report". 
+     Pull from HubSpot: deals closed this week, new opportunities,
+     stage changes, and upcoming meetings.
+
+Claude: Creating skill with:
+
+**Frontmatter:**
+- name: weekly-review
+- description: Generate weekly sales review with deal activity, 
+  pipeline changes, and upcoming meetings. Trigger with 
+  "weekly review", "sales report", or "prepare my weekly review".
+
+**Workflow:**
+1. Query HubSpot for current week activity
+2. Group by: deals closed, new opps, stage changes
+3. Pull calendar for upcoming meetings
+4. Generate formatted summary
+
+**Output:** Structured review with metrics and action items
+
+Looks good?
+```
+
+## Creating Commands Conversationally
+
+Describe what the command should do, and Claude writes the command file:
+
+```
+You: Add a command for qualifying leads
+
+Claude: I'll create a lead qualification command. Tell me:
+
+1. What arguments should it accept?
+   (e.g., company name, contact name, file with lead data)
+
+2. What should it output?
+   (e.g., score, recommendation, research summary)
+
+You: It should take a company name and optionally a contact name.
+     Output a qualification score (A/B/C/D) with reasoning.
+
+Claude: Creating command:
+
+**File:** commands/qualify-lead.md
+
+**Frontmatter:**
+- description: Qualify a lead with research and scoring
+- argument-hint: "<company> [contact-name]"
+
+**Usage:**
+/qualify-lead <company> [contact-name]
+
+**Workflow:**
+1. Research company (size, industry, funding)
+2. Check if existing customer or past opportunity (CRM)
+3. Look up contact if provided
+4. Score based on ICP fit (A: strong, B: moderate, C: weak, D: poor)
+5. Output reasoning and next steps
+
+Good?
+```
+
+## MCP Server Configuration
+
+Claude helps you configure tool connections:
+
+```
+You: Connect to our Snowflake data warehouse
+
+Claude: I'll add Snowflake as an MCP server. A few questions:
+
+1. Do you want to use the standard Snowflake MCP server 
+   or a custom one?
+
+2. Should I use environment variables for credentials?
+
+You: Use the standard server with environment variables
+
+Claude: Adding to .mcp.json:
+
+```json
+{
+  "mcpServers": {
+    "snowflake": {
+      "type": "http",
+      "url": "https://mcp.snowflake.com/mcp",
+      "env": {
+        "SNOWFLAKE_ACCOUNT": "${SNOWFLAKE_ACCOUNT}",
+        "SNOWFLAKE_USER": "${SNOWFLAKE_USER}",
+        "SNOWFLAKE_PASSWORD": "${SNOWFLAKE_PASSWORD}"
+      }
+    }
+  }
+}
+```
+
+Set these environment variables before using the plugin:
+```bash
+export SNOWFLAKE_ACCOUNT="your-account"
+export SNOWFLAKE_USER="your-user" 
+export SNOWFLAKE_PASSWORD="your-password"
+```
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Start simple, iterate">
+    Begin with minimal components (1-2 skills, 1 command). Add more after testing the basics.
+  </Accordion>
+  
+  <Accordion title="Be specific in descriptions">
+    The more specific your skill/command descriptions, the better Claude knows when to use them.
+  </Accordion>
+  
+  <Accordion title="Test without connectors first">
+    Ensure skills work standalone before adding MCP dependencies.
+  </Accordion>
+  
+  <Accordion title="Document your customizations">
+    Keep notes on what you changed and why — helps future updates.
+  </Accordion>
+  
+  <Accordion title="Version your plugins">
+    When making significant changes, increment the version number in plugin.json.
+  </Accordion>
+</AccordionGroup>
+
+## Validation and Packaging
+
+Before delivering your plugin, the management plugin:
+
+1. **Validates** the plugin structure using `claude plugin validate`
+2. **Fixes** any errors or warnings
+3. **Packages** as a `.plugin` file (zip archive)
+4. **Delivers** with a preview you can browse and accept
+
+The validation checks:
+- Required files exist (plugin.json, etc.)
+- JSON syntax is valid
+- Frontmatter is properly formatted
+- Required fields are present
+- File naming follows conventions
+
+## Installation
+
+After Claude delivers your `.plugin` file:
+
+<Steps>
+
+<Step title="Review the plugin">
+  Click the delivered file to see a preview with all files and content.
+</Step>
+
+<Step title="Accept the plugin">
+  Click the "Accept" or "Install" button in the preview.
+</Step>
+
+<Step title="Configure connectors">
+  Go to Settings → Plugins → Your Plugin to connect MCP servers.
+</Step>
+
+<Step title="Test it out">
+  Try triggering skills and invoking commands to verify everything works.
+</Step>
+
+</Steps>
+
+## Iterating on Plugins
+
+After creating a plugin, you can continue the conversation to refine it:
+
+```
+You: The weekly-review skill needs to also check for at-risk deals
+
+Claude: I'll update the weekly-review skill to include at-risk deals.
+
+Adding to the workflow:
+- Query for opportunities with no activity in 7+ days
+- Flag deals past expected close date
+- Identify deals stuck in one stage for 30+ days
+
+Updating SKILL.md and repackaging...
+
+Here's your updated plugin.
+```
+
+## When to Use Plugin Management
+
+| Scenario | Approach |
+|----------|----------|
+| Installing marketplace plugin for first time | Use **Customize** workflow |
+| Building plugin for unique workflow | Use **Create** workflow |
+| Adding a single skill to existing plugin | Use **Create** workflow, specify "add skill" |
+| Changing tool configurations | Use **Customize** workflow |
+| Updating workflows for your process | Edit files directly or use **Customize** |
+| Sharing plugin with team | Package with **Create** workflow |
+
+## Advanced: Distributable Plugins
+
+If you're creating a plugin for others outside your organization, Claude can use `~~` placeholders:
+
+```
+You: I want to share this plugin with other companies
+
+Claude: I'll make the plugin customizable for other organizations.
+
+Using placeholder syntax:
+- `~~CRM` instead of "HubSpot"
+- `~~project tracker` instead of "Linear"
+- `~~chat` instead of "Slack"
+
+Creating CONNECTORS.md to document tool categories...
+
+When others install this plugin, they can customize it for 
+their specific tools.
+```
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Claude can't find installed plugin | May be in remote container; customization only works in desktop app |
+| Validation fails | Check error message, fix syntax or missing fields |
+| Skills not triggering | Make description more specific with clear trigger phrases |
+| MCP servers not connecting | Verify URLs, check authentication, ensure env vars are set |
+| Plugin package too large | Move reference content to separate files, remove unused assets |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/building/getting-started">
+    Learn the basics of how plugins work
+  </Card>
+  <Card title="Creating Skills" icon="brain" href="/building/creating-skills">
+    Deep dive into writing effective skills
+  </Card>
+  <Card title="Creating Commands" icon="terminal" href="/building/creating-commands">
+    Learn command structure and best practices
+  </Card>
+  <Card title="Plugin Structure" icon="folder-tree" href="/building/plugin-structure">
+    Understand the complete plugin file structure
+  </Card>
+</CardGroup>

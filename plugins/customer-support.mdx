@@ -1,0 +1,266 @@
+---
+title: Customer Support Plugin
+description: Triage tickets, draft responses, escalate issues, and build your knowledge base. Research customer context and turn resolved issues into self-service content.
+---
+
+A customer support plugin designed for Claude that provides ticket triage, escalation management, response drafting, customer research, and knowledge base authoring for support teams.
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/customer-support
+```
+
+## What It Does
+
+This plugin turns Claude into a customer support co-pilot:
+
+- **Triage incoming tickets** with structured categorization, priority assessment, and routing recommendations
+- **Research customer questions** by synthesizing information from multiple sources with confidence scoring
+- **Draft professional responses** tailored to the situation, urgency, and communication channel
+- **Package escalations** with full context, reproduction steps, and business impact for engineering or product
+- **Write KB articles** from resolved issues to reduce future ticket volume
+
+## Commands
+
+<CardGroup cols={3}>
+  <Card title="/triage" icon="filter">
+    Categorize, prioritize, and route a support ticket or customer issue
+  </Card>
+  <Card title="/research" icon="magnifying-glass">
+    Multi-source research on a customer question or topic
+  </Card>
+  <Card title="/draft-response" icon="pen-to-square">
+    Draft a customer-facing response for any situation
+  </Card>
+  <Card title="/escalate" icon="arrow-up-right-from-square">
+    Package an escalation for engineering, product, or leadership
+  </Card>
+  <Card title="/kb-article" icon="book">
+    Draft a knowledge base article from a resolved issue
+  </Card>
+</CardGroup>
+
+### /triage
+
+Categorize, prioritize, and route incoming support tickets.
+
+**Usage:**
+```
+/triage <ticket or issue description>
+```
+
+**Examples:**
+```
+/triage Customer says their dashboard has been showing a blank page since this morning
+/triage "I was charged twice for my subscription this month"
+/triage User can't connect their SSO — getting a 403 error on the callback URL
+```
+
+**What it does:**
+- Parses the core problem and symptoms
+- Assigns category (bug, how-to, feature request, billing, etc.) and priority (P1-P4)
+- Checks for duplicates and known issues
+- Recommends routing to the appropriate team
+- Generates a suggested initial response
+
+**Output includes:**
+- Issue summary and key details
+- Priority with justification
+- Routing recommendation
+- Suggested customer response
+- Internal notes for the handling agent
+
+### /research
+
+Multi-source research on customer questions.
+
+**Usage:**
+```
+/research <customer question or topic>
+```
+
+**Example:**
+```
+/research Does our platform support SSO with Okta?
+```
+
+Searches across docs, knowledge base, previous conversations, and web sources. Synthesizes answer with confidence level and source attribution.
+
+### /draft-response
+
+Draft customer-facing responses.
+
+**Usage:**
+```
+/draft-response <situation description>
+```
+
+**Example:**
+```
+/draft-response Customer escalation — their integration has been down for 2 days and they're frustrated
+```
+
+Generates empathetic, professional responses that:
+- Acknowledge the issue and customer frustration
+- Take ownership
+- Provide clear action plan with timeline
+- Offer appropriate next steps (workaround, call, etc.)
+
+### /escalate
+
+Package escalations for engineering or product.
+
+**Usage:**
+```
+/escalate <issue description>
+```
+
+**Example:**
+```
+/escalate API returning 500 errors intermittently — 3 Enterprise customers reported this week
+```
+
+Pulls ticket history, identifies affected accounts, structures reproduction steps, assesses business impact, and generates a structured escalation brief.
+
+### /kb-article
+
+Write knowledge base articles from resolved issues.
+
+**Usage:**
+```
+/kb-article <topic or resolved issue>
+```
+
+**Example:**
+```
+/kb-article How to configure webhook notifications — just resolved this for the third customer this month
+```
+
+Generates structured how-to articles with:
+- Prerequisites
+- Step-by-step instructions
+- Verification steps
+- Common issues
+- Search-optimized content
+
+## Skills
+
+Domain knowledge that activates automatically:
+
+<CardGroup cols={2}>
+  <Card title="ticket-triage" icon="list-check">
+    Category taxonomy, priority framework (P1-P4), routing rules, duplicate detection
+  </Card>
+  <Card title="customer-research" icon="magnifying-glass-chart">
+    Multi-source research methodology, source prioritization, answer synthesis
+  </Card>
+  <Card title="response-drafting" icon="message">
+    Communication best practices, tone guidelines, templates for common scenarios
+  </Card>
+  <Card title="escalation" icon="triangle-exclamation">
+    Escalation tiers, structured escalation format, impact assessment, follow-up cadence
+  </Card>
+  <Card title="knowledge-management" icon="book-bookmark">
+    Article structure standards, writing for searchability, review cadence, maintenance
+  </Card>
+</CardGroup>
+
+### When Skills Activate
+
+These skills provide frameworks and best practices that power the commands above. They include:
+
+- **Priority frameworks:** P1 (critical outage) to P4 (feature request)
+- **Category taxonomy:** Bug, how-to, feature request, billing, account, integration, security, data, performance
+- **Response templates:** For acknowledgments, workarounds, escalations, resolutions
+- **Article structure standards:** How-to format, troubleshooting format, FAQ format
+
+## MCP Integrations
+
+Connect your support tools for the best experience:
+
+| Category | Examples | What It Enables |
+|---|---|---|
+| **Support Platform** | Intercom, Zendesk, Freshdesk, HubSpot Service Hub | Ticket history, customer conversations, auto-routing |
+| **CRM** | HubSpot, Salesforce, Pipedrive | Account details, contact information, plan level |
+| **Knowledge Base** | Guru, Notion, Confluence, Help Scout | Internal docs, runbooks, existing KB articles |
+| **Project Tracker** | Atlassian (Jira/Confluence), Linear, Asana | Bug reports, feature requests, development status |
+| **Chat** | Slack, Microsoft Teams | Internal discussions, customer channel context |
+| **Email** | Microsoft 365, Gmail | Customer correspondence |
+| **Cloud Storage** | Microsoft 365, Google Drive | Customer files, attachments |
+
+<Note>
+Plugin files use `~~category` placeholders (like `~~support platform`) to work with any connected tool in that category. The plugin is tool-agnostic.
+</Note>
+
+## Example Workflows
+
+### Triaging an Incoming Ticket
+
+```
+You: /triage Customer says their dashboard has been showing a blank
+     page since this morning — they're on the Enterprise plan
+
+Claude: Analyzing the issue...
+
+## Triage: Dashboard blank page — Enterprise customer
+
+**Category:** Bug
+**Priority:** P2 — High (core feature broken, enterprise customer)
+**Product area:** Dashboard / Frontend
+
+### Routing Recommendation
+Route to: Tier 2 Support (investigate browser/account specifics,
+then escalate to Engineering if reproducible)
+
+### Suggested Initial Response
+[Draft acknowledging the issue, asking clarifying questions
+about browser and any recent changes, offering status page link]
+```
+
+### Researching a Customer Question
+
+```
+You: /research Does our platform support SSO with Okta?
+
+Claude: Let me check across available sources...
+
+[Searches docs, knowledge base, previous conversations,
+ and web sources — synthesizes answer with confidence
+ level and source attribution]
+```
+
+### Packaging an Escalation
+
+```
+You: /escalate API returning 500 errors intermittently — 3
+     Enterprise customers reported this week
+
+Claude: I'll gather context and build the escalation brief...
+
+[Pulls ticket history, identifies affected accounts,
+ structures reproduction steps, assesses business impact,
+ and generates a structured escalation for engineering]
+```
+
+### Writing a KB Article
+
+```
+You: /kb-article How to configure webhook notifications —
+     just resolved this for the third customer this month
+
+Claude: [Generates a structured how-to article with prerequisites,
+ step-by-step instructions, verification steps, and common
+ issues — optimized for search]
+```
+
+## Configuration
+
+The plugin works out of the box with the included MCP connections. For the richest experience:
+
+1. **Support platform:** Connect your ticketing system for ticket history and customer context
+2. **Knowledge base:** Connect your wiki for internal documentation and existing KB articles
+3. **Project tracker:** Connect your issue tracker for bug reports and feature requests
+4. **CRM:** Connect your CRM for account details and contact information
+
+Without these connections, the plugin will ask you to provide context manually and offer frameworks and templates you can fill in with your own data.

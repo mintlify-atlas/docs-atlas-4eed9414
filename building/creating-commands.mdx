@@ -1,0 +1,494 @@
+---
+title: Creating Commands
+description: Learn how to create slash commands for structured, user-initiated workflows
+---
+
+## What Are Commands?
+
+Commands are explicit actions you invoke with slash commands like `/sales:call-summary` or `/finance:reconciliation`. Unlike skills that activate automatically, commands are triggered on-demand when you need a specific, structured workflow.
+
+Commands are perfect for:
+- Processing structured input (call notes, transcripts, data files)
+- Generating templated outputs (reports, summaries, follow-ups)
+- Executing multi-step procedures (analysis, reconciliation, review)
+- Workflows with clear start and end points
+
+## Command File Structure
+
+Commands are individual markdown files in the `commands/` directory:
+
+```
+commands/
+├── call-summary.md
+├── forecast.md
+└── pipeline-review.md
+```
+
+Each command file has:
+1. **YAML frontmatter**: Metadata including description and argument hints
+2. **Markdown body**: Instructions for Claude to follow
+
+## Basic Command Format
+
+```markdown
+---
+description: Process call notes or a transcript — extract action items, draft follow-up email, generate internal summary
+argument-hint: "<call notes or transcript>"
+---
+
+# /call-summary
+
+Process call notes or a transcript to extract action items, draft follow-up communications, and update records.
+
+## Usage
+
+```
+/call-summary [notes or transcript]
+```
+
+Process these call notes: $ARGUMENTS
+
+If a file is referenced: @$1
+
+---
+
+## What I Need From You
+
+**Option 1: Paste your notes**
+Just paste whatever you have — bullet points, rough notes, stream of consciousness.
+
+**Option 2: Paste a transcript**
+If you have a full transcript from Zoom, Teams, Gong, or Fireflies, paste it.
+
+---
+
+## Execution Steps
+
+1. Parse the input to identify:
+   - Meeting participants and roles
+   - Discussion topics and decisions
+   - Action items with owners
+   - Concerns or objections raised
+
+2. Generate internal summary with:
+   - Key discussion points
+   - Customer priorities
+   - Objections and how addressed
+   - Action items table
+   - Next steps
+
+3. Draft customer-facing follow-up email:
+   - Thank them for their time
+   - Recap key points discussed
+   - List your commitments
+   - Propose clear next step with timeline
+
+## Output Format
+
+[Include expected output template]
+```
+
+## Frontmatter Fields
+
+### description (required)
+
+A concise description of what the command does. This appears in command palette and help text:
+
+```yaml
+description: Process call notes or a transcript — extract action items, draft follow-up email, generate internal summary
+```
+
+Keep it under 120 characters. Focus on the outcome, not implementation.
+
+### argument-hint (optional)
+
+Shows users what arguments the command expects:
+
+```yaml
+argument-hint: "<call notes or transcript>"
+```
+
+Examples:
+- `"<company name>"` - Single required argument
+- `"<start-date> <end-date>"` - Multiple arguments
+- `"[options]"` - Optional arguments
+- `"<file>"` - File input expected
+
+This appears in autocomplete and help text.
+
+### Additional Fields
+
+```yaml
+author: Your Name
+version: 1.0.0
+alias: summary  # Short alias for the command
+```
+
+## Accessing Arguments
+
+Claude can access command arguments with variables:
+
+### $ARGUMENTS
+
+All arguments as a single string:
+
+```markdown
+Process these call notes: $ARGUMENTS
+```
+
+### Positional Arguments
+
+```markdown
+Analyze the period from @$1 to @$2
+```
+
+- `@$1` - First argument
+- `@$2` - Second argument
+- `@$3` - Third argument, etc.
+
+### File References
+
+If a user provides a file path:
+
+```markdown
+If a file is referenced: @$1
+```
+
+Claude will read the file automatically.
+
+## Writing Effective Commands
+
+### 1. Clear Usage Section
+
+Start with how to invoke the command:
+
+```markdown
+## Usage
+
+```
+/forecast [quarter] [confidence-level]
+```
+
+Examples:
+- `/forecast Q1 conservative`
+- `/forecast 2026-Q3 optimistic`
+```
+
+### 2. Explain Input Requirements
+
+Be explicit about what you need:
+
+```markdown
+## What I Need From You
+
+**Required:**
+- Call notes or transcript (paste directly)
+- Meeting date (if not in the notes)
+
+**Helpful if you have it:**
+- List of attendees with titles
+- Any context about the deal stage
+```
+
+### 3. Step-by-Step Instructions
+
+Commands are instructions FOR Claude. Use imperative language:
+
+```markdown
+## Execution Steps
+
+1. Parse the input to identify:
+   - Meeting participants and their roles
+   - Key discussion topics
+   - Decisions made
+   - Action items with clear owners
+   - Open questions or concerns
+
+2. Extract action items:
+   - Identify owner (customer vs. you)
+   - Extract deadline or timeframe
+   - Note dependencies
+
+3. Generate internal summary:
+   - Use structured format (see Output Format)
+   - Flag any risks or blockers
+   - Identify deal impact
+
+4. Draft customer follow-up:
+   - Concise, no markdown formatting in email
+   - Recap key points
+   - List commitments
+   - Clear next step
+```
+
+### 4. Specify Output Format
+
+Show exactly what Claude should produce:
+
+```markdown
+## Output Format
+
+### Internal Summary
+```markdown
+## Call Summary: [Company] — [Date]
+
+**Attendees:** [Names and titles]
+**Call Type:** [Discovery / Demo / Negotiation]
+
+### Key Discussion Points
+1. [Topic] — [Summary]
+
+### Action Items
+| Owner | Action | Due |
+|-------|--------|-----|
+| [You] | [Task] | [Date] |
+
+### Next Steps
+- [Agreed next step with timeline]
+```
+
+### Customer Follow-Up Email
+```
+Subject: [Meeting recap + next steps]
+
+Hi [Name],
+
+Thank you for taking the time to meet today...
+
+[Keep it concise and scannable]
+```
+```
+
+### 5. Handle Connectors
+
+Explain how the command works with and without tools:
+
+```markdown
+## If Connectors Available
+
+**Transcripts connected (e.g. Gong, Fireflies):**
+- Search for the call automatically
+- Pull the full transcript
+- Extract key moments flagged by the platform
+
+**CRM connected:**
+- Offer to update the opportunity stage
+- Log the call as an activity
+- Create tasks for action items
+
+**Email connected:**
+- Create a draft in the user's email client
+- Or send directly if approved
+```
+
+### 6. Add Tips
+
+Help users get better results:
+
+```markdown
+## Tips
+
+1. **More detail = better output** — Even rough notes help
+2. **Name the attendees** — Helps structure the summary
+3. **Flag what matters** — "The big thing was..." is useful context
+4. **Tell me the deal stage** — Helps tailor follow-up tone
+```
+
+## Referencing Placeholders
+
+If your command references tools that might vary by organization, use placeholders:
+
+```markdown
+> If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](../CONNECTORS.md).
+
+Create a task in ~~project tracker with these details...
+```
+
+Then document tool categories in a `CONNECTORS.md` file at the plugin root.
+
+## Real-World Example
+
+Here's a complete command file:
+
+```markdown
+---
+description: Generate forecast for a time period with deal analysis and confidence levels
+argument-hint: "[time-period] [confidence]"
+---
+
+# /forecast
+
+Generate a sales forecast for a specific time period with deal-by-deal analysis.
+
+## Usage
+
+```
+/forecast [time-period] [confidence-level]
+```
+
+Examples:
+- `/forecast Q1`
+- `/forecast Q3-2026 conservative`
+- `/forecast next-month optimistic`
+
+Generate forecast for: $ARGUMENTS
+
+---
+
+## What I Need From You
+
+**Required:**
+- Time period (quarter, month, or date range)
+
+**Optional:**
+- Confidence level (conservative, realistic, optimistic)
+- Specific segment or region to analyze
+
+---
+
+## Execution Steps
+
+1. **Parse the time period**
+   - Convert to specific date range
+   - Default to current quarter if ambiguous
+
+2. **Query deals** (if CRM connected)
+   - Get all opportunities closing in the period
+   - Pull: amount, stage, close date, probability
+   - Get recent activity and notes
+
+3. **Analyze each deal**
+   - Assess health: green/yellow/red
+   - Note risks and blockers
+   - Adjust probability if needed
+
+4. **Calculate forecast**
+   - Group by stage
+   - Apply confidence multipliers:
+     - Conservative: stage probability × 0.8
+     - Realistic: stage probability × 1.0
+     - Optimistic: stage probability × 1.2
+
+5. **Generate report**
+   - Summary metrics
+   - Deal-by-deal breakdown
+   - Risks and opportunities
+   - Recommended actions
+
+---
+
+## Output Format
+
+```markdown
+# Sales Forecast: [Time Period]
+
+**Confidence Level:** [Conservative/Realistic/Optimistic]
+**Generated:** [Date]
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Total Pipeline | $[amount] |
+| Weighted Forecast | $[amount] |
+| # of Deals | [count] |
+
+## Deal Breakdown
+
+### Commit ($[amount])
+
+| Deal | Amount | Close Date | Health | Notes |
+|------|--------|------------|--------|-------|
+| [Company] | $[X] | [Date] | 🟢 | [Status] |
+
+### Best Case ($[amount])
+
+[Same format]
+
+## Risks
+
+1. [Deal] — [Risk description and mitigation]
+
+## Recommended Actions
+
+1. [Action to increase forecast attainment]
+```
+
+---
+
+## Tips
+
+- **Connect your CRM** for automated deal analysis
+- **Specify confidence level** for different planning scenarios  
+- **Review weekly** to track forecast changes over time
+```
+
+## Command vs. Skill: When to Use Each
+
+| Use a Command When... | Use a Skill When... |
+|-----------------------|---------------------|
+| User explicitly invokes workflow | Claude should detect when it's relevant |
+| Requires specific input format | Works with natural language requests |
+| Structured, repeatable process | Flexible, conversational workflow |
+| Clear start and end | Ongoing guidance throughout task |
+| Processing documents/data | Research and synthesis |
+
+**Example Command:** `/call-summary <transcript>` — Process this specific input
+
+**Example Skill:** "Prep me for my call with Acme" — Detect intent and guide through prep
+
+## Email Style Guidelines
+
+When commands generate customer-facing emails, follow these rules:
+
+<Warning>
+  **Do not use markdown formatting in customer emails**. Bold, italics, and headers may not render correctly in all email clients.
+</Warning>
+
+**Good:**
+```
+Here's what we discussed:
+- Quote for 20 seats at $480/seat/year
+- W9 and supplier onboarding docs
+- Point of contact for the contract
+```
+
+**Bad:**
+```
+**What You Need from Us:**
+- Quote for 20 seats at $480/seat/year
+```
+
+Keep emails:
+- Concise and scannable
+- Plain text with simple dashes or numbers
+- Short paragraphs with line breaks
+- Professional but conversational
+
+## Testing Your Command
+
+After creating a command:
+
+1. **Test invocation**: Try `/plugin-name:command-name`
+2. **Test with arguments**: Verify argument parsing works
+3. **Test without connectors**: Ensure it gracefully handles missing tools
+4. **Test with connectors**: Verify it leverages connected data
+5. **Check output format**: Does it match your template?
+6. **Test edge cases**: Empty input, malformed data, missing fields
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Skills" icon="brain" href="/building/creating-skills">
+    Learn how skills differ from commands and when to use each
+  </Card>
+  <Card title="Adding MCP Servers" icon="plug" href="/building/adding-mcp-servers">
+    Connect commands to external tools and data
+  </Card>
+  <Card title="Plugin Structure" icon="folder-tree" href="/building/plugin-structure">
+    Review the complete plugin directory structure
+  </Card>
+  <Card title="Plugin Management" icon="wrench" href="/building/plugin-management">
+    Use the plugin management plugin to create commands
+  </Card>
+</CardGroup>

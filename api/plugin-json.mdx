@@ -1,0 +1,178 @@
+---
+title: plugin.json
+description: Plugin manifest file that defines metadata, identity, and discoverability for your Claude plugin.
+---
+
+The `plugin.json` file is the manifest for your Claude plugin. It lives at `.claude-plugin/plugin.json` in your plugin directory and defines the plugin's identity, metadata, and discoverability.
+
+## Location
+
+```
+plugin-name/
+└── .claude-plugin/
+    └── plugin.json
+```
+
+## Schema
+
+<ParamField path="name" type="string" required>
+  The unique identifier for your plugin. Use lowercase with hyphens for multi-word names.
+  
+  ```json
+  "name": "sales"
+  ```
+  
+  ```json
+  "name": "product-management"
+  ```
+</ParamField>
+
+<ParamField path="version" type="string" required>
+  Semantic version number following the `major.minor.patch` format.
+  
+  ```json
+  "version": "1.0.0"
+  ```
+  
+  ```json
+  "version": "1.1.0"
+  ```
+</ParamField>
+
+<ParamField path="description" type="string" required>
+  A clear, concise description of what your plugin does and who it's for. This appears in the plugin marketplace and helps users understand the value.
+  
+  ```json
+  "description": "Prospect, craft outreach, and build deal strategy faster. Prep for calls, manage your pipeline, and write personalized messaging that moves deals forward."
+  ```
+</ParamField>
+
+<ParamField path="author" type="object" required>
+  Information about the plugin creator.
+  
+  <Expandable title="properties">
+    <ParamField path="name" type="string" required>
+      The name of the individual or organization that created the plugin.
+      
+      ```json
+      "author": {
+        "name": "Anthropic"
+      }
+      ```
+    </ParamField>
+    
+    <ParamField path="url" type="string">
+      Optional URL to the author's website or profile.
+      
+      ```json
+      "author": {
+        "name": "Salesforce",
+        "url": "https://slack.com"
+      }
+      ```
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField path="homepage" type="string">
+  URL to the plugin's homepage, documentation, or repository.
+  
+  ```json
+  "homepage": "https://github.com/slackapi/slack-mcp-plugin"
+  ```
+</ParamField>
+
+<ParamField path="license" type="string">
+  The license under which the plugin is distributed (e.g., "MIT", "Apache-2.0", "BSD-3-Clause").
+  
+  ```json
+  "license": "MIT"
+  ```
+</ParamField>
+
+<ParamField path="keywords" type="array">
+  Array of keywords to improve plugin discoverability in search and filtering.
+  
+  ```json
+  "keywords": ["brand-voice", "sales", "marketing", "content-creation", "guidelines", "discovery", "enterprise"]
+  ```
+</ParamField>
+
+## Examples
+
+### Minimal Plugin
+
+```json
+{
+  "name": "sales",
+  "version": "1.1.0",
+  "description": "Prospect, craft outreach, and build deal strategy faster. Prep for calls, manage your pipeline, and write personalized messaging that moves deals forward.",
+  "author": {
+    "name": "Anthropic"
+  }
+}
+```
+
+### Full Plugin with Metadata
+
+```json
+{
+  "name": "slack-by-salesforce",
+  "version": "1.0.0",
+  "description": "Official Slack MCP server for interactive and collaborative workflows. Surface insights, draft messages, and engage teams directly within Slack from Claude Cowork.",
+  "author": {
+    "name": "Salesforce",
+    "url": "https://slack.com"
+  },
+  "homepage": "https://github.com/slackapi/slack-mcp-plugin",
+  "license": "MIT"
+}
+```
+
+### Plugin with Keywords
+
+```json
+{
+  "name": "brand-voice",
+  "version": "1.0.0",
+  "description": "Brand Voice transforms scattered brand materials into enforceable AI guardrails — automatically. It searches across Notion, Google Drive, Confluence, Gong, Slack, and meeting transcripts to distill your strongest brand signals into a single source of truth.",
+  "author": {
+    "name": "Tribe AI"
+  },
+  "keywords": ["brand-voice", "sales", "marketing", "content-creation", "guidelines", "discovery", "enterprise"]
+}
+```
+
+## Validation Rules
+
+<Warning>
+  **Required Fields**: The `name`, `version`, `description`, and `author.name` fields are required. Your plugin will not load without them.
+</Warning>
+
+<Note>
+  **Naming Conventions**: Use lowercase letters and hyphens for plugin names. Avoid spaces, special characters, or uppercase letters.
+</Note>
+
+<Note>
+  **Version Format**: Follow semantic versioning (semver) format: `major.minor.patch`. Increment the version number when you publish updates.
+</Note>
+
+## Best Practices
+
+1. **Clear Descriptions**: Write descriptions that explain both what the plugin does and who should use it. Focus on outcomes, not just features.
+
+2. **Accurate Versioning**: Update the version number whenever you make changes:
+   - **Patch** (0.0.x): Bug fixes and minor improvements
+   - **Minor** (0.x.0): New features, backward-compatible
+   - **Major** (x.0.0): Breaking changes
+
+3. **Useful Keywords**: Add keywords that match how users might search for your plugin's functionality.
+
+4. **Author Attribution**: Include your organization or personal name to help users know who maintains the plugin.
+
+5. **License Clarity**: Specify a license if you're sharing your plugin publicly to clarify usage rights.
+
+## Related
+
+- [.mcp.json](/api/mcp-json) - Configure MCP server connections
+- [Plugin Structure](/building/plugin-structure) - Learn about the complete plugin directory structure

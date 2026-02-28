@@ -1,0 +1,114 @@
+---
+title: Getting Started with Plugins
+description: Learn what plugins are, how they work, and how to build your first plugin for Claude Cowork
+---
+
+## What Are Plugins?
+
+Plugins turn Claude into a specialist for your role, team, and company. Each plugin bundles skills, slash commands, and connectors for a specific job function — giving Claude the expertise and tools to deliver professional work tailored to how your team operates.
+
+Out of the box, plugins provide Claude with strong starting points for any role. The real power comes when you customize them for your company — your tools, your terminology, your processes — so Claude works like it was built for your team.
+
+## How Plugins Work
+
+Every plugin follows the same simple structure:
+
+```
+plugin-name/
+├── .claude-plugin/plugin.json   # Manifest
+├── .mcp.json                    # Tool connections
+├── commands/                    # Slash commands you invoke explicitly
+└── skills/                      # Domain knowledge Claude draws on automatically
+```
+
+### Skills
+
+Skills encode domain expertise, best practices, and step-by-step workflows Claude needs to give you useful help. Claude draws on skills automatically when relevant.
+
+For example, a sales plugin might include skills for:
+- Call preparation
+- Account research
+- Drafting personalized outreach
+- Competitive intelligence
+
+### Commands
+
+Commands are explicit actions you trigger with slash commands (e.g., `/finance:reconciliation`, `/product-management:write-spec`). They're useful for structured workflows that you initiate on demand.
+
+### Connectors
+
+Connectors wire Claude to external tools your role depends on — CRMs, project trackers, data warehouses, design tools, and more — via [MCP servers](https://modelcontextprotocol.io/). These connections let Claude read and write data directly from the tools you already use.
+
+## What Makes Plugins Powerful
+
+Every component is file-based — markdown and JSON, no code, no infrastructure, no build steps. This means:
+
+- **Easy to create**: Write markdown files with instructions and metadata
+- **Easy to customize**: Edit text files to match your company's workflows
+- **Easy to share**: Package as a `.plugin` file and share with your team
+- **Version controllable**: Store in git and track changes over time
+
+## Your First Plugin
+
+There are three ways to get started:
+
+<Steps>
+
+<Step title="Install from Marketplace">
+  The fastest way to start is installing an existing plugin from the [Plugin Marketplace](https://claude.com/plugins/). These plugins are production-ready and cover common job functions like sales, product management, finance, and more.
+</Step>
+
+<Step title="Customize an Existing Plugin">
+  After installing a plugin, you can customize it for your organization using the `cowork-plugin-management` plugin. This guides you through replacing generic placeholders with your specific tools and processes.
+</Step>
+
+<Step title="Build from Scratch">
+  For unique workflows or roles not covered by existing plugins, you can build a new plugin from scratch. The plugin structure is simple and well-documented.
+</Step>
+
+</Steps>
+
+## Quick Example
+
+Here's what a minimal plugin looks like:
+
+```json title=".claude-plugin/plugin.json"
+{
+  "name": "sales",
+  "version": "1.0.0",
+  "description": "Prospect, craft outreach, and build deal strategy faster.",
+  "author": {
+    "name": "Your Company"
+  }
+}
+```
+
+That's it for the manifest! Add skills and commands by creating markdown files in their respective directories.
+
+## Making Plugins Yours
+
+These plugins become much more useful when you customize them for how your company actually works:
+
+- **Swap connectors**: Edit `.mcp.json` to point at your specific tool stack
+- **Add company context**: Drop your terminology, org structure, and processes into skill files
+- **Adjust workflows**: Modify instructions to match how your team actually does things
+- **Build new plugins**: Create plugins for roles and workflows we haven't covered yet
+
+As your team builds and shares plugins, Claude becomes a cross-functional expert. The context you define gets baked into every relevant interaction.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Plugin Structure" icon="folder-tree" href="/building/plugin-structure">
+    Deep dive into the files and directories that make up a plugin
+  </Card>
+  <Card title="Creating Skills" icon="brain" href="/building/creating-skills">
+    Learn how to write skills that give Claude domain expertise
+  </Card>
+  <Card title="Creating Commands" icon="terminal" href="/building/creating-commands">
+    Build slash commands for structured workflows
+  </Card>
+  <Card title="Adding MCP Servers" icon="plug" href="/building/adding-mcp-servers">
+    Connect Claude to your external tools and services
+  </Card>
+</CardGroup>

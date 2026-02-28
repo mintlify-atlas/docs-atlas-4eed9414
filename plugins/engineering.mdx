@@ -1,0 +1,287 @@
+---
+title: Engineering Plugin
+description: Streamline engineering workflows with standups, code review, architecture decisions, incident response, and technical documentation
+---
+
+A software engineering plugin designed for [Cowork](https://claude.com/product/cowork) and Claude Code. Helps with standups, code review, architecture decisions, incident response, debugging, and technical documentation.
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/engineering
+```
+
+## Overview
+
+The Engineering plugin transforms Claude into an engineering teammate that helps with common software development workflows. Every command works **standalone** (paste code, describe your system) and gets **supercharged** when you connect your development tools via MCP.
+
+## Commands
+
+Explicit workflows you invoke with a slash command:
+
+<CardGroup cols={2}>
+  <Card title="/standup" icon="calendar">
+    Generate a standup update from your recent activity — commits, PRs, tickets, and chat
+  </Card>
+  
+  <Card title="/review" icon="code-review">
+    Review code changes for security, performance, style, and correctness
+  </Card>
+  
+  <Card title="/debug" icon="bug">
+    Structured debugging session — reproduce, isolate, diagnose, and fix
+  </Card>
+  
+  <Card title="/architecture" icon="diagram-project">
+    Create or evaluate architecture decisions with ADR format and trade-off analysis
+  </Card>
+  
+  <Card title="/incident" icon="siren">
+    Run an incident response workflow — triage, communicate, mitigate, and write postmortem
+  </Card>
+  
+  <Card title="/deploy-checklist" icon="clipboard-check">
+    Pre-deployment checklist — verify tests, review changes, check dependencies, confirm rollback plan
+  </Card>
+</CardGroup>
+
+### /standup
+
+Generate a standup update from your recent activity:
+
+```bash
+/standup
+```
+
+If your tools are connected, Claude will pull your recent commits, PR activity, and ticket updates. Otherwise, tell Claude what you worked on and it will format it for you.
+
+### /review
+
+Review code changes with a structured lens on security, performance, correctness, and maintainability:
+
+```bash
+/review https://github.com/org/repo/pull/123
+```
+
+Share a PR link, paste a diff, or point to files. Get a structured review covering:
+
+- **Security**: SQL injection, XSS, auth bypass, secrets in code
+- **Performance**: N+1 queries, memory allocations, algorithmic complexity, missing indexes
+- **Correctness**: Edge cases, error handling, race conditions
+- **Maintainability**: Naming clarity, single responsibility, test coverage, documentation
+
+**Example output:**
+
+```markdown
+## Code Review: Add user authentication
+
+### Summary
+Adds JWT-based authentication to the API. Overall structure is good,
+but there are critical security concerns that need addressing.
+
+### Critical Issues
+| # | File | Line | Issue | Severity |
+|---|------|------|-------|----------|
+| 1 | auth.ts | 42 | JWT secret hardcoded | 🔴 Critical |
+| 2 | middleware.ts | 18 | No token expiration check | 🔴 Critical |
+
+### Suggestions
+| # | File | Line | Suggestion | Category |
+|---|------|------|------------|----------|
+| 1 | auth.ts | 67 | Consider rate limiting login attempts | Security |
+| 2 | db.ts | 123 | N+1 query in user lookup | Performance |
+
+### What Looks Good
+- Comprehensive test coverage for happy paths
+- Clear error messages for authentication failures
+- Good separation of concerns between auth and business logic
+
+### Verdict
+Request Changes — Address critical security issues before merging
+```
+
+### /debug
+
+Walk through a structured debugging process:
+
+```bash
+/debug Users are getting 500 errors on the checkout page
+```
+
+Claude helps you systematically:
+1. **Reproduce** the issue
+2. **Isolate** the problem area
+3. **Diagnose** root cause
+4. **Fix** and verify
+
+### /architecture
+
+Create or evaluate architecture decisions:
+
+```bash
+/architecture Should we use a message queue or direct API calls between services?
+```
+
+Get a structured ADR (Architecture Decision Record) with:
+- Options analysis
+- Trade-offs for each approach
+- Recommendation based on your context
+- Implementation considerations
+
+### /incident
+
+Run an incident response workflow:
+
+```bash
+/incident The payments service is returning 503s
+```
+
+Claude helps you:
+- Triage severity
+- Draft status communications
+- Track timeline and actions
+- Generate postmortem when resolved
+
+### /deploy-checklist
+
+Get a customized pre-deployment checklist:
+
+```bash
+/deploy-checklist auth-service v2.3.0
+```
+
+Claude creates a checklist based on your service and what's changing:
+- Test verification
+- Dependency checks
+- Rollback plan confirmation
+- Breaking change review
+
+## Skills
+
+Domain knowledge Claude uses automatically when relevant:
+
+| Skill | Description | When It Activates |
+|-------|-------------|------------------|
+| `code-review` | Review code for bugs, security issues, performance, and maintainability | When you share code and ask for feedback, or say "review this code" |
+| `incident-response` | Triage and manage production incidents — status updates, runbooks, postmortems | When you mention "incident", "outage", or "production issue" |
+| `system-design` | Design systems and services — architecture diagrams, API design, data modeling | When discussing "architecture", "system design", or "how should we build" |
+| `tech-debt` | Identify, categorize, and prioritize technical debt — build remediation plan | When you mention "tech debt", "refactoring", or "code quality" |
+| `testing-strategy` | Design test strategies — unit, integration, e2e coverage, test plan creation | When discussing "testing", "test coverage", or "how to test" |
+| `documentation` | Write and maintain technical documentation — READMEs, API docs, runbooks | When writing or updating documentation |
+
+## MCP Integrations
+
+Connect your tools for a richer experience:
+
+| Category | Examples | What It Enables |
+|----------|----------|----------------|
+| **Source control** | GitHub, GitLab | PR diffs, commit history, branch status |
+| **Project tracker** | Linear, Jira, Asana | Ticket status, sprint data, assignments |
+| **Monitoring** | Datadog, New Relic | Logs, metrics, alerts, dashboards |
+| **Incident management** | PagerDuty, Opsgenie | On-call schedules, incident tracking, paging |
+| **Chat** | Slack, Teams | Team discussions, standup channels |
+| **Knowledge base** | Notion, Confluence | ADRs, runbooks, onboarding docs |
+
+### Connector Placeholders
+
+Plugin files use `~~category` as a placeholder for whatever tool you connect in that category. For example:
+
+- `~~source control` might mean GitHub, GitLab, or any other VCS with an MCP server
+- `~~project tracker` might mean Linear, Jira, or Asana
+- `~~monitoring` might mean Datadog, New Relic, or Grafana
+
+Plugins are **tool-agnostic** — they describe workflows in terms of categories rather than specific products.
+
+## Standalone vs Supercharged
+
+Every command and skill works without any integrations:
+
+| What You Can Do | Standalone | Supercharged With |
+|-----------------|------------|-------------------|
+| Standup updates | Describe your work | Source control, Project tracker, Chat |
+| Code review | Paste diff or code | Source control (pull PRs automatically) |
+| Debug sessions | Describe the problem | Monitoring (pull logs and metrics) |
+| Architecture decisions | Describe the system | Knowledge base (find prior ADRs) |
+| Incident response | Describe the incident | Monitoring, Incident management, Chat |
+| Deploy checklists | Describe the deploy | CI/CD, Source control |
+
+## Configuration
+
+Create a local settings file at `engineering/.claude/settings.local.json` to personalize:
+
+```json
+{
+  "name": "Your Name",
+  "title": "Software Engineer",
+  "team": "Your Team",
+  "company": "Your Company",
+  "techStack": ["Python", "TypeScript", "PostgreSQL", "AWS"],
+  "defaultBranch": "main",
+  "deployProcess": "canary"
+}
+```
+
+The plugin will ask you for this information interactively if it's not configured.
+
+## Example Workflows
+
+### Morning Standup
+
+```bash
+/standup
+```
+
+If your tools are connected, Claude pulls your recent commits, PR activity, and ticket updates. Otherwise, tell Claude what you worked on:
+
+**You:** Finished the user auth refactor, reviewed two PRs, and started on the rate limiting feature
+
+**Claude:** Here's your standup update:
+
+```markdown
+### Yesterday
+- ✅ Completed user authentication refactoring
+- 👀 Reviewed PRs #234 and #235
+- 🚧 Started implementation of rate limiting feature
+
+### Today
+- Continue rate limiting implementation
+- Deploy auth changes to staging
+
+### Blockers
+- None
+```
+
+### Code Review Session
+
+```bash
+/review https://github.com/org/repo/pull/123
+```
+
+Claude pulls the PR, analyzes the changes, and provides structured feedback on security, performance, and maintainability.
+
+### Debugging Production Issue
+
+```bash
+/debug API returning 500s for /checkout endpoint
+```
+
+**Claude:** Let's debug this systematically. First, let me help you reproduce and isolate the issue.
+
+**Reproduction:**
+- When did this start?
+- Is it affecting all users or specific segments?
+- What's the error rate?
+
+*[Interactive debugging session continues]*
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Data Plugin" href="/plugins/data">
+    SQL queries, data exploration, and analytics
+  </Card>
+  
+  <Card title="Design Plugin" href="/plugins/design">
+    Design critique, system management, and UX writing
+  </Card>
+</CardGroup>

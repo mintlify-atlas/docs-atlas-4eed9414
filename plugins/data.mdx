@@ -1,0 +1,467 @@
+---
+title: Data Analyst Plugin
+description: Write SQL, explore datasets, and generate insights faster with visualizations, dashboards, and data validation
+---
+
+A data analyst plugin designed for [Cowork](https://claude.com/product/cowork) and Claude Code. SQL queries, data exploration, visualization, dashboards, and insight generation. Works with any data warehouse, any SQL dialect, and any analytics stack.
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/data
+```
+
+## Overview
+
+The Data plugin transforms Claude into a data analyst collaborator. It helps you explore datasets, write optimized SQL, build visualizations, create interactive dashboards, and validate analyses before sharing with stakeholders.
+
+### With a Data Warehouse Connection
+
+Connect your data warehouse MCP server (Snowflake, Databricks, BigQuery, PostgreSQL, or any SQL-compatible database) for the best experience. Claude will:
+
+- Query your data warehouse directly
+- Explore schemas and table metadata
+- Run analyses end-to-end without copy-pasting
+- Iterate on queries based on results
+
+### Without a Data Warehouse Connection
+
+Without a connection, paste SQL results or upload CSV/Excel files for analysis and visualization. Claude can also write SQL queries for you to run manually, then analyze the results you provide.
+
+## Commands
+
+Explicit workflows you invoke with a slash command:
+
+<CardGroup cols={2}>
+  <Card title="/analyze" icon="chart-line">
+    Answer data questions — from quick lookups to full analyses
+  </Card>
+  
+  <Card title="/explore-data" icon="magnifying-glass-chart">
+    Profile and explore a dataset to understand its shape, quality, and patterns
+  </Card>
+  
+  <Card title="/write-query" icon="code">
+    Write optimized SQL for your dialect with best practices
+  </Card>
+  
+  <Card title="/create-viz" icon="chart-bar">
+    Create publication-quality visualizations with Python
+  </Card>
+  
+  <Card title="/build-dashboard" icon="table">
+    Build interactive HTML dashboards with filters and charts
+  </Card>
+  
+  <Card title="/validate" icon="shield-check">
+    QA an analysis before sharing — methodology, accuracy, and bias checks
+  </Card>
+</CardGroup>
+
+### /analyze
+
+Answer data questions from quick lookups to full analyses:
+
+```bash
+/analyze What was our monthly revenue trend for the past 12 months, broken down by product line?
+```
+
+Claude will:
+1. Write SQL query
+2. Execute against data warehouse (if connected)
+3. Generate trend chart
+4. Identify key patterns: "Product line A grew 23% YoY while B was flat"
+5. Validate results with sanity checks
+
+### /explore-data
+
+Profile and explore a dataset:
+
+```bash
+/explore-data users table
+```
+
+**Example output:**
+
+```markdown
+## Dataset Profile: users
+
+### Overview
+- **Rows:** 2,347,891
+- **Columns:** 47
+- **Last updated:** 2024-02-27 14:32:00
+
+### Data Quality
+| Column | Type | Nulls | Cardinality | Notes |
+|--------|------|-------|-------------|-------|
+| user_id | bigint | 0% | 100% (2.3M unique) | Primary key |
+| email | varchar | 0.2% | 99.8% | 4,234 duplicates |
+| created_at | timestamp | 0% | - | Range: 2019-01-01 to 2024-02-27 |
+| status | varchar | 0% | 4 distinct | active, inactive, suspended, UNKNOWN |
+
+### Flags
+- ⚠️ **status column** has unexpected value "UNKNOWN" in 340 rows
+- ⚠️ **email** has 0.2% null values
+- ✓ **user_id** has no duplicates or nulls
+
+### Suggested Explorations
+High-value dimensions to explore:
+- **plan_type**: 5 distinct values, drives revenue
+- **signup_source**: 12 distinct values, affects retention
+- **country**: 87 distinct values, geographical analysis
+```
+
+### /write-query
+
+Write optimized SQL for your dialect:
+
+```bash
+/write-query I need a cohort retention analysis -- users grouped by signup month,
+showing what % are still active 1, 3, 6, and 12 months later. We use Snowflake.
+```
+
+**Claude generates:**
+
+```sql
+-- Cohort Retention Analysis
+-- Users grouped by signup month with retention at 1, 3, 6, and 12 months
+
+WITH cohorts AS (
+    -- Define user cohorts by signup month
+    SELECT
+        user_id,
+        DATE_TRUNC('month', signup_date) as cohort_month
+    FROM users
+    WHERE signup_date >= '2023-01-01'
+),
+
+activity AS (
+    -- Get user activity by month
+    SELECT DISTINCT
+        user_id,
+        DATE_TRUNC('month', activity_date) as activity_month
+    FROM user_events
+    WHERE event_type IN ('login', 'action', 'purchase')
+),
+
+retention AS (
+    -- Calculate retention for each cohort month
+    SELECT
+        c.cohort_month,
+        COUNT(DISTINCT c.user_id) as cohort_size,
+        
+        -- Active in month 0 (signup month)
+        COUNT(DISTINCT CASE 
+            WHEN a.activity_month = c.cohort_month 
+            THEN c.user_id 
+        END) as month_0_active,
+        
+        -- Active in month 1
+        COUNT(DISTINCT CASE 
+            WHEN a.activity_month = DATEADD(month, 1, c.cohort_month)
+            THEN c.user_id 
+        END) as month_1_active,
+        
+        -- Active in month 3
+        COUNT(DISTINCT CASE 
+            WHEN a.activity_month = DATEADD(month, 3, c.cohort_month)
+            THEN c.user_id 
+        END) as month_3_active,
+        
+        -- Active in month 6
+        COUNT(DISTINCT CASE 
+            WHEN a.activity_month = DATEADD(month, 6, c.cohort_month)
+            THEN c.user_id 
+        END) as month_6_active,
+        
+        -- Active in month 12
+        COUNT(DISTINCT CASE 
+            WHEN a.activity_month = DATEADD(month, 12, c.cohort_month)
+            THEN c.user_id 
+        END) as month_12_active
+        
+    FROM cohorts c
+    LEFT JOIN activity a ON c.user_id = a.user_id
+    GROUP BY c.cohort_month
+)
+
+SELECT
+    cohort_month,
+    cohort_size,
+    
+    -- Retention percentages
+    ROUND(100.0 * month_0_active / cohort_size, 1) as month_0_retention_pct,
+    ROUND(100.0 * month_1_active / cohort_size, 1) as month_1_retention_pct,
+    ROUND(100.0 * month_3_active / cohort_size, 1) as month_3_retention_pct,
+    ROUND(100.0 * month_6_active / cohort_size, 1) as month_6_retention_pct,
+    ROUND(100.0 * month_12_active / cohort_size, 1) as month_12_retention_pct
+    
+FROM retention
+WHERE cohort_size >= 100  -- Filter out small cohorts
+ORDER BY cohort_month;
+```
+
+**Performance notes:**
+- Uses CTEs for readability and step-by-step logic
+- Filters by date to enable partition pruning
+- Uses DISTINCT in CASE statements to avoid double-counting
+- Only counts cohorts with 100+ users for statistical relevance
+
+### /create-viz
+
+Create publication-quality visualizations:
+
+```bash
+/create-viz Create a bar chart comparing monthly revenue across product lines
+```
+
+Claude generates Python code using matplotlib or plotly for interactive charts, with:
+- Proper labels and titles
+- Color schemes that are accessible
+- Annotations for key insights
+- Export-ready format (PNG, SVG, HTML)
+
+### /build-dashboard
+
+Build interactive HTML dashboards:
+
+```bash
+/build-dashboard Create a sales dashboard with monthly revenue, top products,
+and regional breakdown
+```
+
+Claude generates a self-contained HTML file with:
+- Interactive Chart.js visualizations
+- Dropdown filters for region and time period
+- Responsive layout
+- Opens in browser for immediate review
+
+### /validate
+
+QA an analysis before sharing:
+
+```bash
+/validate [shares analysis document]
+```
+
+**Claude reviews:**
+
+```markdown
+## Analysis Validation: Churn Analysis Q1 2024
+
+### Methodology Review
+✓ **Sample size**: 45,000 users — statistically significant
+⚠️ **Survivorship bias**: Analysis excludes users who churned before Jan 1
+   - Could understate true churn rate by ~5pp
+✓ **Time period**: 90 days — appropriate for monthly product
+
+### Accuracy Checks
+✓ **Aggregation logic**: Correctly calculates churn as (churned / starting_active)
+⚠️ **Denominator**: Excludes trial users which could overstate conversion rate
+✓ **Date filters**: Properly handles timezone and end-of-month boundaries
+
+### Bias Detection
+⚠️ **Selection bias**: Power users over-represented in sample
+✓ **Confounding variables**: Properly controls for plan type and tenure
+
+### Recommendations
+1. Add caveat about trial user exclusion in executive summary
+2. Include sensitivity analysis with trial users included
+3. Add confidence intervals to churn rate estimates
+
+### Verdict
+**Ready to share with noted caveats**
+
+Confidence: Medium-High
+```
+
+## Skills
+
+Domain knowledge Claude uses automatically when relevant:
+
+| Skill | Description | When It Activates |
+|-------|-------------|------------------|
+| `sql-queries` | SQL best practices across dialects, common patterns, and performance optimization | Writing or reviewing SQL queries |
+| `data-exploration` | Data profiling, quality assessment, and pattern discovery | Exploring new datasets or investigating data issues |
+| `data-visualization` | Chart selection, Python viz code patterns, and design principles | Creating charts or dashboards |
+| `statistical-analysis` | Descriptive stats, trend analysis, outlier detection, hypothesis testing | Analyzing trends, distributions, or correlations |
+| `data-validation` | Pre-delivery QA, sanity checks, and documentation standards | Reviewing analyses before sharing |
+| `interactive-dashboard-builder` | HTML/JS dashboard construction with Chart.js, filters, and styling | Building interactive dashboards |
+
+### SQL Dialects Supported
+
+The `sql-queries` skill includes best practices and syntax for:
+
+- **PostgreSQL** (including Aurora, RDS, Supabase, Neon)
+- **Snowflake**
+- **BigQuery** (Google Cloud)
+- **Redshift** (Amazon)
+- **Databricks SQL**
+- **MySQL** (including Aurora MySQL, PlanetScale)
+- **SQL Server** (Microsoft)
+- **DuckDB**
+- **SQLite**
+
+**Example dialect-specific optimizations:**
+
+<CodeGroup>
+```sql PostgreSQL
+-- Date truncation in PostgreSQL
+DATE_TRUNC('month', created_at)
+
+-- Array operations
+ARRAY_AGG(column)
+column @> ARRAY['value']
+
+-- JSON access
+data->>'key'  -- text
+data->'nested'->'key'  -- json
+```
+
+```sql Snowflake
+-- Date truncation in Snowflake
+DATE_TRUNC('month', created_at)
+
+-- Semi-structured data
+data:customer:name::STRING
+data:items[0]:price::NUMBER
+
+-- Flatten arrays
+SELECT f.value 
+FROM table, 
+LATERAL FLATTEN(input => array_col) f
+```
+
+```sql BigQuery
+-- Date truncation in BigQuery
+DATE_TRUNC(created_at, MONTH)
+
+-- Array operations
+ARRAY_AGG(column)
+UNNEST(array_column)
+value IN UNNEST(array_column)
+
+-- No ILIKE, use LOWER()
+LOWER(column) LIKE '%pattern%'
+```
+</CodeGroup>
+
+## MCP Integrations
+
+Connect your tools for a richer experience:
+
+| Category | Examples | What It Enables |
+|----------|----------|----------------|
+| **Data warehouse** | Snowflake, Databricks, BigQuery, PostgreSQL, Redshift, MySQL | Query directly, explore schemas, run analyses end-to-end |
+| **Notebook** | Hex, Jupyter, Deepnote, Observable | Execute analysis code, create interactive notebooks |
+| **Product analytics** | Amplitude, Mixpanel, Heap | Pull product usage data, event analytics |
+| **Project tracker** | Atlassian (Jira/Confluence), Linear, Asana | Link analyses to tickets, track data requests |
+
+### Connector Placeholders
+
+Plugin files use `~~category` as a placeholder for whatever tool you connect:
+
+- `~~data warehouse` might mean Snowflake, BigQuery, PostgreSQL, or any SQL-compatible database
+- `~~notebook` might mean Hex, Jupyter, or Observable
+- `~~product analytics` might mean Amplitude, Mixpanel, or Heap
+
+Plugins are **tool-agnostic** — they describe workflows in terms of categories rather than specific products.
+
+## Example Workflows
+
+### Ad-Hoc Analysis
+
+**You:**
+```bash
+/analyze What was our monthly revenue trend for the past 12 months, broken down by product line?
+```
+
+**Claude:**
+1. Writes SQL query for your data warehouse
+2. Executes and retrieves results
+3. Generates trend visualization
+4. Identifies insights: "Product line A grew 23% YoY while B remained flat. A's growth accelerated in Q4, driven by enterprise customers."
+5. Validates with sanity checks: "Total revenue matches finance report within 0.1%"
+
+### Query Writing for Complex Analysis
+
+**You:**
+```bash
+/write-query We have a 500M row events table partitioned by date. 
+Find the top 100 users by event count in the last 7 days with their most recent event type.
+We use BigQuery.
+```
+
+**Claude:**
+```sql
+-- Top 100 users by event count (last 7 days)
+-- Optimized for BigQuery with partition pruning
+
+WITH recent_events AS (
+    SELECT
+        user_id,
+        event_type,
+        event_timestamp,
+        -- Rank events per user by recency
+        ROW_NUMBER() OVER (
+            PARTITION BY user_id 
+            ORDER BY event_timestamp DESC
+        ) as recency_rank
+    FROM events
+    WHERE 
+        -- Partition filter for performance
+        DATE(event_timestamp) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+),
+
+user_event_counts AS (
+    SELECT
+        user_id,
+        COUNT(*) as event_count,
+        -- Get most recent event type
+        MAX(CASE WHEN recency_rank = 1 THEN event_type END) as latest_event_type
+    FROM recent_events
+    GROUP BY user_id
+)
+
+SELECT
+    user_id,
+    event_count,
+    latest_event_type
+FROM user_event_counts
+ORDER BY event_count DESC
+LIMIT 100;
+```
+
+**Performance notes:**
+- ✓ Partition filter on date column reduces scan to ~0.3% of table
+- ✓ Uses window function instead of correlated subquery
+- ✓ Single pass over filtered data
+- Expected cost: ~$0.05 per run
+
+### Dashboard Building
+
+**You:**
+```bash
+/build-dashboard Create a sales dashboard
+```
+
+**Claude:** Generates `sales_dashboard.html` with:
+- Monthly revenue trend (line chart)
+- Top 10 products by revenue (bar chart)
+- Regional breakdown (pie chart)
+- Interactive filters: date range, region, product category
+- Responsive layout that works on desktop and mobile
+
+**Output:** Opens in browser, fully self-contained HTML file ready to share.
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Engineering Plugin" href="/plugins/engineering">
+    Code review, debugging, and technical workflows
+  </Card>
+  
+  <Card title="Design Plugin" href="/plugins/design">
+    Design critique, system management, and UX writing
+  </Card>
+</CardGroup>

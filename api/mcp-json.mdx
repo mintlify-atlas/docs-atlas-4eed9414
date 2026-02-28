@@ -1,0 +1,297 @@
+---
+title: .mcp.json
+description: MCP server configuration file that connects your plugin to external tools and services via the Model Context Protocol.
+---
+
+The `.mcp.json` file configures MCP (Model Context Protocol) server connections for your plugin. It defines which external tools and services Claude can access when your plugin is active.
+
+## Location
+
+```
+plugin-name/
+└── .mcp.json
+```
+
+## Schema
+
+<ParamField path="mcpServers" type="object" required>
+  An object where each key is a unique server identifier and the value is a server configuration object.
+  
+  ```json
+  {
+    "mcpServers": {
+      "slack": { ... },
+      "notion": { ... }
+    }
+  }
+  ```
+</ParamField>
+
+### Server Configuration
+
+Each server in `mcpServers` has the following properties:
+
+<ParamField path="type" type="string" required>
+  The server transport type. Currently only `"http"` is supported.
+  
+  ```json
+  "type": "http"
+  ```
+</ParamField>
+
+<ParamField path="url" type="string" required>
+  The HTTP endpoint URL for the MCP server. Can be an empty string if the server is not yet configured.
+  
+  ```json
+  "url": "https://mcp.slack.com/mcp"
+  ```
+  
+  ```json
+  "url": ""
+  ```
+  
+  <Note>
+    Empty URLs are useful for plugins that need user configuration before they can connect to the service.
+  </Note>
+</ParamField>
+
+<ParamField path="oauth" type="object">
+  Optional OAuth configuration for servers that require authentication.
+  
+  <Expandable title="properties">
+    <ParamField path="clientId" type="string" required>
+      The OAuth client ID for the application.
+      
+      ```json
+      "clientId": "1601185624273.8899143856786"
+      ```
+    </ParamField>
+    
+    <ParamField path="callbackPort" type="number" required>
+      The local port number where the OAuth callback should be received.
+      
+      ```json
+      "callbackPort": 3118
+      ```
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Examples
+
+### Basic HTTP Servers
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    }
+  }
+}
+```
+
+### Server with OAuth
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp",
+      "oauth": {
+        "clientId": "1601185624273.8899143856786",
+        "callbackPort": 3118
+      }
+    }
+  }
+}
+```
+
+### Servers Requiring Configuration
+
+```json
+{
+  "mcpServers": {
+    "snowflake": {
+      "type": "http",
+      "url": ""
+    },
+    "databricks": {
+      "type": "http",
+      "url": ""
+    },
+    "bigquery": {
+      "type": "http",
+      "url": "https://bigquery.googleapis.com/mcp"
+    }
+  }
+}
+```
+
+### Sales Plugin Example
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "close": {
+      "type": "http",
+      "url": "https://mcp.close.com/mcp"
+    },
+    "clay": {
+      "type": "http",
+      "url": "https://api.clay.com/v3/mcp"
+    },
+    "zoominfo": {
+      "type": "http",
+      "url": "https://mcp.zoominfo.com/mcp"
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "atlassian": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    },
+    "fireflies": {
+      "type": "http",
+      "url": "https://api.fireflies.ai/mcp"
+    }
+  }
+}
+```
+
+### Data Plugin Example
+
+```json
+{
+  "mcpServers": {
+    "snowflake": {
+      "type": "http",
+      "url": ""
+    },
+    "databricks": {
+      "type": "http",
+      "url": ""
+    },
+    "bigquery": {
+      "type": "http",
+      "url": "https://bigquery.googleapis.com/mcp"
+    },
+    "hex": {
+      "type": "http",
+      "url": "https://app.hex.tech/mcp"
+    },
+    "amplitude": {
+      "type": "http",
+      "url": "https://mcp.amplitude.com/mcp"
+    },
+    "atlassian": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    }
+  }
+}
+```
+
+## Common MCP Servers
+
+Here are some commonly used MCP server URLs:
+
+| Service | URL |
+|---------|-----|
+| Slack | `https://mcp.slack.com/mcp` |
+| Notion | `https://mcp.notion.com/mcp` |
+| HubSpot | `https://mcp.hubspot.com/anthropic` |
+| Linear | `https://mcp.linear.app/mcp` |
+| Asana | `https://mcp.asana.com/v2/mcp` |
+| Atlassian (Jira) | `https://mcp.atlassian.com/v1/mcp` |
+| Microsoft 365 | `https://microsoft365.mcp.claude.com/mcp` |
+| Google Calendar | `https://gcal.mcp.claude.com/mcp` |
+| Gmail | `https://gmail.mcp.claude.com/mcp` |
+| Figma | `https://mcp.figma.com/mcp` |
+| Canva | `https://mcp.canva.com/mcp` |
+| Amplitude | `https://mcp.amplitude.com/mcp` |
+| BigQuery | `https://bigquery.googleapis.com/mcp` |
+| Hex | `https://app.hex.tech/mcp` |
+| Monday | `https://mcp.monday.com/mcp` |
+| ClickUp | `https://mcp.clickup.com/mcp` |
+| Close | `https://mcp.close.com/mcp` |
+| Clay | `https://api.clay.com/v3/mcp` |
+| ZoomInfo | `https://mcp.zoominfo.com/mcp` |
+| Fireflies | `https://api.fireflies.ai/mcp` |
+| Apollo | `https://api.apollo.io/mcp` |
+| Outreach | `https://mcp.outreach.io/mcp` |
+| SimilarWeb | `https://mcp.similarweb.com/mcp` |
+| Ahrefs | `https://api.ahrefs.com/mcp/mcp` |
+| Klaviyo | `https://mcp.klaviyo.com/mcp` |
+| PubMed | `https://pubmed.mcp.claude.com/mcp` |
+| BioRender | `https://mcp.services.biorender.com/mcp` |
+| bioRxiv | `https://mcp.deepsense.ai/biorxiv/mcp` |
+| ClinicalTrials.gov | `https://mcp.deepsense.ai/clinical_trials/mcp` |
+| ChEMBL | `https://mcp.deepsense.ai/chembl/mcp` |
+| Synapse | `https://mcp.synapse.org/mcp` |
+| Wiley | `https://connector.scholargateway.ai/mcp` |
+| Owkin | `https://mcp.k.owkin.com/mcp` |
+| Open Targets | `https://mcp.platform.opentargets.org/mcp` |
+
+## Validation Rules
+
+<Warning>
+  **Required Structure**: The top-level `mcpServers` object is required, even if empty. Each server must have a `type` and `url` field.
+</Warning>
+
+<Note>
+  **Empty URLs**: You can use an empty string for the `url` field if the server requires user-specific configuration. This is common for data warehouse connections (Snowflake, Databricks) that need account-specific endpoints.
+</Note>
+
+<Warning>
+  **OAuth Configuration**: If you include an `oauth` object, both `clientId` and `callbackPort` are required.
+</Warning>
+
+## Best Practices
+
+1. **Server Names**: Use clear, recognizable names for server identifiers (e.g., `"slack"`, `"notion"`, `"hubspot"`).
+
+2. **Empty URLs for Configuration**: Use empty URL strings for servers that require user-specific configuration rather than omitting them entirely. This documents which servers the plugin supports.
+
+3. **Organize by Function**: Group related servers together in your configuration for better maintainability.
+
+4. **Version Endpoints**: Some services include version numbers in their MCP endpoints (e.g., `/v1/mcp`, `/v2/mcp`). Use the latest stable version recommended by the service.
+
+5. **OAuth Setup**: For servers requiring OAuth, ensure the `callbackPort` doesn't conflict with other services in your plugin.
+
+6. **Testing**: Verify that all server URLs are accessible and correctly formatted before distributing your plugin.
+
+## How It Works
+
+When your plugin is activated:
+
+1. Claude reads the `.mcp.json` file and establishes connections to all configured servers
+2. Each server exposes tools, resources, and prompts that become available to Claude
+3. Claude automatically uses these tools when relevant to the user's request
+4. Users may need to authenticate with services (especially those with OAuth) before Claude can access them
+
+## Related
+
+- [plugin.json](/api/plugin-json) - Plugin manifest and metadata
+- [Model Context Protocol](https://modelcontextprotocol.io/) - Learn more about MCP
+- [Plugin Structure](/building/plugin-structure) - Complete plugin directory structure

@@ -1,0 +1,671 @@
+---
+title: "Modifying Workflows"
+description: "Customize the step-by-step instructions in skill files to match how your team actually works"
+---
+
+## What Are Workflows?
+
+Workflows are the step-by-step instructions Claude follows when executing a skill. They live in the `SKILL.md` file under sections like:
+
+- `## Execution Flow`
+- `## How It Works`
+- `## Step 1: ...`, `## Step 2: ...`, etc.
+
+Out-of-the-box workflows are generic best practices. Modifying them to match your company's actual process makes Claude's output much more useful.
+
+<Note>
+You're editing the instructions Claude follows — not writing code. It's markdown with step-by-step guidance.
+</Note>
+
+## Why Modify Workflows?
+
+Every company has different:
+- **Qualification criteria** — What makes a good lead?
+- **Approval processes** — Who needs to sign off?
+- **Output formats** — How do you structure documents?
+- **Decision frameworks** — What factors matter most?
+
+Modifying workflows ensures Claude follows YOUR process, not a generic textbook version.
+
+## Where Workflows Live
+
+Open any `SKILL.md` file and look for the execution instructions:
+
+```
+sales/
+└── skills/
+    └── call-prep/
+        └── SKILL.md
+            ├── [Skill description]
+            ├── [Usage examples]
+            ├── ## Execution Flow    ← Workflow steps here
+            │   ├── ### Step 1
+            │   ├── ### Step 2
+            │   └── ### Step 3
+            └── [Output format]
+```
+
+## Example: Modifying Call Prep Workflow
+
+Let's customize the call-prep skill to match a specific sales process.
+
+### Default Workflow
+
+Here's the generic workflow from `call-prep/SKILL.md`:
+
+```markdown
+## Execution Flow
+
+### Step 1: Gather Context
+
+**If connectors available:**
+1. Calendar → Find upcoming meeting matching company name
+2. CRM → Query account (details, contacts, opportunities, activities)
+3. Email → Search recent threads (last 30 days)
+4. Chat → Search internal discussions (last 30 days)
+5. Transcripts → Find prior calls
+
+**If no connectors:**
+1. Ask user: "What company are you meeting with?"
+2. Ask user: "What type of meeting is this?"
+3. Ask user: "Who's attending?"
+4. Ask user: "Any context you want me to know?"
+
+### Step 2: Research Supplement
+
+**Always run (web search):**
+1. "[Company] news" — last 30 days
+2. "[Company] funding" — recent announcements
+3. "[Company] leadership" — executive changes
+4. Attendee LinkedIn profiles — background research
+
+### Step 3: Synthesize & Generate
+
+1. Combine all sources into unified context
+2. Identify gaps in understanding → generate discovery questions
+3. Anticipate objections based on stage and history
+4. Create suggested agenda tailored to meeting type
+5. Output formatted prep brief
+```
+
+### Customized Workflow
+
+Here's how a mid-market SaaS company might customize it:
+
+```markdown
+## Execution Flow
+
+### Step 1: Gather Context
+
+**If connectors available:**
+1. Calendar → Find upcoming meeting
+2. HubSpot (CRM) → Query account
+   - Required fields: Deal stage, deal size, competitors
+   - Get last 3 activities (emails, calls, meetings)
+   - Check if we have a champion identified
+3. Gmail → Search last 14 days only (we move fast)
+4. Slack → Search #sales-intel channel for company mentions
+5. Fireflies → Get last call transcript if exists
+
+**If no connectors:**
+1. Ask user: "What company?"
+2. Ask user: "What stage? (Discovery/Demo/Negotiation)"
+3. Ask user: "Deal size estimate?"
+4. Ask user: "Known competitors in the deal?"
+
+### Step 1.5: Qualification Check (Acme-Specific)
+
+**Before proceeding, verify BANT:**
+- Budget: Is deal size $50K+ ARR?
+- Authority: Is VP Product or Head of Data involved?
+- Need: Are they using slow BI tools or spreadsheets?
+- Timeline: Are they evaluating within 90 days?
+
+**If missing any BANT element:**
+- Flag it prominently in the prep brief
+- Add discovery questions to fill the gap
+- Consider if this call should be a qualification call
+
+### Step 2: Research Supplement
+
+**Always run (web search):**
+1. "[Company] Series A OR Series B funding" — Trigger event?
+2. "[Company] hiring product manager OR data analyst" — Growth signal?
+3. "[Company] using Tableau OR Looker" — Competitor displacement?
+4. Attendee LinkedIn profiles — Focus on product/data roles
+5. "[Company] product launch OR release" — Understand their pace
+
+**Skip if:**
+- Call is in <2 hours (use cached research)
+- This is a repeat meeting (use prior prep)
+
+### Step 3: Synthesize & Generate
+
+1. Combine all sources
+2. Determine which sales stage this call is for:
+   - **Discovery:** Focus on qualification and pain points
+   - **Demo:** Focus on use cases and technical requirements
+   - **Negotiation:** Focus on value justification and objections
+3. Generate stage-appropriate discovery questions
+4. Pull relevant proof points from our customer list:
+   - Similar company size
+   - Similar industry
+   - Similar use case
+5. Identify likely objections based on:
+   - Deal stage
+   - Competitors involved
+   - Company's current tools
+6. Create agenda following our standard format:
+   - 5 min: Recap last conversation
+   - 15 min: [Stage-specific content]
+   - 5 min: Next steps with clear timeline
+7. Output prep brief
+
+### Step 4: Acme-Specific Quality Checks
+
+**Before outputting, verify prep includes:**
+- [ ] BANT status clearly stated
+- [ ] Deal stage identified
+- [ ] At least 1 similar customer proof point
+- [ ] Competitor positioning if applicable
+- [ ] Next step with specific date (not "follow up soon")
+- [ ] Champion status (do we have one?)
+
+**If any missing:**
+- Add a "Gaps to Fill" section
+- Suggest questions to fill those gaps
+```
+
+### What Changed?
+
+<CardGroup cols={2}>
+  <Card title="Added qualification step" icon="clipboard-check">
+    Step 1.5 ensures BANT is checked before every call
+  </Card>
+  <Card title="Specified tools" icon="screwdriver-wrench">
+    "CRM" → "HubSpot", generic chat → "#sales-intel channel"
+  </Card>
+  <Card title="Adjusted timelines" icon="clock">
+    Changed from 30-day email search to 14 days (faster cycle)
+  </Card>
+  <Card title="Added quality checks" icon="circle-check">
+    Step 4 ensures output meets Acme's standards
+  </Card>
+</CardGroup>
+
+## Real Example: Account Research Workflow
+
+Here's the research workflow from `account-research/SKILL.md`:
+
+### Default (Generic)
+
+```markdown
+## Execution Flow
+
+### Step 2: Web Search (Always)
+
+Run these searches:
+1. "[Company name]" → Homepage, about page
+2. "[Company name] news" → Recent announcements
+3. "[Company name] funding" → Investment history
+4. "[Company name] careers" → Hiring signals
+5. "[Person name] [Company] LinkedIn" → Profile info
+```
+
+### Customized (For a specific ICP)
+
+```markdown
+## Execution Flow
+
+### Step 2: Web Search (Always)
+
+**Company qualification searches:**
+1. "[Company] employees" → Size check (must be 100-1000)
+2. "[Company] Series A OR Series B" → Funding stage (disqualify seed)
+3. "[Company] product" → Understand what they build
+4. "[Company] Snowflake OR BigQuery OR Databricks" → Tech stack fit
+
+**Signal searches:**
+5. "[Company] hiring data analyst OR product manager" → Growth signal
+6. "[Company] news" last 90 days → Trigger events
+7. "[Company] careers data OR analytics" → Relevant hiring
+
+**People searches:**
+8. "[Company] VP Product LinkedIn" → Decision maker
+9. "[Company] Head of Data LinkedIn" → Technical buyer
+
+**Disqualification checks:**
+- If <100 employees: Note "Too small for our ICP"
+- If using Excel only: Note "Not analytics-mature"
+- If enterprise (1000+): Note "Needs enterprise sales motion"
+
+**Extract and prioritize:**
+- Trigger events (funding, new VP, product launch) → Top of output
+- Tech stack compatibility → Clearly flag
+- Hiring signals → Quantify (e.g., "15 open data roles")
+```
+
+### What Changed?
+
+- **Qualification-first:** Check if they fit ICP before deep research
+- **Signal-focused:** Prioritize trigger events over general info
+- **Disqualification logic:** Explicitly check if they're NOT a fit
+- **Specific roles:** Look for exact titles relevant to our product
+
+## Example: Draft Outreach Workflow
+
+From `draft-outreach/SKILL.md`:
+
+### Default Hook Priority
+
+```markdown
+### Step 3: Identify Hook
+
+Priority order for hooks:
+1. Trigger event (funding, hiring, news) → Most timely
+2. Mutual connection → Social proof
+3. Their content (post, article, talk) → Shows you did research
+4. Company initiative → Relevant to their priorities
+5. Role-based pain point → Least personal but still relevant
+```
+
+### Customized (For specific outreach strategy)
+
+```markdown
+### Step 3: Identify Hook (Acme Priority Order)
+
+**Priority order for hooks:**
+1. **Using competitor tool** (Tableau/Looker mention) → Best displacement angle
+   - Hook: "Saw you're using [Tool]. Curious how you handle real-time queries?"
+
+2. **Hiring data/analytics roles** → Indicates scaling need
+   - Hook: "Saw you're hiring [X] data analysts. As your team scales..."
+
+3. **Recent funding** (Series A/B in last 6 months) → Growth mode
+   - Hook: "Congrats on the Series [X]. As you scale the product team..."
+
+4. **New VP Product/Data** (in role <6 months) → Building credibility
+   - Hook: "Congrats on joining [Company]. Often see new leaders want..."
+
+5. **Product launch announcement** → Moving fast
+   - Hook: "Saw the [Feature] launch. How are you measuring adoption?"
+
+6. **LinkedIn content** (posted about data/analytics) → Engaged on topic
+   - Hook: "Saw your post about [Topic]. We've seen similar at..."
+
+7. **Role-based pain point** → Fallback if no specific trigger
+   - Hook: "Most product teams we talk to struggle with..."
+
+**Never use:**
+- ❌ "I hope this email finds you well"
+- ❌ "Just wanted to reach out"
+- ❌ "I noticed you work at [obvious fact]"
+- ❌ Generic "congrats on your role" (needs specific context)
+
+**Quality check:**
+- Would the recipient know we researched them? (Should be yes)
+- Is the hook in the first sentence? (Should be yes)
+- Does it naturally transition to our value prop? (Should be yes)
+```
+
+### What Changed?
+
+- **Specific to ICP:** Competitor usage is top priority (displacement play)
+- **Added "never use":** Explicit anti-patterns
+- **Quality checks:** Built-in validation before sending
+- **Context requirements:** "Congrats on your role" only with specific context
+
+## Workflow Modification Patterns
+
+Here are common modifications teams make:
+
+### 1. Add Qualification Gates
+
+**Before:**
+```markdown
+### Step 1: Research Company
+1. Search for company
+2. Extract information
+```
+
+**After:**
+```markdown
+### Step 1: Research Company
+1. Search for company
+2. Extract information
+3. **Check qualification criteria:**
+   - [ ] Company size: 100-1000 employees
+   - [ ] Industry: B2B SaaS or fintech
+   - [ ] Tech stack: Cloud-based infrastructure
+   - [ ] Funding: Series A or later
+4. **If disqualified:** Flag clearly and suggest passing
+```
+
+### 2. Add Company-Specific Checks
+
+**Before:**
+```markdown
+### Step 3: Generate Discovery Questions
+1. Identify gaps in understanding
+2. Generate questions
+```
+
+**After:**
+```markdown
+### Step 3: Generate Discovery Questions (MEDDIC Framework)
+
+**Required MEDDIC elements:**
+- Metrics: "What metrics define success for this initiative?"
+- Economic Buyer: "Who owns the budget for this?"
+- Decision Criteria: "What factors will drive your final decision?"
+- Decision Process: "What's your evaluation and approval process?"
+- Identify Pain: "What happens if you don't solve this in the next quarter?"
+- Champion: "Who internally will advocate for this solution?"
+
+**Generate at least one question per MEDDIC element**
+```
+
+### 3. Add Output Validation
+
+**Before:**
+```markdown
+### Step 4: Generate Output
+1. Combine research
+2. Create document
+```
+
+**After:**
+```markdown
+### Step 4: Generate Output
+1. Combine research
+2. Create document
+3. **Validate before delivering:**
+   - [ ] Uses company name correctly
+   - [ ] References specific proof point
+   - [ ] Includes clear next step with date
+   - [ ] Tone matches company style guide
+   - [ ] No markdown formatting in email body
+   - [ ] Subject line <50 characters
+4. **If validation fails:** Revise before showing to user
+```
+
+### 4. Add Tool-Specific Instructions
+
+**Before:**
+```markdown
+### Step 1: Pull CRM Data
+1. Query account from CRM
+2. Get contact information
+```
+
+**After:**
+```markdown
+### Step 1: Pull HubSpot Data
+1. Query account (company record)
+2. Get required HubSpot fields:
+   - Deal Stage (required)
+   - Deal Amount (required)
+   - Close Date (required)
+   - Competitor (if populated)
+   - Custom field: "Champion Identified" (Yes/No)
+3. Get last 5 activities from timeline
+4. Get all contacts with role = "Decision Maker" OR "Influencer"
+5. **If deal stage = "Negotiation":** Also pull quote/proposal details
+```
+
+### 5. Adjust for Team Size/Velocity
+
+**Before:**
+```markdown
+### Step 2: Research Supplement
+1. Search news from last 30 days
+2. Get hiring information
+```
+
+**After:**
+```markdown
+### Step 2: Research Supplement (Fast-Moving Team)
+
+**If call is within 48 hours:**
+1. Search news from last 7 days only (recent is enough)
+2. Skip hiring research (low signal for fast deal)
+3. Focus on: deal-specific intel, competitor mentions, product changes
+
+**If call is >48 hours away:**
+1. Search news from last 30 days
+2. Get hiring information
+3. Research attendees in depth
+
+**Rationale:** We have a 30-day sales cycle, prioritize deal velocity over deep research.
+```
+
+## Step-by-Step: Modifying a Workflow
+
+<Steps>
+  <Step title="Pick a skill you use frequently">
+    Start with the skill you run most often (e.g., call-prep, write-spec)
+  </Step>
+  
+  <Step title="Document your current manual process">
+    Write down how you actually do this task today, step by step
+  </Step>
+  
+  <Step title="Open the SKILL.md file">
+    ```bash
+    cd ~/path-to-plugin/sales/skills/call-prep/
+    code SKILL.md
+    ```
+  </Step>
+  
+  <Step title="Find the Execution Flow section">
+    Look for:
+    - `## Execution Flow`
+    - `## How It Works`
+    - Step-by-step sections
+  </Step>
+  
+  <Step title="Modify the steps to match your process">
+    - Add steps you always do
+    - Remove steps you never do
+    - Reorder steps to match your sequence
+    - Add qualification checks
+    - Add validation steps
+  </Step>
+  
+  <Step title="Add company-specific context in each step">
+    - Replace "CRM" with "HubSpot"
+    - Specify field names from your system
+    - Add your qualification criteria
+    - Include your output format requirements
+  </Step>
+  
+  <Step title="Save and test">
+    Run the skill and see if Claude follows your customized workflow
+  </Step>
+  
+  <Step title="Iterate based on output">
+    - If Claude skips a step, make it more explicit
+    - If output doesn't match your format, add format examples
+    - If validation fails, add specific checks
+  </Step>
+</Steps>
+
+## Testing Modified Workflows
+
+After modifying a workflow, test it:
+
+<CodeGroup>
+
+```bash Test Call Prep
+# Run the skill
+"Prep me for my call with [test company]"
+
+# Check if Claude:
+# ✓ Follows your qualification steps
+# ✓ Uses your specific CRM fields
+# ✓ Generates questions based on your framework
+# ✓ Outputs in your format
+# ✓ Includes your quality checks
+```
+
+```bash Test Draft Outreach
+# Run the skill
+"Draft outreach to [test prospect]"
+
+# Check if Claude:
+# ✓ Prioritizes hooks in your order
+# ✓ Avoids your anti-patterns
+# ✓ Uses your proof points
+# ✓ Follows your tone guidelines
+# ✓ Validates before showing output
+```
+
+```bash Test Account Research
+# Run the skill
+"Research [test company]"
+
+# Check if Claude:
+# ✓ Checks qualification criteria first
+# ✓ Searches for your specific signals
+# ✓ Flags disqualification reasons
+# ✓ Prioritizes trigger events
+# ✓ Outputs in your format
+```
+
+</CodeGroup>
+
+<Note>
+If Claude doesn't follow your workflow exactly, make the instructions more explicit. Add examples of what to do and what not to do.
+</Note>
+
+## Common Workflow Modifications by Role
+
+### Sales Teams
+
+**Call Prep:**
+- Add MEDDIC/BANT qualification framework
+- Specify CRM fields to check
+- Add competitor-specific positioning
+- Include proof points from similar customers
+
+**Draft Outreach:**
+- Prioritize hooks based on your ICP
+- Add tone and voice guidelines
+- Specify CTA options by deal stage
+- Add validation for company style guide
+
+**Pipeline Review:**
+- Add custom deal stages
+- Specify risk indicators
+- Include forecast categories
+- Add next-step requirements
+
+### Support Teams
+
+**Ticket Triage:**
+- Add priority rules (P0/P1/P2/P3 criteria)
+- Specify escalation paths
+- Include SLA requirements by tier
+- Add routing rules by product area
+
+**Draft Response:**
+- Add response templates by issue type
+- Specify tone guidelines
+- Include required follow-up actions
+- Add validation for customer-facing language
+
+**Bug Escalation:**
+- Add reproduction step requirements
+- Specify information needed for engineering
+- Include severity criteria
+- Add Jira field mappings
+
+### Product Teams
+
+**Write Spec:**
+- Add spec template sections
+- Specify stakeholder approval process
+- Include prioritization framework
+- Add success metrics requirements
+
+**Roadmap Planning:**
+- Add initiative sizing (S/M/L/XL)
+- Specify dependency checking
+- Include resource requirements
+- Add timeline constraints
+
+**User Research Synthesis:**
+- Add insight categorization
+- Specify evidence requirements
+- Include recommendation format
+- Add stakeholder tagging
+
+## Advanced: Multi-Stage Workflows
+
+Some workflows need different paths based on context:
+
+```markdown
+## Execution Flow
+
+### Step 1: Determine Workflow Type
+
+**Check deal stage:**
+- If "Discovery" → Follow Discovery Workflow (Steps 2A)
+- If "Demo" → Follow Demo Workflow (Steps 2B)
+- If "Negotiation" → Follow Negotiation Workflow (Steps 2C)
+
+### Step 2A: Discovery Workflow
+[Discovery-specific steps]
+
+### Step 2B: Demo Workflow
+[Demo-specific steps]
+
+### Step 2C: Negotiation Workflow
+[Negotiation-specific steps]
+
+### Step 3: Common Final Steps
+[Steps that apply to all workflows]
+```
+
+## Tips for Effective Workflow Modifications
+
+<CardGroup cols={2}>
+  <Card title="Be Explicit" icon="bullseye">
+    "Check if qualified" → "Check: 100-1000 employees, B2B SaaS, has CRM"
+  </Card>
+  <Card title="Add Examples" icon="file-lines">
+    Show what good output looks like vs bad output
+  </Card>
+  <Card title="Include Validation" icon="circle-check">
+    Add quality checks before final output
+  </Card>
+  <Card title="Document Why" icon="message">
+    Explain reasoning: "We skip X because our sales cycle is only 30 days"
+  </Card>
+</CardGroup>
+
+## Common Mistakes to Avoid
+
+<Warning>
+**Don't make these mistakes when modifying workflows:**
+</Warning>
+
+1. **Too vague:** "Qualify the prospect" vs "Check: company size, industry, budget, timeline"
+2. **No validation:** Missing quality checks means inconsistent output
+3. **Unchanged from default:** If you don't customize, you're not getting the full value
+4. **Overly complex:** 20-step workflows are hard to follow — keep it focused
+5. **Missing examples:** Abstract instructions without concrete examples of good/bad output
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Customization Overview" icon="map" href="/customization/overview">
+    Back to customization overview
+  </Card>
+  <Card title="Configure Connectors" icon="plug" href="/customization/configuring-connectors">
+    Wire up your tool stack
+  </Card>
+  <Card title="Add Company Context" icon="building" href="/customization/adding-company-context">
+    Add your terminology and processes
+  </Card>
+</CardGroup>

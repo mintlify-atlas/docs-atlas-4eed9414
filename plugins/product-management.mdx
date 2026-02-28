@@ -1,0 +1,348 @@
+---
+title: Product Management Plugin
+description: Write feature specs, plan roadmaps, and synthesize user research faster. Keep stakeholders updated and stay ahead of the competitive landscape.
+---
+
+A product management plugin designed for Claude that covers the full PM workflow: writing feature specs, managing roadmaps, communicating with stakeholders, synthesizing user research, analyzing competitors, and tracking product metrics.
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/product-management
+```
+
+## What It Does
+
+An AI-powered product management partner that helps with:
+
+- **Feature Specs & PRDs** — Generate structured product requirements documents from a problem statement or feature idea. Includes user stories, requirements prioritization, success metrics, and scope management.
+- **Roadmap Planning** — Create, update, and reprioritize your product roadmap. Supports Now/Next/Later, quarterly themes, and OKR-aligned formats with dependency mapping.
+- **Stakeholder Updates** — Generate status updates tailored to your audience (executives, engineering, customers). Pulls context from connected tools to save you the weekly update grind.
+- **User Research Synthesis** — Turn interview notes, survey data, and support tickets into structured insights. Identifies themes, builds personas, and surfaces opportunity areas with supporting evidence.
+- **Competitive Analysis** — Research competitors and generate briefs with feature comparisons, positioning analysis, and strategic implications.
+- **Metrics Review** — Analyze product metrics, identify trends, compare against targets, and surface actionable insights.
+
+## Commands
+
+<CardGroup cols={3}>
+  <Card title="/write-spec" icon="file-lines">
+    Write a feature spec or PRD from a problem statement
+  </Card>
+  <Card title="/roadmap-update" icon="road">
+    Update, create, or reprioritize your roadmap
+  </Card>
+  <Card title="/stakeholder-update" icon="users">
+    Generate a stakeholder update (weekly, monthly, launch)
+  </Card>
+  <Card title="/synthesize-research" icon="clipboard-list">
+    Synthesize user research from interviews, surveys, and tickets
+  </Card>
+  <Card title="/competitive-brief" icon="chart-mixed">
+    Create a competitive analysis brief
+  </Card>
+  <Card title="/metrics-review" icon="chart-line">
+    Review and analyze product metrics
+  </Card>
+</CardGroup>
+
+### /write-spec
+
+Write a feature specification or PRD.
+
+**Usage:**
+```
+/write-spec <feature or problem statement>
+```
+
+**Examples:**
+- `/write-spec SSO support`
+- `/write-spec Enterprise customers keep asking for centralized auth`
+- `/write-spec Users want to export their data as CSV`
+
+**What Claude will ask you:**
+- User problem: What problem does this solve? Who experiences it?
+- Target users: Which user segment(s)?
+- Success metrics: How will we know this worked?
+- Constraints: Technical constraints, timeline, dependencies
+- Prior art: Has this been attempted before?
+
+**What you get:**
+
+```markdown
+## Problem Statement
+The user problem, who is affected, and impact (2-3 sentences)
+
+## Goals
+3-5 specific, measurable outcomes tied to user or business metrics
+
+## Non-Goals
+3-5 things explicitly out of scope with rationale
+
+## User Stories
+As a [user type], I want [capability] so that [benefit]
+(grouped by persona)
+
+## Requirements
+- Must-Have (P0): Critical requirements with acceptance criteria
+- Nice-to-Have (P1): Important but not blocking
+- Future Considerations (P2): Out of scope for now
+
+## Success Metrics
+- Leading indicators (change quickly)
+- Lagging indicators (change over time)
+- Specific targets for each
+
+## Open Questions
+Unresolved questions tagged with who needs to answer
+(engineering, design, legal, data)
+
+## Timeline Considerations
+Hard deadlines, dependencies, and phasing
+```
+
+**Supercharged with connectors:**
+- **Project tracker:** Pulls related tickets, epics, existing requirements, identifies dependencies
+- **Knowledge base:** Searches research docs, prior specs, meeting notes
+- **Design tools:** Pulls mockups and wireframes
+
+### /roadmap-update
+
+Create or update your product roadmap.
+
+**Usage:**
+```
+/roadmap-update
+```
+
+Supports multiple formats:
+- Now/Next/Later
+- Quarterly themes
+- OKR-aligned roadmaps
+- Dependency mapping
+
+Pulls context from connected project trackers and generates prioritized roadmap views.
+
+### /stakeholder-update
+
+Generate status updates for different audiences.
+
+**Usage:**
+```
+/stakeholder-update
+```
+
+**Update types:**
+- Weekly update
+- Monthly update
+- Launch announcement
+- Ad-hoc update
+
+**Tailored by audience:**
+- **Executives:** High-level progress, decisions needed, risks
+- **Engineering:** Technical details, blockers, sprint progress
+- **Customers:** Feature announcements, benefits, migration guides
+
+**Example:**
+```
+You: /stakeholder-update
+Claude: What type of update? (weekly, monthly, launch, ad-hoc)
+You: Weekly update for the exec team
+Claude: [Pulls context from project management tool, chat, and docs]
+Claude: [Generates executive summary with progress, decisions, risks, and next milestones]
+```
+
+### /synthesize-research
+
+Turn user research into actionable insights.
+
+**Usage:**
+```
+/synthesize-research
+```
+
+**What you can provide:**
+- Interview transcripts
+- Survey data
+- Support tickets
+- User feedback from multiple sources
+
+**What you get:**
+- Thematic analysis across all inputs
+- Key findings with supporting evidence
+- Persona development or refinement
+- Opportunity areas prioritized by frequency and impact
+- Actionable recommendations
+
+**Example:**
+```
+You: /synthesize-research
+Claude: What research do you want to synthesize?
+You: [Pastes 8 interview transcripts]
+Claude: [Identifies themes, patterns, and insights]
+Claude: [Generates synthesis with findings, personas, opportunities, and evidence]
+```
+
+### /competitive-brief
+
+Analyze competitors and generate strategic briefs.
+
+**Usage:**
+```
+/competitive-brief
+```
+
+**Example:**
+```
+You: /competitive-brief
+Claude: Which competitor(s) or feature area?
+You: Compare our onboarding flow to [competitor A] and [competitor B]
+Claude: [Researches competitor onboarding approaches]
+Claude: [Generates brief with feature comparison, strengths/weaknesses, strategic implications]
+```
+
+**Output includes:**
+- Feature comparison matrix
+- Positioning analysis
+- Win/loss insights (from connected CRM)
+- Strategic recommendations
+
+### /metrics-review
+
+Analyze product metrics and surface insights.
+
+**Usage:**
+```
+/metrics-review
+```
+
+**Provides:**
+- Metric trend analysis
+- Comparison against targets
+- Anomaly detection
+- Actionable optimization recommendations
+- Dashboard design suggestions
+
+**Supercharged with analytics connectors** (Amplitude, Pendo, Mixpanel) for real-time data.
+
+## Skills
+
+Domain expertise that powers the commands:
+
+<CardGroup cols={2}>
+  <Card title="feature-spec" icon="file-contract">
+    PRD structure, user stories, requirements categorization, acceptance criteria
+  </Card>
+  <Card title="roadmap-management" icon="map">
+    Prioritization frameworks (RICE, MoSCoW), roadmap formats, dependency mapping
+  </Card>
+  <Card title="stakeholder-comms" icon="bullhorn">
+    Update templates by audience, risk communication, decision documentation
+  </Card>
+  <Card title="user-research-synthesis" icon="microscope">
+    Thematic analysis, affinity mapping, persona development, opportunity sizing
+  </Card>
+  <Card title="competitive-analysis" icon="scale-balanced">
+    Feature comparison matrices, positioning analysis, win/loss analysis
+  </Card>
+  <Card title="metrics-tracking" icon="gauge">
+    Product metrics hierarchy, goal setting (OKRs), dashboard design, review cadences
+  </Card>
+</CardGroup>
+
+### Prioritization Frameworks
+
+The `roadmap-management` skill includes frameworks like:
+
+**RICE (Reach, Impact, Confidence, Effort)**
+- Reach: How many users affected?
+- Impact: How much value for each user?
+- Confidence: How certain are we?
+- Effort: How much work required?
+
+**MoSCoW (Must have, Should have, Could have, Won't have)**
+- Categorizes requirements by necessity
+- Useful for scope management and release planning
+
+## MCP Integrations
+
+Connect your PM tools for richer context:
+
+| Category | Examples | What It Enables |
+|---|---|---|
+| **Project Tracker** | Linear, Asana, monday.com, ClickUp, Atlassian (Jira/Confluence), Shortcut, Basecamp | Roadmap integration, ticket context, status tracking, dependency mapping |
+| **Knowledge Base** | Notion, Confluence, Guru, Coda | Existing specs, research notes, meeting notes, decision records |
+| **Design** | Figma, Sketch, Adobe XD | Design context, mockups, handoff files |
+| **Product Analytics** | Amplitude, Pendo, Mixpanel, Heap, FullStory | Usage data, metrics, behavioral analysis, funnels |
+| **User Feedback** | Intercom, Productboard, Canny, UserVoice | Support tickets, feature requests, user conversations |
+| **Meeting Transcription** | Fireflies, Gong, Dovetail, Otter.ai | Meeting notes, discussion context, decision history |
+| **Chat** | Slack, Microsoft Teams | Team context, stakeholder threads, discussions |
+| **Competitive Intelligence** | Similarweb, Crayon, Klue | Competitor traffic, market benchmarks, competitive moves |
+
+<Note>
+Plugin files use `~~category` placeholders (like `~~project tracker`) to work with any connected tool in that category. The plugin is tool-agnostic.
+</Note>
+
+## Example Workflows
+
+### Writing a PRD
+
+```
+You: /write-spec
+Claude: What feature or problem are you speccing out?
+You: We need to add SSO support for enterprise customers
+Claude: [Asks about target users, constraints, success metrics]
+Claude: [Generates full PRD with problem statement, user stories,
+         requirements, success metrics, open questions]
+```
+
+### Preparing a Stakeholder Update
+
+```
+You: /stakeholder-update
+Claude: What type of update? (weekly, monthly, launch, ad-hoc)
+You: Weekly update for the exec team
+Claude: [Pulls context from project management tool, chat, and docs]
+Claude: [Generates executive summary with progress, decisions,
+         risks, and next milestones]
+```
+
+### Synthesizing User Research
+
+```
+You: /synthesize-research
+Claude: What research do you want to synthesize? You can paste interview
+        notes, upload files, or I can pull from connected sources.
+You: [Pastes 8 interview transcripts]
+Claude: [Identifies themes, patterns, and insights across interviews]
+Claude: [Generates synthesis with key findings, personas, opportunity
+         areas, and evidence]
+```
+
+### Competitive Analysis
+
+```
+You: /competitive-brief
+Claude: Which competitor(s) or feature area do you want to analyze?
+You: Compare our onboarding flow to [competitor A] and [competitor B]
+Claude: [Researches competitor onboarding approaches]
+Claude: [Generates brief with feature comparison, strengths/weaknesses,
+         and strategic implications]
+```
+
+## Best Practices
+
+### For Specs
+- Be opinionated about scope — tight specs are better than expansive vague ones
+- If an idea is too big, break it into phases and spec the first phase
+- Success metrics should be specific and measurable, not vague
+- Non-goals are as important as goals (they prevent scope creep)
+
+### For Research Synthesis
+- More context = better insights — provide as much raw research as possible
+- Claude looks for patterns across multiple sources
+- Tag any known constraints or business context upfront
+
+### For Stakeholder Updates
+- Tailor by audience — execs want decisions and risks, engineers want technical details
+- Pull context from connected tools to save time
+- Be transparent about blockers and dependencies

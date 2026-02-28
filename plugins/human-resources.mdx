@@ -1,0 +1,282 @@
+---
+title: Human Resources
+description: Streamline people operations — recruiting, onboarding, performance reviews, compensation analysis, and policy guidance
+---
+
+A people operations plugin for Cowork that helps with recruiting, onboarding, performance management, policy guidance, and compensation analysis. Works standalone or supercharged when you connect your HRIS, ATS, and other tools.
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/human-resources
+```
+
+## Commands
+
+<CardGroup cols={2}>
+  <Card title="Draft Offer" icon="envelope">
+    Draft an offer letter with compensation details, start date, and terms
+  </Card>
+  <Card title="Onboarding" icon="user-plus">
+    Generate an onboarding checklist and first-week plan for a new hire
+  </Card>
+  <Card title="Performance Review" icon="star">
+    Structure a performance review with templates and calibration prep
+  </Card>
+  <Card title="Policy Lookup" icon="book">
+    Find and explain company policies — PTO, benefits, expense, travel, remote work
+  </Card>
+  <Card title="Comp Analysis" icon="dollar-sign">
+    Analyze compensation data — benchmarking, band placement, equity refresh modeling
+  </Card>
+  <Card title="People Report" icon="chart-bar">
+    Generate headcount, attrition, diversity, or org health reports
+  </Card>
+</CardGroup>
+
+### /draft-offer
+
+Draft a complete offer letter for a new hire.
+
+```bash
+/draft-offer <role and level>
+```
+
+**What you need to provide:**
+- Role and title
+- Level (Junior, Mid, Senior, Staff, etc.)
+- Location (affects comp and benefits)
+- Compensation: base salary, equity, signing bonus
+- Start date
+- Hiring manager
+
+**Example:**
+```bash
+/draft-offer Senior Software Engineer
+```
+
+**Output includes:**
+- Complete compensation package breakdown
+- Offer letter text
+- Benefits summary
+- Notes for hiring manager with comp band context
+
+### /onboarding
+
+Generate a comprehensive onboarding plan.
+
+```bash
+/onboarding
+```
+
+Provide the new hire's name, role, team, and start date. Get:
+- Onboarding checklist
+- First-week calendar
+- Tool access list
+- Buddy assignment template
+
+### /performance-review
+
+Structure a performance review process.
+
+```bash
+/performance-review
+```
+
+Get templates for:
+- Self-assessments with competency-based prompts
+- Manager review template
+- Calibration preparation
+- Feedback that's specific, actionable, and fair
+
+### /policy-lookup
+
+Find and explain company policies.
+
+```bash
+/policy-lookup <policy topic>
+```
+
+Or just ask naturally:
+```
+What's our parental leave policy?
+```
+
+The `employee-handbook` skill triggers automatically and searches your connected knowledge base.
+
+### /comp-analysis
+
+Analyze compensation data with market benchmarking.
+
+```bash
+/comp-analysis
+```
+
+Upload comp data or describe your bands. Get:
+- Market comparisons
+- Band placement analysis
+- Recommendations for adjustments
+- Equity refresh modeling
+
+### /people-report
+
+Generate workforce analytics reports.
+
+```bash
+/people-report <report type>
+```
+
+**Report types:** headcount, attrition, diversity, org health
+
+## Skills
+
+Domain knowledge automatically applied when relevant:
+
+| Skill | Description |
+|-------|-------------|
+| `recruiting-pipeline` | Track and manage recruiting pipeline — source, screen, interview, offer stages |
+| `employee-handbook` | Answer questions about company policies, benefits, and procedures |
+| `compensation-benchmarking` | Benchmark compensation against market data — base, equity, total comp |
+| `org-planning` | Headcount planning, org design, and team structure optimization |
+| `people-analytics` | Analyze workforce data — attrition trends, engagement signals, diversity metrics |
+| `interview-prep` | Create structured interview plans — competency-based questions, scorecards, debrief templates |
+
+## Example Workflows
+
+### Drafting an Offer
+
+```bash
+/draft-offer
+```
+
+Tell the plugin the role, level, location, and comp details. Get a complete offer letter draft with:
+- Terms and equity breakdown
+- Benefits summary
+- Personalized reference from the interview process
+
+### Onboarding a New Hire
+
+```bash
+/onboarding
+```
+
+Provide new hire details and receive:
+- Day-by-day onboarding schedule
+- Tool access checklist
+- First-week meetings and introductions
+- 30-60-90 day milestones
+
+### Performance Reviews
+
+```bash
+/performance-review
+```
+
+Get structured templates for:
+- Employee self-assessment
+- Manager evaluation
+- Goal setting for next period
+- Calibration discussion prep
+
+### Understanding Benefits
+
+Just ask:
+```
+What's our parental leave policy?
+How does PTO rollover work?
+```
+
+The plugin searches your employee handbook automatically.
+
+### Compensation Benchmarking
+
+```bash
+/comp-analysis
+```
+
+Upload current comp data or describe your situation. Get:
+- Market positioning analysis
+- Band placement recommendations
+- Total compensation comparisons
+- Equity refresh scenarios
+
+## Standalone + Supercharged
+
+Every command works without integrations, but connecting your tools unlocks automatic data:
+
+| What You Can Do | Standalone | Supercharged With |
+|-----------------|------------|-------------------|
+| Draft offers | Provide details manually | HRIS, ATS for auto-fill |
+| Onboarding checklists | Describe your process | HRIS, Knowledge base for templates |
+| Performance reviews | Manual input | HRIS for review history |
+| Policy lookup | Paste handbook content | Knowledge base |
+| Comp analysis | Upload CSV, describe bands | Compensation data MCP |
+| People reports | Upload data | HRIS for live data |
+
+## Connectors
+
+The plugin uses placeholders like `~~HRIS` and `~~ATS` for tool-agnostic workflows:
+
+| Category | Placeholder | Included Servers | Other Options |
+|----------|-------------|------------------|---------------|
+| ATS | `~~ATS` | — | Greenhouse, Lever, Ashby, Workable |
+| Calendar | `~~calendar` | Google Calendar | Microsoft 365 |
+| Chat | `~~chat` | Slack | Microsoft Teams |
+| Email | `~~email` | Gmail, Microsoft 365 | — |
+| HRIS | `~~HRIS` | — | Workday, BambooHR, Rippling, Gusto |
+| Knowledge base | `~~knowledge base` | Notion, Atlassian (Confluence) | Guru, Coda |
+| Compensation data | `~~compensation data` | — | Pave, Radford, Levels.fyi |
+
+### Recommended Integrations
+
+<CardGroup cols={2}>
+  <Card title="HRIS" icon="users">
+    Workday, BambooHR, or Rippling for employee data, org structure, and PTO balances
+  </Card>
+  <Card title="ATS" icon="briefcase">
+    Greenhouse, Lever, or Ashby for candidate pipeline, interview schedules, and offer tracking
+  </Card>
+  <Card title="Compensation Data" icon="money-bill-trend-up">
+    Pave or Radford for market benchmarks and comp band data
+  </Card>
+  <Card title="Knowledge Base" icon="book-open">
+    Notion or Confluence for employee handbook and policy documentation
+  </Card>
+  <Card title="Chat" icon="comments">
+    Slack or Teams for team announcements and candidate coordination
+  </Card>
+  <Card title="Calendar" icon="calendar">
+    Google Calendar or Microsoft 365 for interview scheduling and onboarding calendar
+  </Card>
+</CardGroup>
+
+## Settings
+
+Create a local settings file at `human-resources/.claude/settings.local.json` to personalize:
+
+```json
+{
+  "company": "Your Company",
+  "headquarters": "City, State",
+  "employeeCount": 500,
+  "benefits": {
+    "healthInsurance": "Provider Name",
+    "pto": "Unlimited / X days",
+    "parentalLeave": "X weeks"
+  },
+  "compensation": {
+    "currency": "USD",
+    "equityType": "RSU / Options",
+    "vestingSchedule": "4 years, 1 year cliff"
+  }
+}
+```
+
+The plugin will ask you for this information interactively if it's not configured.
+
+## Tips
+
+1. **Include total comp** — Candidates compare total compensation, not just base salary
+2. **Be specific about equity** — Share count, current valuation method, and vesting schedule
+3. **Personalize offers** — Reference something from the interview process to make it warm
+4. **Upload proposals** — For vendor analysis, upload the full proposal for detailed extraction

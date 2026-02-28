@@ -1,122 +1,128 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Knowledge Work Plugins",
+  "theme": "palm",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#7C3AED",
+    "light": "#A78BFA",
+    "dark": "#5B21B6"
   },
-  "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/anthropics/knowledge-work-plugins"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/anthropics/knowledge-work-plugins"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
+              "introduction",
               "quickstart",
-              "development"
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/how-plugins-work",
+              "concepts/skills",
+              "concepts/commands",
+              "concepts/connectors",
+              "concepts/mcp-integration"
+            ]
+          },
+          {
+            "group": "Business Plugins",
+            "pages": [
+              "plugins/sales",
+              "plugins/customer-support",
+              "plugins/marketing",
+              "plugins/product-management"
+            ]
+          },
+          {
+            "group": "Operations Plugins",
+            "pages": [
+              "plugins/finance",
+              "plugins/legal",
+              "plugins/human-resources",
+              "plugins/operations"
+            ]
+          },
+          {
+            "group": "Technical Plugins",
+            "pages": [
+              "plugins/engineering",
+              "plugins/data",
+              "plugins/design"
+            ]
+          },
+          {
+            "group": "Specialized Plugins",
+            "pages": [
+              "plugins/bio-research",
+              "plugins/enterprise-search",
+              "plugins/productivity"
             ]
           },
           {
             "group": "Customization",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "customization/overview",
+              "customization/adding-company-context",
+              "customization/configuring-connectors",
+              "customization/modifying-workflows"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Building Plugins",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "building/getting-started",
+              "building/plugin-structure",
+              "building/creating-skills",
+              "building/creating-commands",
+              "building/adding-mcp-servers",
+              "building/plugin-management"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Plugin Manifest",
             "pages": [
-              "api-reference/introduction"
+              "api/plugin-json",
+              "api/mcp-json"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Skill Reference",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api/skill-metadata",
+              "api/skill-examples"
+            ]
+          },
+          {
+            "group": "Command Reference",
+            "pages": [
+              "api/command-metadata",
+              "api/command-examples"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

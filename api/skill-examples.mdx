@@ -1,0 +1,518 @@
+---
+title: Skill Examples
+description: Complete skill file examples showing different patterns for research, analysis, drafting, and execution workflows
+---
+
+## Overview
+
+This page shows complete skill examples demonstrating different skill patterns and use cases. Each example includes the full markdown content to illustrate best practices.
+
+## Skill Patterns
+
+Skills typically fall into these categories:
+
+- **Research Skills**: Gather and synthesize information
+- **Analysis Skills**: Evaluate and assess content or data
+- **Drafting Skills**: Create new content or documents
+- **Execution Skills**: Perform specific tasks or workflows
+- **Strategy Skills**: Guide decision-making and planning
+
+---
+
+## Research Skill Example
+
+Research skills gather information from multiple sources and synthesize it into actionable insights.
+
+### account-research
+
+```markdown
+---
+name: account-research
+description: Research a company or person and get actionable sales intel. Works standalone with web search, supercharged when you connect enrichment tools or your CRM. Trigger with "research [company]", "look up [person]", "intel on [prospect]", "who is [name] at [company]", or "tell me about [company]".
+---
+
+# Account Research
+
+Get a complete picture of any company or person before outreach. This skill 
+always works with web search, and gets significantly better with enrichment 
+and CRM data.
+
+## How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     ACCOUNT RESEARCH                             │
+├─────────────────────────────────────────────────────────────────┤
+│  ALWAYS (works standalone via web search)                        │
+│  ✓ Company overview: what they do, size, industry               │
+│  ✓ Recent news: funding, leadership changes, announcements      │
+│  ✓ Hiring signals: open roles, growth indicators                │
+│  ✓ Key people: leadership team from LinkedIn                    │
+│  ✓ Product/service: what they sell, who they serve              │
+├─────────────────────────────────────────────────────────────────┤
+│  SUPERCHARGED (when you connect your tools)                      │
+│  + Enrichment: verified emails, phone, tech stack, org chart    │
+│  + CRM: prior relationship, past opportunities, contacts        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Getting Started
+
+Just tell me who to research:
+- "Research Stripe"
+- "Look up the CTO at Notion"
+- "Intel on acme.com"
+- "Who is Sarah Chen at TechCorp?"
+
+## Output Format
+
+```markdown
+# Research: [Company or Person Name]
+
+**Generated:** [Date]
+**Sources:** Web Search [+ Enrichment] [+ CRM]
+
+## Quick Take
+[2-3 sentences: Who they are, why they might need you, best angle]
+
+## Company Profile
+| Field | Value |
+|-------|-------|
+| **Company** | [Name] |
+| **Industry** | [Industry] |
+| **Size** | [Employee count] |
+
+## Key People
+[Profiles with backgrounds and talking points]
+
+## Recommended Approach
+[Best entry point and opening hook based on research]
+```
+
+## Execution Flow
+
+### Step 1: Parse Request
+Identify what to research: company, person, or role-based search
+
+### Step 2: Web Search (Always)
+Run searches for company info, news, funding, careers, leadership
+
+### Step 3: Enrichment (If Connected)
+Pull verified contact info, org chart, tech stack, funding details
+
+### Step 4: CRM Check (If Connected)
+Search for prior relationship history and opportunity context
+
+### Step 5: Synthesize
+Combine sources, identify signals, generate talking points, recommend approach
+```
+
+<Accordion title="Key Features">
+- **Standalone capability**: Works with web search alone
+- **Progressive enhancement**: Gets better with connected tools
+- **Structured output**: Consistent format for easy consumption
+- **Execution flow**: Clear step-by-step process
+- **Multiple entry points**: Flexible trigger patterns
+</Accordion>
+
+---
+
+## Analysis Skill Example
+
+Analysis skills evaluate content, code, data, or designs against established criteria.
+
+### code-review
+
+```markdown
+---
+name: code-review
+description: Review code for bugs, security vulnerabilities, performance issues, and maintainability. Trigger with "review this code", "check this PR", "look at this diff", "is this code safe?", or when the user shares code and asks for feedback.
+---
+
+# Code Review
+
+Structured code review covering security, performance, correctness, and 
+maintainability. Works on diffs, PRs, files, or pasted code snippets.
+
+## Review Dimensions
+
+### Security
+- SQL injection, XSS, CSRF
+- Authentication and authorization flaws
+- Secrets or credentials in code
+- Insecure deserialization
+- Path traversal
+- SSRF
+
+### Performance
+- N+1 queries
+- Unnecessary memory allocations
+- Algorithmic complexity (O(n²) in hot paths)
+- Missing database indexes
+- Unbounded queries or loops
+- Resource leaks
+
+### Correctness
+- Edge cases (empty input, null, overflow)
+- Race conditions and concurrency issues
+- Error handling and propagation
+- Off-by-one errors
+- Type safety
+
+### Maintainability
+- Naming clarity
+- Single responsibility
+- Duplication
+- Test coverage
+- Documentation for non-obvious logic
+
+## Output Format
+
+Rate each dimension and provide specific, actionable findings with file and 
+line references. Prioritize critical issues first. Always include positive 
+observations alongside issues.
+```
+
+<Accordion title="Key Features">
+- **Multiple dimensions**: Covers security, performance, correctness, maintainability
+- **Specific checklists**: Clear criteria for each dimension
+- **Actionable output**: References specific files and lines
+- **Balanced feedback**: Includes positive observations
+</Accordion>
+
+---
+
+## Drafting Skill Example
+
+Drafting skills create new content following templates and best practices.
+
+### content-creation
+
+```markdown
+---
+name: content-creation
+description: Draft marketing content across channels — blog posts, social media, email newsletters, landing pages, press releases, and case studies. Use when writing any marketing content, when you need channel-specific formatting, SEO-optimized copy, headline options, or calls to action.
+---
+
+# Content Creation Skill
+
+Guidelines and frameworks for creating effective marketing content across channels.
+
+## Content Type Templates
+
+### Blog Post Structure
+1. **Headline** — clear, benefit-driven, includes primary keyword
+2. **Introduction** (100-150 words) — hook the reader
+3. **Body sections** (3-5 sections) — each with descriptive subheading
+4. **Conclusion** (75-100 words) — summarize and include CTA
+5. **Meta description** — under 160 characters with primary keyword
+
+### Social Media Post Structure
+- **Hook** — first line grabs attention
+- **Body** — 2-4 concise points or short narrative
+- **CTA** — what should the reader do next
+- **Hashtags** — 3-5 relevant hashtags
+
+### Landing Page Structure
+- **Headline** — primary benefit in under 10 words
+- **Subheadline** — elaborates with supporting context
+- **Hero section** — headline, subheadline, CTA, supporting visual
+- **Value propositions** — 3-4 benefit-driven sections
+- **Social proof** — testimonials, logos, stats
+- **Final CTA** — repeat the primary call to action
+
+## Writing Best Practices by Channel
+
+### Blog
+- Write at 8th-grade reading level for broad audiences
+- Use short paragraphs (2-4 sentences)
+- Include subheadings every 200-300 words
+- Write in active voice
+
+### Social Media
+- **LinkedIn**: professional but human, 1,300 character sweet spot
+- **Twitter/X**: concise and punchy, strong opening words
+- **Instagram**: visual-first captions, line breaks for readability
+
+### Email
+- Subject lines create urgency, curiosity, or state clear value
+- One primary CTA per email
+- Keep body scannable: bold key phrases, short paragraphs
+- Mobile-first design
+
+## Headline Formulas
+- **How to [achieve result] [without common obstacle]**
+- **[Number] [adjective] ways to [achieve result]**
+- **Why [common belief] is wrong (and what to do instead)**
+
+## Call-to-Action Best Practices
+- Use action verbs: "Get", "Start", "Download", "Join"
+- Be specific about what happens next
+- Create urgency when genuine
+- Reduce risk: "No credit card required"
+```
+
+<Accordion title="Key Features">
+- **Template library**: Structures for multiple content types
+- **Channel-specific guidance**: Best practices for each platform
+- **Formula collections**: Reusable patterns for headlines and CTAs
+- **Practical examples**: Concrete illustrations throughout
+</Accordion>
+
+---
+
+## Strategy Skill Example
+
+Strategy skills guide decision-making through frameworks and methodologies.
+
+### scientific-problem-selection
+
+```markdown
+---
+name: scientific-problem-selection
+description: This skill should be used when scientists need help with research problem selection, project ideation, troubleshooting stuck projects, or strategic scientific decisions. Use this skill when users ask to pitch a new research idea, work through a project problem, evaluate project risks, plan research strategy, navigate decision trees, or get help choosing what scientific problem to work on.
+---
+
+# Scientific Problem Selection Skills
+
+A conversational framework for systematic scientific problem selection based 
+on Fischbach & Walsh's "Problem choice and decision trees in science and 
+engineering" (Cell, 2024).
+
+## Getting Started
+
+Present users with three entry points:
+
+**1) Pitch an idea for a new project** — to work it up together
+
+**2) Share a problem in a current project** — to troubleshoot together
+
+**3) Ask a strategic question** — to navigate the decision tree together
+
+## Core Framework Concepts
+
+### The Central Insight
+**Problem Choice >> Execution Quality**
+
+Even brilliant execution of a mediocre problem yields incremental impact. 
+Good execution of an important problem yields substantial impact.
+
+### The Time Paradox
+Scientists typically spend:
+- **Days** choosing a problem
+- **Years** solving it
+
+This imbalance limits impact.
+
+### Evaluation Axes
+- **X-axis:** Likelihood of success
+- **Y-axis:** Impact if successful
+
+Skills help move ideas rightward (more feasible) and upward (more impactful).
+
+## The 9 Skills Overview
+
+| Skill | Purpose | Output | Time |
+|-------|---------|--------|------|
+| 1. Intuition Pumps | Generate research ideas | Problem Ideation Document | ~1 week |
+| 2. Risk Assessment | Identify and manage risks | Risk Assessment Matrix | 3-5 days |
+| 3. Optimization Function | Define success metrics | Impact Assessment | 2-3 days |
+| 4. Parameter Strategy | Fix vs. keep flexible | Parameter Strategy Doc | 2-3 days |
+| 5. Decision Tree | Plan decision points | Decision Tree Map | 2 days |
+
+## Key Design Principles
+
+1. **Conversational Entry** - Meet users where they are
+2. **Thoughtful Interaction** - Ask clarifying questions
+3. **Literature Integration** - Use PubMed searches for validation
+4. **Concrete Outputs** - Every skill produces tangible documents
+5. **Building Specificity** - Progressive detail through questions
+6. **Flexibility** - Skills work independently or sequentially
+```
+
+<Accordion title="Key Features">
+- **Multiple entry points**: Flexible starting points for different needs
+- **Framework-based**: Grounded in published research methodology
+- **Conversational flow**: Asks questions to build specificity
+- **Concrete outputs**: Produces tangible deliverables
+- **Modular design**: Skills can be used independently or together
+</Accordion>
+
+---
+
+## Execution Skill Example
+
+Execution skills perform specific workflows with clear steps.
+
+### call-prep
+
+```markdown
+---
+name: call-prep
+description: Prepare for a sales call with account context, attendee research, and suggested agenda. Works standalone with user input and web research, supercharged when you connect your CRM, email, chat, or transcripts. Trigger with "prep me for my call with [company]", "I'm meeting with [company] prep me", "call prep [company]", or "get me ready for [meeting]".
+---
+
+# Call Prep
+
+Get fully prepared for any sales call in minutes. This skill works with whatever 
+context you provide, and gets significantly better when you connect your sales tools.
+
+## How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  ALWAYS (works standalone)                                       │
+│  ✓ You tell me: company, meeting type, attendees                │
+│  ✓ Web search: recent news, funding, leadership changes         │
+│  ✓ Output: prep brief with agenda and questions                 │
+├─────────────────────────────────────────────────────────────────┤
+│  SUPERCHARGED (when you connect your tools)                      │
+│  + CRM: account history, contacts, opportunities                │
+│  + Email: recent threads, open questions, commitments           │
+│  + Calendar: auto-find meeting, pull attendees                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Execution Flow
+
+### Step 1: Gather Context
+
+**If connectors available:**
+1. Calendar → Find upcoming meeting
+2. CRM → Query account details and activities
+3. Email → Search recent threads
+4. Chat → Search internal discussions
+
+**If no connectors:**
+1. Ask user:
+   - "What company are you meeting with?"
+   - "What type of meeting is this?"
+   - "Who's attending?"
+
+### Step 2: Research Supplement
+
+**Always run (web search):**
+1. "[Company] news" — last 30 days
+2. "[Company] funding" — recent announcements
+3. Attendee LinkedIn profiles
+
+### Step 3: Synthesize & Generate
+
+1. Combine all sources into unified context
+2. Identify gaps → generate discovery questions
+3. Anticipate objections based on stage
+4. Create suggested agenda tailored to meeting type
+5. Output formatted prep brief
+
+## Meeting Type Variations
+
+### Discovery Call
+- Focus: Understanding their world, pain points, priorities
+- Agenda emphasis: Questions > Talking
+
+### Demo / Presentation
+- Focus: Their specific use case, tailored examples
+- Agenda emphasis: Show relevant features, get feedback
+
+### Negotiation
+- Focus: Addressing concerns, justifying value
+- Agenda emphasis: Handle objections, close gaps
+```
+
+<Accordion title="Key Features">
+- **Progressive enhancement**: Works standalone and with integrations
+- **Clear execution flow**: Step-by-step process
+- **Context variations**: Adapts to different meeting types
+- **Multiple data sources**: Combines user input, web search, and tool data
+</Accordion>
+
+---
+
+## Best Practices
+
+### Structure Your Skill
+
+<Steps>
+  <Step title="Clear Purpose">
+    Start with a concise description of what the skill does and when to use it
+  </Step>
+  
+  <Step title="How It Works">
+    Provide a high-level overview before diving into details
+  </Step>
+  
+  <Step title="Getting Started">
+    Show users the simplest way to invoke the skill
+  </Step>
+  
+  <Step title="Execution Flow">
+    Break down the step-by-step process
+  </Step>
+  
+  <Step title="Output Format">
+    Show what users should expect to receive
+  </Step>
+</Steps>
+
+### Writing Style
+
+- **Be conversational**: Write like you're explaining to a colleague
+- **Use examples**: Concrete examples are more helpful than abstract descriptions
+- **Show, don't tell**: Include templates and sample outputs
+- **Be specific**: "Search for [Company] news in last 30 days" vs. "Do research"
+- **Format for scanning**: Use headings, lists, tables, and code blocks
+
+### Common Patterns
+
+<AccordionGroup>
+  <Accordion title="Progressive Enhancement Pattern">
+    Skill works standalone but improves with connected tools:
+    - Define baseline capability (always works)
+    - Show enhanced capability (with integrations)
+    - Example: `account-research`, `call-prep`
+  </Accordion>
+  
+  <Accordion title="Framework Application Pattern">
+    Skill applies an established framework or methodology:
+    - Reference the source framework
+    - Break down into clear steps
+    - Provide concrete outputs
+    - Example: `scientific-problem-selection`, `contract-review`
+  </Accordion>
+  
+  <Accordion title="Template Library Pattern">
+    Skill provides templates and formulas:
+    - Organize by content type or use case
+    - Include multiple template options
+    - Show examples for each
+    - Example: `content-creation`
+  </Accordion>
+  
+  <Accordion title="Analysis Checklist Pattern">
+    Skill evaluates against criteria:
+    - Define clear evaluation dimensions
+    - Provide specific checklists
+    - Specify output format
+    - Example: `code-review`, `design-critique`
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Metadata Schema" icon="code" href="/api/skill-metadata">
+    Learn about skill frontmatter and naming conventions
+  </Card>
+  
+  <Card title="Create a Plugin" icon="puzzle-piece" href="/plugins/create">
+    Package your skill into a plugin
+  </Card>
+  
+  <Card title="Testing Skills" icon="flask" href="/plugins/testing">
+    Test your skill before deployment
+  </Card>
+  
+  <Card title="Publishing" icon="rocket" href="/plugins/publishing">
+    Share your skill with others
+  </Card>
+</CardGroup>

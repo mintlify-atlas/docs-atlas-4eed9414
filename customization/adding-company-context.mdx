@@ -1,0 +1,474 @@
+---
+title: "Adding Company Context"
+description: "Teach Claude about your company's terminology, processes, org structure, and domain-specific knowledge"
+---
+
+## Why Add Company Context?
+
+Out-of-the-box skills are generic. They work for any company, but they don't know YOUR company.
+
+Adding company context makes Claude:
+- Use your terminology instead of generic terms
+- Follow your processes instead of textbook workflows
+- Understand your org structure and decision-making
+- Reference your products, competitors, and market position
+
+**Result:** Claude gives you work that looks like it came from someone on your team.
+
+## Where to Add Context
+
+Company context lives in skill files at the bottom of `SKILL.md` under a `## Company Configuration` section.
+
+```
+sales/
+└── skills/
+    ├── call-prep/
+    │   └── SKILL.md           ← Add context here
+    ├── account-research/
+    │   └── SKILL.md           ← Add context here
+    └── draft-outreach/
+        └── SKILL.md           ← Add context here
+```
+
+<Note>
+You don't need to add context to every skill — start with the ones you use most.
+</Note>
+
+## What Context to Add
+
+Here are the most valuable types of context for each use case:
+
+### For Sales Plugins
+
+**Company & Product:**
+- What you sell (product/service in one sentence)
+- Target market (company size, industry, geography)
+- Value proposition (why customers buy)
+- Key differentiators vs competitors
+
+**Sales Process:**
+- Sales stages (Discovery → Demo → Negotiation → Closed)
+- Average deal size and cycle length
+- Required qualification criteria
+- Decision-maker roles you target
+
+**Messaging:**
+- Company voice and tone
+- Proof points and case studies
+- Common objections and how to handle them
+- Competitive positioning
+
+### For Support Plugins
+
+**Product Knowledge:**
+- Product architecture and key features
+- Common customer issues
+- Escalation criteria and paths
+- SLA requirements
+
+**Support Process:**
+- Ticket triage rules
+- Response templates
+- When to escalate to engineering
+- How to package bugs for handoff
+
+### For Product Plugins
+
+**Product Development:**
+- Product areas and team structure
+- Prioritization framework
+- Spec template and requirements
+- Stakeholder approval process
+
+## Example: Sales Plugin Context
+
+Here's how to add comprehensive context to the sales plugin's call-prep skill:
+
+### Step 1: Open the skill file
+
+<Steps>
+  <Step title="Navigate to the skill">
+    ```bash
+    cd ~/path-to-plugin/sales/skills/call-prep/
+    ```
+  </Step>
+  
+  <Step title="Open SKILL.md in your editor">
+    ```bash
+    code SKILL.md
+    ```
+  </Step>
+  
+  <Step title="Scroll to the bottom">
+    Look for `## Company Configuration [CUSTOMIZE]` or add it if it doesn't exist
+  </Step>
+</Steps>
+
+### Step 2: Add your company context
+
+Replace the `[CUSTOMIZE]` section with your actual details:
+
+```markdown
+## Company Configuration
+
+### Company Profile
+
+- **Company:** Acme Analytics
+- **Product:** Real-time analytics platform for product teams
+- **Website:** acme-analytics.com
+- **Founded:** 2020
+- **Target Market:** Mid-market B2B SaaS companies (100-1000 employees)
+- **Geography:** North America, expanding to EMEA
+
+### What We Sell
+
+A real-time analytics platform that helps product teams understand user behavior 
+without waiting for data warehouse queries. We connect directly to your product 
+database and make data available in under 5 seconds vs 30+ minutes with 
+traditional BI tools.
+
+### Value Proposition
+
+Product teams ship features 3x faster because they can validate hypotheses in 
+real-time instead of waiting for data analysts to run queries.
+
+### Sales Process
+
+**Stages:**
+1. Discovery (week 1-2): Understand current analytics setup and pain points
+2. Demo (week 3-4): Show product with their data
+3. Technical Evaluation (week 5-6): Trial with their team
+4. Negotiation (week 7-8): Pricing and contract review
+5. Closed Won/Lost
+
+**Average Metrics:**
+- Deal size: $50K-$200K ARR
+- Sales cycle: 60 days
+- Win rate: 35% (measured from qualified discovery to close)
+
+**Qualification Criteria (BANT):**
+- Budget: $50K+ annual budget for analytics
+- Authority: Need VP Product or Head of Data as champion
+- Need: Currently using slow BI tools or spreadsheets for product analytics
+- Timeline: Evaluating within 90 days
+
+### Key Competitors
+
+**Primary:**
+- **DataCorp:** Legacy BI tool, slower but enterprise-proven
+  - Where we win: Speed and ease of use
+  - Where they win: Enterprise security compliance
+
+- **FastQuery:** Direct competitor, similar speed
+  - Where we win: Better UX and self-service capabilities
+  - Where they win: Cheaper for small teams
+
+**Secondary:**
+- **Tableau/Looker:** Traditional BI, indirect competitors
+
+### Proof Points
+
+1. **TechStartup Inc:** Reduced time-to-insight from 4 hours to 30 seconds, 
+   shipped 2x more features in Q1
+2. **SaaSCo:** Entire product team (45 people) now self-service on analytics, 
+   freed up 3 data analysts for deeper work
+3. **GrowthApp:** Used our real-time data to optimize onboarding flow, 
+   improved activation rate by 23%
+
+### Messaging & Tone
+
+**Voice:** Direct and helpful, not overly formal. Talk about impact, not features.
+
+**Good example:**
+"We help product teams validate ideas in seconds, not hours. Your team can test, 
+learn, and ship faster because the data is always ready."
+
+**Bad example:**
+"Our enterprise-grade analytics solution leverages cutting-edge technology to 
+provide real-time insights at scale."
+
+### Common Objections
+
+| Objection | How to Handle |
+|-----------|---------------|
+| "We already have Tableau" | "Great! Tableau is excellent for deep analysis. We're complementary — use us for real-time product decisions, keep Tableau for executive reporting." |
+| "Too expensive for our team size" | "What's the cost of waiting 4 hours for every data question? Calculate analyst time saved — usually pays for itself in month 1." |
+| "Security/compliance concerns" | "We're SOC 2 Type II certified and support SSO. Happy to connect you with our security team for any specific requirements." |
+| "Current setup works fine" | "How many data requests does your team make per week? What if every PM could answer those themselves in 30 seconds?" |
+
+### Decision Makers by Role
+
+- **VP Product / Head of Product:** Primary champion — feels the pain most
+- **Head of Data / Analytics:** Technical evaluator — needs to approve data access
+- **Engineering VP:** Security/compliance — needs to approve data connection
+- **CFO / Finance:** Budget holder for contracts $100K+
+
+### Sales Plays by Trigger Event
+
+**Company raised Series A/B:**
+- Angle: "You're scaling the product team — how will analytics scale with you?"
+- Urgency: New hire onboarding, need self-service tools
+
+**Hired new VP Product:**
+- Angle: "New leaders want data-driven decisions from day 1"
+- Urgency: First 90 days, making their mark
+
+**Competitor mention (using slow BI):**
+- Angle: "What if your team didn't have to wait for queries?"
+- Urgency: Frustration with current tools
+```
+
+### Step 3: Save and test
+
+<Steps>
+  <Step title="Save the file">
+    Save your changes to `SKILL.md`
+  </Step>
+  
+  <Step title="Test the skill">
+    Ask Claude: "Prep me for a call with a Series B SaaS company using Tableau"
+  </Step>
+  
+  <Step title="Check the output">
+    Claude should now reference your:
+    - Product (real-time analytics)
+    - Competitors (Tableau positioning)
+    - Value prop (speed vs traditional BI)
+    - Proof points (your customer examples)
+  </Step>
+</Steps>
+
+## Real Example from the Sales Plugin
+
+Here's actual context from the `draft-outreach` skill showing how to configure messaging:
+
+```markdown
+## Company Configuration [CUSTOMIZE]
+
+## Outreach Settings
+
+- My name: [Your Name]
+- My title: [Your Title]
+- My company: [Company Name]
+- Value prop: [One sentence - what you help with]
+
+## Signature
+[Your preferred email signature]
+
+## Proof Points
+- [Customer 1]: [Result]
+- [Customer 2]: [Result]
+- [Customer 3]: [Result]
+
+## CTA Options
+- Default: "Worth a 15-min call?"
+- Softer: "Open to learning more?"
+- Specific: "Can I send over a quick demo?"
+
+## Tone
+- [Professional / Casual / Direct]
+- Industry-specific language: [Yes/No]
+```
+
+**After customization:**
+
+```markdown
+## Outreach Settings
+
+- My name: Sarah Chen
+- My title: Account Executive
+- My company: Acme Analytics
+- Value prop: We help product teams make data-driven decisions in real-time 
+  instead of waiting hours for queries
+
+## Signature
+Sarah Chen
+Account Executive, Acme Analytics
+sarah@acme-analytics.com
+555-0123
+
+## Proof Points
+- TechStartup Inc: Reduced time-to-insight from 4 hours to 30 seconds
+- SaaSCo: 45-person product team now self-service on analytics
+- GrowthApp: Improved activation rate by 23% using real-time data
+
+## CTA Options
+- Default: "Worth a quick call to see if this fits your workflow?"
+- Softer: "Open to learning how other product teams are doing this?"
+- Specific: "Can I show you how this works with your data?"
+
+## Tone
+- Casual but competent — talk to PMs like peers, not prospects
+- Use product terminology: features, activation, funnels, cohorts
+- Avoid: enterprise speak, buzzwords, anything salesy
+```
+
+Now when you run `/sales:draft-outreach to the VP Product at [Company]`, Claude will write in your voice, use your proof points, and suggest your preferred CTAs.
+
+## Context for Other Skills
+
+Different skills need different context. Here's what to add where:
+
+### Account Research Skill
+
+```markdown
+## Company Configuration
+
+### Target Customer Profile
+
+**Industry:** B2B SaaS, e-commerce platforms, fintech
+**Company Size:** 100-1000 employees, $10M-$100M revenue
+**Tech Stack:** Modern cloud stack (AWS/GCP), using Snowflake/BigQuery
+**Buying Signals:** 
+- Recently raised Series A/B funding
+- Hiring product managers or data analysts
+- Job postings mentioning "data-driven" or "analytics"
+
+### Disqualifiers
+
+- Under 50 employees (too small)
+- Using spreadsheets only (not analytics-mature)
+- Enterprise (1000+ employees, need enterprise sales)
+```
+
+### Competitive Intelligence Skill
+
+```markdown
+## Company Configuration
+
+### Your Company
+- **Name:** Acme Analytics
+- **Product:** Real-time analytics platform
+- **Positioning:** Fastest analytics tool for product teams
+
+### Your Competitors
+1. **DataCorp** (primary)
+   - Their strength: Enterprise compliance
+   - Our counter: "We integrate with their security model, plus we're 10x faster"
+
+2. **FastQuery** (primary)
+   - Their strength: Lower price for small teams
+   - Our counter: "Calculate analyst time saved — we pay for ourselves in month 1"
+
+3. **Tableau/Looker** (secondary)
+   - Their strength: Established BI market leader
+   - Our counter: "Complementary — keep them for executive dashboards, 
+     use us for real-time product decisions"
+```
+
+## Tips for Effective Context
+
+<CardGroup cols={2}>
+  <Card title="Be Specific" icon="bullseye">
+    "We target mid-market SaaS (100-1000 employees)" is better than "We target businesses"
+  </Card>
+  <Card title="Include Examples" icon="file-lines">
+    Show actual customer quotes, email examples, or call scripts your team uses
+  </Card>
+  <Card title="Update Regularly" icon="arrows-rotate">
+    As your messaging evolves, keep context fresh (quarterly review recommended)
+  </Card>
+  <Card title="Share Across Team" icon="users">
+    Once customized, everyone benefits from consistent context
+  </Card>
+</CardGroup>
+
+### What Makes Good Context?
+
+**Good:**
+```markdown
+### Discovery Questions
+
+1. What analytics tool do you use today? 
+   (Qualify: If "Excel only", probably too early for us)
+2. How many product managers need access? 
+   (Size the deal: <10 = $50K, 10-30 = $100K, 30+ = $150K+)
+3. How long does it take to answer a product question today?
+   (Establish pain: We're valuable when current time >1 hour)
+```
+
+**Bad:**
+```markdown
+### Discovery Questions
+
+1. What are your pain points?
+2. What's your budget?
+3. When do you want to buy?
+```
+
+**Why?** The good example includes the reasoning behind each question, so Claude understands not just what to ask, but why.
+
+## Common Mistakes to Avoid
+
+<Warning>
+**Don't make these mistakes when adding context:**
+</Warning>
+
+1. **Too vague:** "We sell software to companies" → Not helpful
+2. **Too long:** 10 pages of context → Claude won't use it all effectively
+3. **Outdated:** Last updated 2 years ago → Stale messaging
+4. **Inconsistent:** Sales deck says X, skill file says Y → Confusing output
+5. **Missing examples:** Only abstract descriptions → Hard for Claude to apply
+
+## Testing Your Context
+
+After adding context, test it:
+
+<Steps>
+  <Step title="Ask Claude to use the skill">
+    "Prep me for a call with a Series B SaaS company"
+  </Step>
+  
+  <Step title="Check if Claude uses your context">
+    - Does it mention your product by name?
+    - Does it reference your competitors correctly?
+    - Does it use your proof points?
+    - Does it follow your sales process stages?
+  </Step>
+  
+  <Step title="Refine and iterate">
+    If Claude doesn't use certain context, make it more explicit or add examples
+  </Step>
+</Steps>
+
+## Context Template
+
+Use this template as a starting point:
+
+```markdown
+## Company Configuration
+
+### Company Profile
+- **Company:** [Your company name]
+- **Product:** [One-sentence description]
+- **Target Market:** [Who you sell to]
+- **Value Proposition:** [Why customers buy]
+
+### Sales/Support/Product Process
+[Your specific workflow stages and criteria]
+
+### Key Differentiators
+[What makes you different from alternatives]
+
+### Proof Points
+1. [Customer example 1]
+2. [Customer example 2]
+3. [Customer example 3]
+
+### Common Scenarios
+[How to handle typical situations]
+
+### Messaging & Tone
+[How to communicate — with good/bad examples]
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configure Connectors" icon="plug" href="/customization/configuring-connectors">
+    Wire Claude to your CRM, Slack, and other tools
+  </Card>
+  <Card title="Modify Workflows" icon="diagram-project" href="/customization/modifying-workflows">
+    Adjust the step-by-step execution logic
+  </Card>
+</CardGroup>

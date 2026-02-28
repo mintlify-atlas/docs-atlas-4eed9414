@@ -1,0 +1,224 @@
+---
+title: Skill Metadata Schema
+description: Complete reference for skill frontmatter metadata, file structure, and naming conventions
+---
+
+## Overview
+
+Skills are markdown files that define specialized agent behaviors and capabilities. Each skill file begins with YAML frontmatter that describes the skill's purpose, trigger patterns, and metadata.
+
+## File Structure
+
+Every skill must follow this structure:
+
+```
+skills/
+└── skill-name/
+    └── SKILL.md          # Main skill file (required)
+```
+
+The filename **must** be `SKILL.md` in uppercase.
+
+## Frontmatter Schema
+
+### Required Fields
+
+<ParamField path="name" type="string" required>
+  The skill's unique identifier. Use lowercase with hyphens for multi-word names.
+  
+  **Examples:**
+  - `call-prep`
+  - `account-research`
+  - `data-exploration`
+  - `contract-review`
+</ParamField>
+
+<ParamField path="description" type="string" required>
+  A comprehensive description that includes:
+  1. What the skill does
+  2. When to use it
+  3. Trigger patterns that activate the skill
+  
+  **Best practices:**
+  - Start with a clear, concise description of the skill's purpose
+  - Include specific use cases
+  - List trigger patterns using natural language (e.g., "Trigger with 'research [company]'")
+  - Use multi-line YAML format (`>` or `|`) for longer descriptions
+  
+  **Example:**
+  ```yaml
+  description: Research a company or person and get actionable sales intel. Works standalone with web search, supercharged when you connect enrichment tools or your CRM. Trigger with "research [company]", "look up [person]", "intel on [prospect]", "who is [name] at [company]", or "tell me about [company]".
+  ```
+</ParamField>
+
+### Complete Example
+
+```yaml
+---
+name: account-research
+description: Research a company or person and get actionable sales intel. Works standalone with web search, supercharged when you connect enrichment tools or your CRM. Trigger with "research [company]", "look up [person]", "intel on [prospect]", "who is [name] at [company]", or "tell me about [company]".
+---
+```
+
+### Multi-line Description Format
+
+For complex skills with many trigger patterns, use YAML's multi-line syntax:
+
+```yaml
+---
+name: brand-voice-enforcement
+description: >
+  This skill applies brand guidelines to content creation. It should be used when
+  the user asks to "write an email", "draft a proposal", "create a pitch deck",
+  "write a LinkedIn post", "draft a presentation", "write a Slack message",
+  "draft sales content", or any content creation request where brand voice should
+  be applied. Also triggers on "on-brand", "brand voice", "enforce voice",
+  "apply brand guidelines", "brand-aligned content", "write in our voice",
+  "use our brand tone", "make this sound like us", "rewrite this in our tone",
+  or "this doesn't sound on-brand". Not for generating guidelines from scratch
+  (use guideline-generation) or discovering brand materials (use discover-brand).
+---
+```
+
+## Trigger Patterns
+
+Trigger patterns tell the system when to activate your skill. Include them in the description field.
+
+### Pattern Types
+
+#### Explicit Commands
+Direct phrases users type to invoke the skill:
+- `"research [company]"`
+- `"prep me for my call with [company]"`
+- `"review this code"`
+
+#### Natural Language Triggers
+Conversational phrases that indicate the skill is needed:
+- `"I'm meeting with [company] prep me"`
+- `"what do you think of this design"`
+- `"help me evaluate this project"`
+
+#### Context-Based Triggers
+Situations where the skill should activate automatically:
+- `"when encountering a new dataset"`
+- `"when the user shares code and asks for feedback"`
+- `"when reviewing vendor contracts"`
+
+### Best Practices for Trigger Patterns
+
+1. **Use brackets for variables**: `[company]`, `[person]`, `[name]` indicate user-provided values
+2. **Include variations**: List different ways users might ask for the same thing
+3. **Be specific**: Clear triggers reduce ambiguity about when to use the skill
+4. **Use quotes**: Wrap trigger phrases in quotes for clarity
+5. **Separate with commas or "or"**: Make the list scannable
+
+### Examples from Real Skills
+
+**Sales Research Skill:**
+```
+Trigger with "research [company]", "look up [person]", "intel on [prospect]", 
+"who is [name] at [company]", or "tell me about [company]".
+```
+
+**Code Review Skill:**
+```
+Trigger with "review this code", "check this PR", "look at this diff", 
+"is this code safe?", or when the user shares code and asks for feedback.
+```
+
+**Data Exploration Skill:**
+```
+Use when encountering a new dataset, assessing data quality, discovering column 
+distributions, identifying nulls and outliers, or deciding which dimensions to analyze.
+```
+
+**Design Critique Skill:**
+```
+Trigger with "what do you think of this design", "give me feedback on", 
+"critique this", "review this mockup", or when the user shares a design and 
+asks for opinions.
+```
+
+## Naming Conventions
+
+### Skill Name Guidelines
+
+<ResponseField name="Format" type="lowercase-with-hyphens">
+  Use lowercase letters and hyphens to separate words. No spaces, underscores, or special characters.
+</ResponseField>
+
+<ResponseField name="Length" type="2-4 words">
+  Keep names concise but descriptive. Most skill names are 2-3 words.
+</ResponseField>
+
+<ResponseField name="Clarity" type="descriptive">
+  The name should clearly indicate what the skill does.
+</ResponseField>
+
+### Examples by Pattern
+
+**Action-Object Pattern** (most common):
+- `account-research`
+- `call-prep`
+- `contract-review`
+- `data-exploration`
+- `code-review`
+
+**Domain-Capability Pattern**:
+- `brand-voice-enforcement`
+- `design-critique`
+- `legal-risk-assessment`
+
+**Process-Type Pattern**:
+- `content-creation`
+- `competitive-analysis`
+- `user-research-synthesis`
+
+**Descriptive Phrase Pattern**:
+- `scientific-problem-selection`
+- `interactive-dashboard-builder`
+
+## Validation Rules
+
+<Note>
+  The skill loader validates these requirements:
+  
+  - File must be named `SKILL.md` (case-sensitive)
+  - Frontmatter must be valid YAML enclosed in `---`
+  - `name` field is required and must be a string
+  - `description` field is required and must be a string
+  - `name` must use lowercase letters, numbers, and hyphens only
+  - No other frontmatter fields are currently supported
+</Note>
+
+## Directory Organization
+
+Skills are organized by domain or plugin:
+
+```
+plugins/
+├── sales/
+│   └── skills/
+│       ├── call-prep/
+│       │   └── SKILL.md
+│       └── account-research/
+│           └── SKILL.md
+├── data/
+│   └── skills/
+│       └── data-exploration/
+│           └── SKILL.md
+└── engineering/
+    └── skills/
+        └── code-review/
+            └── SKILL.md
+```
+
+## Next Steps
+
+<Card title="Skill Examples" icon="code" href="/api/skill-examples">
+  See complete skill examples with full markdown content
+</Card>
+
+<Card title="Plugin Structure" icon="folder" href="/plugins/structure">
+  Learn how skills fit into the overall plugin architecture
+</Card>

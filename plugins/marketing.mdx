@@ -1,0 +1,311 @@
+---
+title: Marketing Plugin
+description: Create content, plan campaigns, and analyze performance across marketing channels. Maintain brand voice consistency, track competitors, and report on what's working.
+---
+
+A marketing plugin designed for Claude that helps with content creation, campaign planning, brand voice management, competitive analysis, and performance reporting.
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/marketing
+```
+
+## Commands
+
+<CardGroup cols={3}>
+  <Card title="/draft-content" icon="pen-nib">
+    Draft blog posts, social media, email newsletters, landing pages, press releases, and case studies
+  </Card>
+  <Card title="/campaign-plan" icon="bullseye">
+    Generate a full campaign brief with objectives, channels, content calendar, and success metrics
+  </Card>
+  <Card title="/brand-review" icon="shield-check">
+    Review content against your brand voice, style guide, and messaging pillars
+  </Card>
+  <Card title="/competitive-brief" icon="chart-mixed">
+    Research competitors and generate a positioning and messaging comparison
+  </Card>
+  <Card title="/performance-report" icon="chart-line">
+    Build a marketing performance report with key metrics, trends, and optimization recommendations
+  </Card>
+  <Card title="/seo-audit" icon="magnifying-glass">
+    Run a comprehensive SEO audit — keyword research, on-page analysis, content gaps, technical checks
+  </Card>
+  <Card title="/email-sequence" icon="envelopes-bulk">
+    Design and draft multi-email sequences for nurture flows, onboarding, drip campaigns
+  </Card>
+</CardGroup>
+
+### /draft-content
+
+Generate marketing content drafts tailored to your brand and audience.
+
+**Usage:**
+```
+/draft-content <content type and topic>
+```
+
+**Inputs you'll provide:**
+- **Content type:** Blog post, social media, email newsletter, landing page, press release, or case study
+- **Topic:** The subject or theme
+- **Target audience:** Who this is for (role, industry, pain points)
+- **Key messages:** 2-4 main takeaways
+- **Tone:** Authoritative, conversational, technical, etc.
+- **Length:** Target word count or format constraint
+
+**Content types supported:**
+
+**Blog Post**
+- Engaging headline (2-3 options)
+- Introduction with hook
+- 3-5 organized sections with SEO-optimized subheadings
+- Conclusion with clear CTA
+- Primary keyword suggestions
+
+**Social Media Post**
+- Platform-appropriate format and length
+- Hook in first line
+- Hashtag suggestions (3-5 relevant)
+- Engagement prompt
+- Platform-specific best practices (LinkedIn, Twitter/X, Instagram, Facebook)
+
+**Email Newsletter**
+- Subject line options (2-3 with open-rate considerations)
+- Preview text
+- Body sections with clear hierarchy
+- CTA button text
+
+**Landing Page Copy**
+- Headline and subheadline
+- Hero section copy
+- 3-4 benefit-driven value propositions
+- Primary and secondary CTAs
+- FAQ section suggestions
+- Meta title and description
+
+**Press Release**
+- Headline following PR conventions
+- Dateline and location
+- Lead paragraph (who, what, when, where, why)
+- Quote placeholders
+- Standard formatting
+
+**Case Study**
+- Title emphasizing results
+- Customer overview (industry, size, challenge)
+- Challenge, solution, and results sections
+- Metrics and customer quote placeholders
+
+### /campaign-plan
+
+Generate comprehensive campaign briefs.
+
+**Usage:**
+```
+/campaign-plan
+```
+
+**Example:**
+```
+> /campaign-plan
+Goal: Drive 500 signups for our new product launch
+Audience: Technical decision-makers at enterprise companies
+Timeline: 6 weeks
+Budget range: $20,000-$30,000
+```
+
+**What you get:**
+- Campaign objectives and audience segmentation
+- Key messages and positioning
+- Channel strategy
+- Week-by-week content calendar
+- KPIs and success metrics
+- Budget allocation recommendations
+
+### /brand-review
+
+Review content against your brand guidelines.
+
+**Usage:**
+```
+/brand-review
+[paste your draft content]
+```
+
+If your brand style guide is configured in local settings, Claude will check your content against:
+- Brand voice attributes
+- Tone consistency
+- Terminology and style guidelines
+- Messaging pillars
+
+If not configured, Claude will provide a generic review for clarity, consistency, and professionalism.
+
+### /competitive-brief
+
+Research competitors and generate positioning comparisons.
+
+**Usage:**
+```
+/competitive-brief
+```
+
+Generates analysis with:
+- Feature comparison matrix
+- Messaging and positioning analysis
+- Content gap identification
+- Differentiation recommendations
+- Competitive battlecard
+
+### /performance-report
+
+Analyze marketing metrics and generate reports.
+
+**Usage:**
+```
+/performance-report
+```
+
+Builds reports with:
+- Key metrics by channel
+- Trend analysis and insights
+- Performance vs. targets
+- Optimization recommendations
+- Attribution analysis
+
+### /seo-audit
+
+Comprehensive SEO analysis.
+
+**Usage:**
+```
+/seo-audit
+```
+
+**Covers:**
+- Keyword research and opportunity identification
+- On-page SEO analysis
+- Content gap analysis
+- Technical SEO checks
+- Competitor comparison
+- Backlink analysis (with Ahrefs connected)
+
+### /email-sequence
+
+Design multi-email campaigns.
+
+**Usage:**
+```
+/email-sequence
+```
+
+Creates sequences for:
+- Nurture flows
+- Onboarding campaigns
+- Drip campaigns
+- Re-engagement series
+
+Includes timing, triggers, subject lines, and content for each email.
+
+## Skills
+
+Domain expertise that powers the commands:
+
+<CardGroup cols={2}>
+  <Card title="content-creation" icon="pen-fancy">
+    Content type templates, writing best practices by channel, SEO fundamentals, headline formulas, CTA guidance
+  </Card>
+  <Card title="campaign-planning" icon="calendar-days">
+    Campaign frameworks, channel selection, content calendar creation, budget allocation, success metrics
+  </Card>
+  <Card title="brand-voice" icon="volume">
+    Brand voice documentation, voice attributes, tone adaptation, style guide enforcement, terminology management
+  </Card>
+  <Card title="competitive-analysis" icon="users-viewfinder">
+    Competitive research methodology, messaging comparison, content gap analysis, positioning, battlecard creation
+  </Card>
+  <Card title="performance-analytics" icon="chart-simple">
+    Key metrics by channel, reporting templates, trend analysis, attribution modeling, optimization frameworks
+  </Card>
+</CardGroup>
+
+## MCP Integrations
+
+Connect your marketing tools for enhanced capabilities:
+
+| Category | Examples | What It Enables |
+|---|---|---|
+| **Marketing Automation** | HubSpot, Marketo, Pardot, Mailchimp | Campaign data, contact management, automation tracking |
+| **Email Marketing** | Klaviyo, Mailchimp, Brevo, Customer.io | Draft and review email sequences and campaigns |
+| **SEO** | Ahrefs, Similarweb, Semrush, Moz | Keyword research, backlink analysis, site audits, competitive traffic |
+| **Product Analytics** | Amplitude, Mixpanel, Google Analytics | User behavior data for performance reporting |
+| **Design** | Canva, Figma, Adobe Creative Cloud | Create and access design assets and brand files |
+| **Knowledge Base** | Notion, Confluence, Guru | Access briefs, style guides, campaign documents |
+| **Chat** | Slack, Microsoft Teams | Share drafts, reports, and briefs with your team |
+
+<Note>
+Plugin files use `~~category` placeholders (like `~~marketing automation`) to work with any connected tool in that category.
+</Note>
+
+## Configuration
+
+Configure your brand voice, style guide, and target personas in a local settings file for personalized output. This allows commands like `/draft-content` and `/brand-review` to automatically apply your brand standards without prompting each time.
+
+**Example settings file location:** `marketing/.claude/settings.local.json`
+
+```json
+{
+  "brand": {
+    "voice": "Authoritative but approachable",
+    "tone_attributes": ["Professional", "Helpful", "Clear"],
+    "terminology": {
+      "preferred": ["AI-powered", "customer success"],
+      "avoid": ["bleeding-edge", "game-changing"]
+    }
+  },
+  "target_personas": [
+    {
+      "name": "Marketing Director",
+      "industry": "B2B SaaS",
+      "pain_points": ["Attribution", "Proving ROI"]
+    }
+  ]
+}
+```
+
+## Example Workflows
+
+### Drafting a Blog Post
+
+```
+> /draft-content
+Type: blog post
+Topic: How AI is transforming B2B marketing
+Audience: Marketing directors at mid-market SaaS companies
+Key messages: AI saves time on repetitive tasks, improves personalization, requires human oversight
+Tone: Authoritative but approachable
+Length: 1200 words
+```
+
+Claude generates a structured blog post with engaging headline, SEO-optimized subheadings, and clear CTA.
+
+### Planning a Campaign
+
+```
+> /campaign-plan
+Goal: Drive 500 signups for our new product launch
+Audience: Technical decision-makers at enterprise companies
+Timeline: 6 weeks
+Budget range: $20,000-$30,000
+```
+
+Claude produces a campaign brief with objectives, audience segmentation, channel strategy, week-by-week content calendar, and KPIs.
+
+### Reviewing Brand Consistency
+
+```
+> /brand-review
+[paste your draft content]
+```
+
+Claude checks your content against configured brand voice, tone, terminology, and messaging pillars.

@@ -1,0 +1,272 @@
+---
+title: Plugin Structure
+description: Understand the files and directories that make up a Claude plugin
+---
+
+## Directory Structure
+
+Every plugin follows a consistent structure that Claude recognizes automatically:
+
+```
+plugin-name/
+├── .claude-plugin/
+│   └── plugin.json           # Required: plugin manifest
+├── commands/                 # Slash commands (.md files)
+├── skills/                   # Skills (subdirectories with SKILL.md)
+│   └── skill-name/
+│       ├── SKILL.md
+│       └── references/       # Optional: detailed reference content
+├── .mcp.json                 # MCP server definitions
+└── README.md                 # Plugin documentation
+```
+
+### Key Principles
+
+- **`.claude-plugin/plugin.json`** is always required
+- Component directories (`commands/`, `skills/`) go at the plugin root, not inside `.claude-plugin/`
+- Only create directories for components your plugin actually uses
+- Use kebab-case for all directory and file names
+- Everything is markdown and JSON — no build steps required
+
+## plugin.json Manifest
+
+The manifest file at `.claude-plugin/plugin.json` defines your plugin's metadata. Only the `name` field is required:
+
+```json
+{
+  "name": "sales",
+  "version": "1.1.0",
+  "description": "Prospect, craft outreach, and build deal strategy faster.",
+  "author": {
+    "name": "Anthropic"
+  }
+}
+```
+
+### Name Rules
+
+- Use kebab-case (lowercase with hyphens)
+- No spaces or special characters
+- Should be descriptive of the plugin's purpose
+
+Examples: `sales`, `product-management`, `customer-support`
+
+### Version Format
+
+Versions use semantic versioning (semver): `MAJOR.MINOR.PATCH`
+
+- **MAJOR**: Breaking changes
+- **MINOR**: New features, backward compatible
+- **PATCH**: Bug fixes
+
+Start new plugins at `0.1.0` or `1.0.0`.
+
+### Optional Fields
+
+```json
+{
+  "name": "sales",
+  "version": "1.1.0",
+  "description": "...",
+  "author": {
+    "name": "Your Company",
+    "email": "plugins@yourcompany.com",
+    "url": "https://yourcompany.com"
+  },
+  "homepage": "https://github.com/your-org/plugins/tree/main/sales",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/plugins.git",
+    "directory": "sales"
+  },
+  "license": "MIT",
+  "keywords": ["sales", "crm", "prospecting"]
+}
+```
+
+## Skills Directory
+
+Skills live in subdirectories under `skills/`. Each skill is a separate directory containing a `SKILL.md` file:
+
+```
+skills/
+├── call-prep/
+│   ├── SKILL.md
+│   └── references/
+│       └── output-template.md
+├── account-research/
+│   └── SKILL.md
+└── draft-outreach/
+    └── SKILL.md
+```
+
+### Skill Structure
+
+Each skill directory can contain:
+
+- **SKILL.md** (required): The main skill definition with frontmatter and instructions
+- **references/** (optional): Detailed reference content, schemas, examples
+- **examples/** (optional): Working examples and sample outputs
+
+### Progressive Disclosure
+
+Keep the main SKILL.md concise (under 3,000 words) with core knowledge. Put detailed content in reference files. This helps Claude load skills efficiently.
+
+## Commands Directory
+
+Commands are individual markdown files in the `commands/` directory:
+
+```
+commands/
+├── call-summary.md
+├── forecast.md
+└── pipeline-review.md
+```
+
+Each command file includes:
+- YAML frontmatter with metadata
+- Markdown body with instructions for Claude
+
+Commands are invoked explicitly with slash commands like `/sales:call-summary`.
+
+## MCP Configuration
+
+The `.mcp.json` file at the plugin root defines external tool connections:
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    }
+  }
+}
+```
+
+See [Adding MCP Servers](/building/adding-mcp-servers) for details.
+
+## Custom Component Paths
+
+You can specify custom paths for components in `plugin.json`:
+
+```json
+{
+  "name": "my-plugin",
+  "commands": "./custom-commands",
+  "skills": ["./skills", "./specialized-skills"],
+  "mcpServers": "./.mcp.json"
+}
+```
+
+This supplements (not replaces) auto-discovery from standard locations.
+
+## README.md
+
+Include a README.md at the plugin root to document:
+
+- What the plugin does
+- Who should use it
+- What skills and commands it provides
+- Required connectors
+- Setup instructions
+- Customization tips
+
+This helps both users and future maintainers understand your plugin.
+
+## Complete Example
+
+Here's a complete minimal plugin structure:
+
+```
+my-sales-plugin/
+├── .claude-plugin/
+│   └── plugin.json
+├── skills/
+│   └── call-prep/
+│       └── SKILL.md
+├── commands/
+│   └── call-summary.md
+├── .mcp.json
+└── README.md
+```
+
+**plugin.json:**
+```json
+{
+  "name": "my-sales-plugin",
+  "version": "1.0.0",
+  "description": "Custom sales workflows for our team",
+  "author": {
+    "name": "Your Company"
+  }
+}
+```
+
+**README.md:**
+```markdown
+# My Sales Plugin
+
+Custom sales workflows for our team.
+
+## Skills
+- **call-prep**: Prepare for sales calls with account context
+
+## Commands
+- `/call-summary`: Process call notes and extract action items
+
+## Connectors
+- Slack (team communication)
+- HubSpot (CRM)
+```
+
+That's a complete, functional plugin!
+
+## Path Variables
+
+When referencing files within your plugin, use the `${CLAUDE_PLUGIN_ROOT}` variable:
+
+```json
+{
+  "mcpServers": {
+    "local-server": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/servers/custom-server.js"]
+    }
+  }
+}
+```
+
+Never use hardcoded absolute paths — they won't work when the plugin is installed elsewhere.
+
+## Packaging Plugins
+
+To share your plugin, package it as a `.plugin` file (which is just a zip file):
+
+```bash
+cd plugin-directory
+zip -r my-plugin.plugin . -x "*.DS_Store" "node_modules/*"
+```
+
+Users can install this file directly in Cowork.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Skills" icon="brain" href="/building/creating-skills">
+    Learn how to write skills with frontmatter and instructions
+  </Card>
+  <Card title="Creating Commands" icon="terminal" href="/building/creating-commands">
+    Build slash commands for structured workflows
+  </Card>
+  <Card title="Adding MCP Servers" icon="plug" href="/building/adding-mcp-servers">
+    Connect your plugin to external tools
+  </Card>
+  <Card title="Plugin Management" icon="wrench" href="/building/plugin-management">
+    Use the plugin management plugin to create and customize plugins
+  </Card>
+</CardGroup>

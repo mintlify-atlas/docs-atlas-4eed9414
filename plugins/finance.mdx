@@ -1,0 +1,216 @@
+---
+title: Finance & Accounting
+description: Streamline finance and accounting workflows, from journal entries and reconciliation to financial statements and variance analysis
+---
+
+A finance and accounting plugin for Cowork that supports month-end close, journal entry preparation, account reconciliation, financial statement generation, variance analysis, and SOX audit support.
+
+<Warning>
+This plugin assists with finance and accounting workflows but does not provide financial, tax, or audit advice. All outputs should be reviewed by qualified financial professionals before use in financial reporting, regulatory filings, or audit documentation.
+</Warning>
+
+## Installation
+
+```bash
+claude plugins add knowledge-work-plugins/finance
+```
+
+## Commands
+
+<CardGroup cols={2}>
+  <Card title="Journal Entry" icon="book">
+    Generate accruals, fixed asset entries, prepaids, payroll, and revenue entries with proper debits/credits and supporting detail
+  </Card>
+  <Card title="Reconciliation" icon="balance-scale">
+    Compare GL balances to subledger, bank, or third-party balances and identify reconciling items
+  </Card>
+  <Card title="Income Statement" icon="chart-line">
+    Produce P&L with period-over-period comparison and variance analysis
+  </Card>
+  <Card title="Variance Analysis" icon="chart-mixed">
+    Decompose variances into drivers with narrative explanations and waterfall analysis
+  </Card>
+  <Card title="SOX Testing" icon="shield-check">
+    Generate sample selections, testing workpapers, and control assessments
+  </Card>
+</CardGroup>
+
+### /journal-entry
+
+Prepare journal entries with proper debits, credits, and supporting detail.
+
+```bash
+/journal-entry <type> <period>
+```
+
+**Entry types:**
+- `ap-accrual` — Accounts payable accruals for goods/services received but not yet invoiced
+- `fixed-assets` — Depreciation and amortization entries for fixed assets and intangibles
+- `prepaid` — Amortization of prepaid expenses (insurance, software, rent, etc.)
+- `payroll` — Payroll accruals including salaries, benefits, taxes, and bonus accruals
+- `revenue` — Revenue recognition entries including deferred revenue adjustments
+
+**Example:**
+```bash
+/journal-entry ap-accrual 2024-12
+```
+
+Generates a formatted journal entry with:
+- Account codes, debits, and credits
+- Department/cost center allocation
+- Supporting calculations and documentation
+- Review checklist for approval
+- Comparison to prior period entries
+
+### /reconciliation
+
+Account reconciliation to compare GL balances to subledger, bank, or third-party balances.
+
+```bash
+/reconciliation <account type> <period>
+```
+
+**Account types:** `cash`, `accounts-receivable`, `accounts-payable`, `inventory`, `fixed-assets`
+
+### /income-statement
+
+Generate income statements with period-over-period comparison.
+
+```bash
+/income-statement <frequency> <period>
+```
+
+**Frequency:** `monthly`, `quarterly`, `annual`
+
+### /variance-analysis
+
+Decompose variances into drivers with narrative explanations.
+
+```bash
+/variance-analysis <category> <period> vs <comparison>
+```
+
+**Example:**
+```bash
+/variance-analysis revenue 2024-Q4 vs 2024-Q3
+/variance-analysis opex 2024-12 vs budget
+```
+
+### /sox-testing
+
+Generate SOX compliance testing workpapers and control assessments.
+
+```bash
+/sox-testing <control area> <period>
+```
+
+## Skills
+
+Domain knowledge automatically applied when relevant:
+
+| Skill | Description |
+|-------|-------------|
+| `journal-entry-prep` | JE preparation best practices, standard accrual types, supporting documentation requirements, and review workflows |
+| `reconciliation` | Reconciliation methodology for GL-to-subledger, bank recs, and intercompany, with reconciling item categorization and aging |
+| `financial-statements` | Income statement, balance sheet, and cash flow statement formats with GAAP presentation and flux analysis methodology |
+| `variance-analysis` | Variance decomposition techniques (price/volume, rate/mix), materiality thresholds, narrative generation, and waterfall charts |
+| `close-management` | Month-end close checklist, task sequencing, dependencies, status tracking, and common close activities by day |
+| `audit-support` | SOX 404 control testing methodology, sample selection, documentation standards, and deficiency classification |
+
+## Example Workflows
+
+### Month-End Close
+
+1. Generate AP accrual entries:
+   ```bash
+   /journal-entry ap-accrual 2024-12
+   ```
+
+2. Amortize prepaid expenses:
+   ```bash
+   /journal-entry prepaid 2024-12
+   ```
+
+3. Book depreciation:
+   ```bash
+   /journal-entry fixed-assets 2024-12
+   ```
+
+4. Reconcile bank accounts:
+   ```bash
+   /reconciliation cash 2024-12
+   ```
+
+5. Reconcile AR subledger:
+   ```bash
+   /reconciliation accounts-receivable 2024-12
+   ```
+
+6. Generate P&L with flux analysis:
+   ```bash
+   /income-statement monthly 2024-12
+   ```
+
+### Variance Analysis
+
+```bash
+/variance-analysis revenue 2024-Q4 vs 2024-Q3
+/variance-analysis opex 2024-12 vs budget
+```
+
+Receive waterfall analysis and provide context on unexplained variances.
+
+### SOX Testing
+
+```bash
+/sox-testing revenue-recognition 2024-Q4
+/sox-testing procure-to-pay 2024-Q4
+```
+
+Review sample selections and document test results.
+
+## Connectors
+
+The plugin uses placeholders like `~~data warehouse` and `~~erp` for tool-agnostic workflows. Connect your financial data sources via MCP servers:
+
+| Category | Placeholder | Included Servers | Other Options |
+|----------|-------------|------------------|---------------|
+| Data warehouse | `~~data warehouse` | Snowflake, Databricks, BigQuery | Redshift, PostgreSQL |
+| Email | `~~email` | Microsoft 365 | — |
+| Office suite | `~~office suite` | Microsoft 365 | — |
+| Chat | `~~chat` | Slack | Microsoft Teams |
+| ERP / Accounting | `~~erp` | — | NetSuite, SAP, QuickBooks, Xero |
+| Analytics / BI | `~~analytics` | — | Tableau, Looker, Power BI |
+
+### Recommended Integrations
+
+<CardGroup cols={2}>
+  <Card title="ERP / Accounting" icon="database">
+    Connect your ERP (NetSuite, SAP) to pull trial balances, subledger data, and journal entries automatically
+  </Card>
+  <Card title="Data Warehouse" icon="warehouse">
+    Connect Snowflake or BigQuery to query financial data, run variance analysis, and pull historical comparisons
+  </Card>
+  <Card title="Spreadsheets" icon="table">
+    Connect Google Sheets or Excel for workpaper generation, reconciliation templates, and financial model updates
+  </Card>
+  <Card title="Analytics / BI" icon="chart-column">
+    Connect Tableau or Looker to pull dashboards, KPIs, and trend data for variance explanations
+  </Card>
+</CardGroup>
+
+<Note>
+Connect your ERP and data warehouse MCP servers to pull financial data automatically. Without these, you can paste data or upload files for analysis.
+</Note>
+
+## Configuration
+
+Add your data source MCP servers to the `mcpServers` section of `.mcp.json` in the plugin directory. The plugin recommends these integration categories:
+
+- `erp-accounting` — ERP or accounting system for GL, subledger, and JE data
+- `data-warehouse` — Data warehouse for financial queries and historical data
+- `spreadsheets` — Spreadsheet tools for workpaper generation
+- `analytics-bi` — BI tools for dashboards and KPI data
+- `documents` — Document storage for policies, memos, and support
+- `email` — Email for sending reports and requesting approvals
+- `chat` — Team communication for close status updates and questions

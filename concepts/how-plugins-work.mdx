@@ -1,0 +1,191 @@
+---
+title: How plugins work
+description: Understand the structure and architecture of Knowledge Work Plugins for Claude
+---
+
+Knowledge Work Plugins turn Claude into a specialist for your role, team, and company. Each plugin bundles the skills, connectors, slash commands, and sub-agents needed for a specific job function.
+
+## Plugin architecture
+
+Every plugin follows the same file-based structure. No code, no infrastructure, no build steps — just markdown and JSON.
+
+```
+plugin-name/
+├── .claude-plugin/
+│   └── plugin.json          # Plugin manifest
+├── .mcp.json                # MCP server connections
+├── commands/                # Slash commands
+│   ├── command-1.md
+│   └── command-2.md
+└── skills/                  # Domain expertise
+    ├── skill-1/
+    │   ├── SKILL.md
+    │   └── references/      # Optional supporting docs
+    └── skill-2/
+        └── SKILL.md
+```
+
+### Plugin manifest
+
+The `plugin.json` file defines your plugin's metadata:
+
+```json .claude-plugin/plugin.json
+{
+  "name": "sales",
+  "version": "1.1.0",
+  "description": "Prospect, craft outreach, and build deal strategy faster. Prep for calls, manage your pipeline, and write personalized messaging that moves deals forward.",
+  "author": {
+    "name": "Anthropic"
+  }
+}
+```
+
+<Note>
+  The plugin name must match the directory name and should use lowercase with hyphens (kebab-case).
+</Note>
+
+### MCP configuration
+
+The `.mcp.json` file connects your plugin to external tools via [Model Context Protocol](https://modelcontextprotocol.io/) servers:
+
+```json .mcp.json
+{
+  "mcpServers": {
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic"
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp"
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    }
+  }
+}
+```
+
+See [MCP integration](/concepts/mcp-integration) for details on how Claude uses these connections.
+
+## How plugins activate
+
+Once installed, plugins work automatically:
+
+<Steps>
+  <Step title="Skills activate contextually">
+    When you describe a task that matches a skill's domain, Claude automatically draws on that skill's expertise and workflows.
+  </Step>
+  
+  <Step title="Commands are explicitly invoked">
+    Use slash commands to trigger specific workflows: `/sales:call-prep`, `/pipeline-review`, `/forecast`
+  </Step>
+  
+  <Step title="Connectors provide data">
+    When configured, MCP servers give Claude access to your CRM, project management tools, data warehouses, and more.
+  </Step>
+</Steps>
+
+## Component types
+
+### Skills
+
+Skills encode domain expertise, best practices, and step-by-step workflows. Claude draws on them automatically when relevant.
+
+**Example:** The `call-prep` skill activates when you say "prep me for my call with Acme Corp" — no command needed.
+
+Learn more: [Skills](/concepts/skills)
+
+### Commands
+
+Commands are explicit actions you trigger with slash syntax. They're perfect for repeatable workflows you want to invoke on demand.
+
+**Example:** `/call-summary <notes>` processes call notes into action items and follow-up emails.
+
+Learn more: [Commands](/concepts/commands)
+
+### Connectors
+
+Connectors wire Claude to external tools via MCP servers. They provide read/write access to your company's systems.
+
+**Example:** The HubSpot connector lets Claude pull account history, update deal stages, and create tasks.
+
+Learn more: [Connectors](/concepts/connectors)
+
+## Standalone vs supercharged
+
+Plugins are designed to work with or without external tool connections:
+
+<CardGroup cols={2}>
+  <Card title="Standalone mode" icon="circle">
+    Works with manual input and web research. You provide context, Claude provides expertise.
+  </Card>
+  <Card title="Supercharged mode" icon="bolt">
+    When you connect your tools via MCP, Claude can pull data automatically and update systems for you.
+  </Card>
+</CardGroup>
+
+### Example: Call prep skill
+
+<Accordion title="Standalone (works without connectors)">
+  - You tell Claude: company name, meeting type, attendees
+  - Claude does web research: recent news, funding, leadership
+  - Output: prep brief with agenda and suggested questions
+</Accordion>
+
+<Accordion title="Supercharged (with connectors)">
+  - CRM: account history, contacts, opportunities, activities
+  - Email: recent threads, open questions, commitments
+  - Chat: internal discussions, colleague insights
+  - Transcripts: prior call recordings, key moments
+  - Calendar: auto-find meeting, pull attendees
+</Accordion>
+
+## Customization philosophy
+
+The marketplace plugins are generic starting points. They become powerful when you customize them for your company:
+
+<Steps>
+  <Step title="Swap connectors">
+    Edit `.mcp.json` to point at your specific tool stack
+  </Step>
+  
+  <Step title="Add company context">
+    Drop your terminology, org structure, and processes into skill files
+  </Step>
+  
+  <Step title="Adjust workflows">
+    Modify skill instructions to match how your team actually works
+  </Step>
+  
+  <Step title="Create new components">
+    Add skills and commands for workflows unique to your company
+  </Step>
+</Steps>
+
+## File-based simplicity
+
+Because plugins are just markdown and JSON:
+
+- **Easy to version control** — Track changes with git
+- **Easy to share** — Fork, modify, and distribute to your team
+- **Easy to customize** — Edit in any text editor
+- **Easy to understand** — No code to decipher
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Skills" icon="brain" href="/concepts/skills">
+    Learn how skills encode domain expertise
+  </Card>
+  <Card title="Commands" icon="terminal" href="/concepts/commands">
+    Understand slash commands and workflows
+  </Card>
+  <Card title="Connectors" icon="plug" href="/concepts/connectors">
+    Connect Claude to your tools
+  </Card>
+  <Card title="MCP integration" icon="share-nodes" href="/concepts/mcp-integration">
+    Deep dive on Model Context Protocol
+  </Card>
+</CardGroup>
